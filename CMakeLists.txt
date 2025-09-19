@@ -31,6 +31,7 @@ find_package(spdlog REQUIRED)
 # 设置通用源文件
 set(SOURCES
     src/main.cpp
+    src/engine/core/game_app.cpp
 )
 
 # 根据平台向"通用源文件"追加平台专属的文件

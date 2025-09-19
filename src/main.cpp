@@ -8,16 +8,21 @@
 #include <spdlog/spdlog.h>
 #include <nlohmann/json.hpp>
 
+#include "engine/core/game_app.h"
+
 void testSpdlog();
 void testJson();
 
 int main(int, char**) {
+
+	engine::core::GameApp app;
+	app.run();
     
     // 执行测试spdlog json 库
-    {
-        testSpdlog();
-		testJson();
-    }
+	{
+		// testSpdlog();
+		// testJson();
+	}
 
     return 0;
 }
@@ -75,7 +80,7 @@ void testJson() {
 		// 安全访问的方法
 		// 成员函数contains检查某个键是否存在
 		if (data.contains("email")) {
-			std::string email = data.at("email").get<std::string>();
+			email = data.at("email").get<std::string>();
 			spdlog::info("Email: {}", email);
 		}
 		if (data.contains("nonExistentKey")) {
