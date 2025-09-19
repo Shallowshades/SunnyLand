@@ -2,8 +2,11 @@
 #include <spdlog/spdlog.h>
 
 #include "game_app.h"
+#include "time.h"
 
-engine::core::GameApp::GameApp() = default;
+engine::core::GameApp::GameApp() {
+	mTime = std::make_unique<engine::core::Time>();
+}
 
 engine::core::GameApp::~GameApp() {
 	if (mIsRunning) {
@@ -18,11 +21,15 @@ void engine::core::GameApp::run() {
 		return;
 	}
 
+	mTime->setTargetFps(144);	// 设置目标帧率,未来从配置文件读取
 	while (mIsRunning) {
-		float delta = 0.01f; // 每帧的时间间隔
+		mTime->update();
+		float delta = mTime->getDeltaTime(); // 每帧的时间间隔
 		handleEvents();
 		update(delta);
 		render();
+
+		spdlog::info("Delta Time: {}", delta);
 	}
 
 	close();
