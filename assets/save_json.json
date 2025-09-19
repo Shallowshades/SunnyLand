@@ -1,0 +1,46 @@
+{
+    "address": {
+        "city": "示例市 (Sample City)",
+        "isPrimary": true,
+        "street": "人民路123号 (Renmin Road No. 123)",
+        "zipCode": "100000"
+    },
+    "age": 30,
+    "email": "zhangsan@example.com",
+    "height_meters": 1.75,
+    "hobbies": [
+        "编程 (Programming)",
+        "阅读 (Reading)",
+        "旅行 (Traveling)"
+    ],
+    "isStudent": false,
+    "metadata": {
+        "tags": [
+            "data",
+            "example"
+        ],
+        "version": 1.2
+    },
+    "middleName": null,
+    "name": "张三 (Zhang San)",
+    "projects": [
+        {
+            "budget": 50000.75,
+            "isActive": true,
+            "projectName": "项目Alpha (Project Alpha)",
+            "status": "已完成 (Completed)"
+        },
+        {
+            "budget": 120000,
+            "deadline": null,
+            "isActive": true,
+            "projectName": "项目Beta (Project Beta)",
+            "status": "进行中 (In Progress)"
+        }
+    ],
+    "scores": [
+        95,
+        88,
+        72.5
+    ]
+}

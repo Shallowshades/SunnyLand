@@ -55,6 +55,6 @@ target_link_libraries(${TARGET}
                         )
 
 # 不要弹出控制台窗口
-if (MSVC)
-    target_link_options(${TARGET} PRIVATE "/SUBSYSTEM:WINDOWS")
-endif()
+# if (MSVC)
+#     target_link_options(${TARGET} PRIVATE "/SUBSYSTEM:WINDOWS")
+# endif()
