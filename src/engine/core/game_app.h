@@ -9,6 +9,10 @@
 struct SDL_Window;
 struct SDL_Renderer;
 
+namespace engine::resource {
+class ResourceManager;
+}
+
 namespace engine::core {
 class Time;
 /**
@@ -37,13 +41,24 @@ private:
 	void render();
 	void close();
 
+	// 各模块的初始化/创建函数, 在init()中调用
+	bool initSDL();
+	bool initTime();
+	bool initResourceManager();
+
+	// 测试函数
+	void testResourceManager();
+
 private:
+	static constexpr std::string_view mLogTag = "GameApp";
+
 	SDL_Window* mWindow = nullptr;
 	SDL_Renderer* mSDLRenderer = nullptr;
 	bool mIsRunning = false;
 
 	// 引擎组件
 	std::unique_ptr<engine::core::Time> mTime;
+	std::unique_ptr<engine::resource::ResourceManager> mResourceManager;
 };
 
 }

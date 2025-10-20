@@ -1,10 +1,6 @@
 #include <iostream>
 #include <fstream>
 
-#include <SDL3/SDL.h>
-#include <SDL3_image/SDL_image.h>
-#include <SDL3_mixer/SDL_mixer.h>
-#include <SDL3_ttf/SDL_ttf.h>
 #include <spdlog/spdlog.h>
 #include <nlohmann/json.hpp>
 
@@ -15,6 +11,7 @@ void testJson();
 
 int main(int, char**) {
 
+	spdlog::set_level(spdlog::level::debug);
 	engine::core::GameApp app;
 	app.run();
     
