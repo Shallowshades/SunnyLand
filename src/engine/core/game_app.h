@@ -13,6 +13,11 @@ namespace engine::resource {
 class ResourceManager;
 }
 
+namespace engine::render {
+class Renderer;
+class Camera;
+}
+
 namespace engine::core {
 class Time;
 /**
@@ -42,12 +47,16 @@ private:
 	void close();
 
 	// 各模块的初始化/创建函数, 在init()中调用
-	bool initSDL();
-	bool initTime();
-	bool initResourceManager();
+	[[nodiscard]] bool initSDL();
+	[[nodiscard]] bool initTime();
+	[[nodiscard]] bool initResourceManager();
+	[[nodiscard]] bool initRenderer();
+	[[nodiscard]] bool initCamera();
 
 	// 测试函数
 	void testResourceManager();
+	void testRenderer();
+	void testCamera();
 
 private:
 	static constexpr std::string_view mLogTag = "GameApp";
@@ -59,6 +68,8 @@ private:
 	// 引擎组件
 	std::unique_ptr<engine::core::Time> mTime;
 	std::unique_ptr<engine::resource::ResourceManager> mResourceManager;
+	std::unique_ptr<engine::render::Renderer> mRenderer;
+	std::unique_ptr<engine::render::Camera> mCamera;
 };
 
 }
