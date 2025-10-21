@@ -20,6 +20,7 @@ class Camera;
 
 namespace engine::core {
 class Time;
+class Config;
 /**
  * @brief 主游戏应用程序类, 初始化SDL, 管理游戏循环
  */
@@ -47,6 +48,7 @@ private:
 	void close();
 
 	// 各模块的初始化/创建函数, 在init()中调用
+	[[nodiscard]] bool initConfig();
 	[[nodiscard]] bool initSDL();
 	[[nodiscard]] bool initTime();
 	[[nodiscard]] bool initResourceManager();
@@ -67,6 +69,7 @@ private:
 
 	// 引擎组件
 	std::unique_ptr<engine::core::Time> mTime;
+	std::unique_ptr<engine::core::Config> mConfig;
 	std::unique_ptr<engine::resource::ResourceManager> mResourceManager;
 	std::unique_ptr<engine::render::Renderer> mRenderer;
 	std::unique_ptr<engine::render::Camera> mCamera;

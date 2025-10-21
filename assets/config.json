@@ -9,38 +9,38 @@
         "vsync": true
     },
     "performance": {
-        "target_fps": 60
+        "target_fps": 144
     },
     "audio": {
-        "music_volume": 0.2,
+        "music_volume": 0.5,
         "sound_volume": 0.5
     },
     "input_mappings": {
-        "pause": [
+        "Pause": [
             "P",
             "Escape"
         ],
-        "move_down": [
+        "MoveDown": [
             "S",
             "Down"
         ],
-        "jump": [
+        "Jump": [
             "J",
             "Space"
         ],
-        "move_up": [
+        "MoveUp": [
             "W",
             "Up"
         ],
-        "move_right": [
+        "MoveRight": [
             "D",
             "Right"
         ],
-        "attack": [
+        "Attack": [
             "K",
             "MouseLeft"
         ],
-        "move_left": [
+        "MoveLeft": [
             "A",
             "Left"
         ]

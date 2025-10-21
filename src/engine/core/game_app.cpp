@@ -3,6 +3,7 @@
 
 #include "game_app.h"
 #include "time.h"
+#include "config.h"
 #include "../resource/resource_manager.h"
 #include "../render/renderer.h"
 #include "../render/camera.h"
@@ -22,7 +23,7 @@ void engine::core::GameApp::run() {
 		return;
 	}
 
-	mTime->setTargetFps(144);	// 设置目标帧率,未来从配置文件读取
+
 	while (mIsRunning) {
 		mTime->update();
 		float delta = mTime->getDeltaTime(); // 每帧的时间间隔
@@ -39,6 +40,7 @@ void engine::core::GameApp::run() {
 bool engine::core::GameApp::init() {
 	spdlog::trace("{} 初始化...", std::string(mLogTag));
 	
+	if (!initConfig()) return false;
 	if (!initSDL()) return false;
 	if (!initTime()) return false;
 	if (!initResourceManager()) return false;
@@ -94,13 +96,25 @@ void engine::core::GameApp::close() {
 	mIsRunning = false;
 }
 
+bool engine::core::GameApp::initConfig() {
+	try {
+		mConfig = std::make_unique<engine::core::Config>("assets/config.json");
+	}
+	catch (const std::exception& e) {
+		spdlog::error("{} 初始化配置失败: {}", std::string(mLogTag), e.what());
+		return false;
+	}
+	spdlog::trace("{} 配置初始化成功", std::string(mLogTag));
+	return true;
+}
+
 bool engine::core::GameApp::initSDL() {
 	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
 		spdlog::error("{} 无法创建窗口! SDL错误: {}", std::string(mLogTag), SDL_GetError());
 		return false;
 	}
 
-	mWindow = SDL_CreateWindow("SunnyLand", 1280, 720, SDL_WINDOW_RESIZABLE);
+	mWindow = SDL_CreateWindow(mConfig->mWindowTitle.c_str(), mConfig->mWindowWidth, mConfig->mWindowHeight, SDL_WINDOW_RESIZABLE);
 	if (mWindow == nullptr) {
 		spdlog::error("{} 无法创建窗口! SDL错误: {}", std::string(mLogTag), SDL_GetError());
 		return false;
@@ -112,8 +126,13 @@ bool engine::core::GameApp::initSDL() {
 		return false;
 	}
 
-	// 设置逻辑分辨率
-	SDL_SetRenderLogicalPresentation(mSDLRenderer, 640, 360, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+	// 设置VSync(注意:VSync开启时, 驱动程序会尝试将帧率限制到显示器刷新率, 有可能会覆盖手动设置的mTargetFps)
+	int vsyncMode = mConfig->mVsyncEnabled ? SDL_RENDERER_VSYNC_ADAPTIVE : SDL_RENDERER_VSYNC_DISABLED;
+	SDL_SetRenderVSync(mSDLRenderer, vsyncMode);
+	spdlog::trace("{} Vsync设置为: {}", std::string(mLogTag), mConfig->mVsyncEnabled ? "Enable" : "Disable");
+
+	// 设置逻辑分辨率为窗口大小的一半 (针对像素游戏)
+	SDL_SetRenderLogicalPresentation(mSDLRenderer, mConfig->mWindowWidth / 2, mConfig->mWindowHeight / 2, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 	spdlog::trace("{} 初始化SDL成功", std::string(mLogTag));
 	return true;
 }
@@ -126,6 +145,8 @@ bool engine::core::GameApp::initTime() {
 		spdlog::error("{} 初始化时间管理器失败: {}", std::string(mLogTag), e.what());
 		return false;
 	}
+	mTime->setTargetFps(mConfig->mTargetFps);
+	spdlog::trace("{} 时间管理初始化成功", std::string(mLogTag));
 	return true;
 }
 
@@ -155,7 +176,7 @@ bool engine::core::GameApp::initRenderer() {
 
 bool engine::core::GameApp::initCamera() {
 	try {
-		mCamera = std::make_unique<engine::render::Camera>(glm::vec2(640, 360));
+		mCamera = std::make_unique<engine::render::Camera>(glm::vec2(mConfig->mWindowWidth / 2, mConfig->mWindowHeight / 2));
 	}
 	catch (const std::exception& e) {
 		spdlog::error("{} 初始化相机失败: {}", std::string(mLogTag), e.what());
