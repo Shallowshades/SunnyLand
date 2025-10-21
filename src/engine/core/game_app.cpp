@@ -7,6 +7,7 @@
 #include "../resource/resource_manager.h"
 #include "../render/renderer.h"
 #include "../render/camera.h"
+#include "../input/input_manager.h"
 
 engine::core::GameApp::GameApp() = default;
 
@@ -27,6 +28,7 @@ void engine::core::GameApp::run() {
 	while (mIsRunning) {
 		mTime->update();
 		float delta = mTime->getDeltaTime(); // 每帧的时间间隔
+		mInputManager->update();
 		handleEvents();
 		update(delta);
 		render();
@@ -46,6 +48,7 @@ bool engine::core::GameApp::init() {
 	if (!initResourceManager()) return false;
 	if (!initRenderer()) return false;
 	if (!initCamera()) return false;
+	if (!initInputManager()) return false;
 
 	// 测试资源管理器
 	testResourceManager();
@@ -56,12 +59,13 @@ bool engine::core::GameApp::init() {
 }
 
 void engine::core::GameApp::handleEvents() {
-	SDL_Event event;
-	while (SDL_PollEvent(&event)) {
-		if (event.type == SDL_EVENT_QUIT) {
-			mIsRunning = false;
-		}
+	if (mInputManager->shouldQuit()) {
+		spdlog::trace("{} 收到来自 InputManager 的退出请求.", std::string(mLogTag));
+		mIsRunning = false;
+		return;
 	}
+
+	testInputManager();
 }
 
 void engine::core::GameApp::update([[maybe_unused]] float delta) {
@@ -186,6 +190,18 @@ bool engine::core::GameApp::initCamera() {
 	return true;
 }
 
+bool engine::core::GameApp::initInputManager() {
+	try {
+		mInputManager = std::make_unique<engine::input::InputManager>(mSDLRenderer, mConfig.get());
+	}
+	catch (const std::exception& e) {
+		spdlog::error("{} 初始化输入管理器失败: {}", std::string(mLogTag), e.what());
+		return false;
+	}
+	spdlog::trace("{} 输入管理器初始化成功", std::string(mLogTag));
+	return true;
+}
+
 //////////////////////////////////////////////////////////////////////////
 /// 测试用函数
 //////////////////////////////////////////////////////////////////////////
@@ -219,4 +235,30 @@ void engine::core::GameApp::testCamera() {
 	if (key_state[SDL_SCANCODE_DOWN]) mCamera->move(glm::vec2(0, 1));
 	if (key_state[SDL_SCANCODE_LEFT]) mCamera->move(glm::vec2(-1, 0));
 	if (key_state[SDL_SCANCODE_RIGHT]) mCamera->move(glm::vec2(1, 0));
+}
+
+void engine::core::GameApp::testInputManager() {
+	std::vector<std::string> actions = {
+		"MoveUp",
+		"MoveDown",
+		"MoveLeft",
+		"MoveRight",
+		"Jump",
+		"Attack",
+		"Pause",
+		"MouseLeftClick",
+		"MouseRightClick"
+	};
+
+	for (const auto& action : actions) {
+		if (mInputManager->isActionPressed(action)) {
+			spdlog::info("{} 按下 {}", std::string(mLogTag), action);
+		}
+		if (mInputManager->isActionReleased(action)) {
+			spdlog::info("{} 抬起 {}", std::string(mLogTag), action);
+		}
+		if (mInputManager->isActionDown(action)) {
+			spdlog::info("{} 按下中 {}", std::string(mLogTag), action);
+		}
+	}
 }

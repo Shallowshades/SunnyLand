@@ -18,6 +18,10 @@ class Renderer;
 class Camera;
 }
 
+namespace engine::input {
+class InputManager;
+}
+
 namespace engine::core {
 class Time;
 class Config;
@@ -54,11 +58,13 @@ private:
 	[[nodiscard]] bool initResourceManager();
 	[[nodiscard]] bool initRenderer();
 	[[nodiscard]] bool initCamera();
+	[[nodiscard]] bool initInputManager();
 
 	// 测试函数
 	void testResourceManager();
 	void testRenderer();
 	void testCamera();
+	void testInputManager();
 
 private:
 	static constexpr std::string_view mLogTag = "GameApp";
@@ -73,6 +79,7 @@ private:
 	std::unique_ptr<engine::resource::ResourceManager> mResourceManager;
 	std::unique_ptr<engine::render::Renderer> mRenderer;
 	std::unique_ptr<engine::render::Camera> mCamera;
+	std::unique_ptr<engine::input::InputManager> mInputManager;
 };
 
 }
