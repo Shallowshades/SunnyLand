@@ -8,6 +8,7 @@
 #include "../render/renderer.h"
 #include "../render/camera.h"
 #include "../input/input_manager.h"
+#include "../object/game_object.h"
 
 engine::core::GameApp::GameApp() = default;
 
@@ -55,6 +56,7 @@ bool engine::core::GameApp::init() {
 
 	mIsRunning = true;
 	spdlog::trace("{} 初始化成功", std::string(mLogTag));
+	testGameObject();
 	return true;
 }
 
@@ -261,4 +263,9 @@ void engine::core::GameApp::testInputManager() {
 			spdlog::info("{} 按下中 {}", std::string(mLogTag), action);
 		}
 	}
+}
+
+void engine::core::GameApp::testGameObject() {
+	engine::object::GameObject gameObject("testGameObject");
+	gameObject.addComponent<engine::component::Component>();
 }

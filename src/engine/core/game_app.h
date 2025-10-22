@@ -65,6 +65,7 @@ private:
 	void testRenderer();
 	void testCamera();
 	void testInputManager();
+	void testGameObject();
 
 private:
 	static constexpr std::string_view mLogTag = "GameApp";
