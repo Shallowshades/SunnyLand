@@ -18,6 +18,10 @@
 #include <spdlog/spdlog.h>
 #include "../component/component.h"
 
+namespace engine::core {
+	class Context;
+}
+
 namespace engine::object {
 /**
  * @brief 游戏对象类, 负责管理游戏对象的组件.
@@ -36,17 +40,17 @@ public:
 	GameObject(const std::string& name = "", const std::string& tag = "");
 
 	// 禁用拷贝和移动语义
-	GameObject(const GameObject&) = delete;					///< @brief 删除拷贝构造
-	GameObject& operator=(const GameObject&) = delete;		///< @brief 删除拷贝赋值构造
-	GameObject(GameObject&&) = delete;						///< @brief 删除移动构造
-	GameObject& operator=(GameObject&&) = delete;			///< @brief 删除移动赋值构造
+	GameObject(const GameObject&) = delete;							///< @brief 删除拷贝构造
+	GameObject& operator=(const GameObject&) = delete;				///< @brief 删除拷贝赋值构造
+	GameObject(GameObject&&) = delete;								///< @brief 删除移动构造
+	GameObject& operator=(GameObject&&) = delete;					///< @brief 删除移动赋值构造
 
-	void setName(const std::string& name);					///< @brief 设置名称
-	const std::string& getName() const;						///< @brief 获取名称
-	void setTag(const std::string& tag);					///< @brief 设置标签
-	const std::string& getTag() const;						///< @brief 获取标签
-	void setNeedRemove(bool needRemove);					///< @brief 设置是否需要删除
-	bool isNeedRemove() const;								///< @brief 获取是否需要删除
+	void setName(const std::string& name);							///< @brief 设置名称
+	const std::string& getName() const;								///< @brief 获取名称
+	void setTag(const std::string& tag);							///< @brief 设置标签
+	const std::string& getTag() const;								///< @brief 获取标签
+	void setNeedRemove(bool needRemove);							///< @brief 设置是否需要删除
+	bool isNeedRemove() const;										///< @brief 获取是否需要删除
 
 	/// 组件相关函数
 
@@ -88,10 +92,10 @@ public:
 	void removeComponent();
 
 	// 关键循环函数
-	void update(float deltaTime);							///< @brief 更新所有组件
-	void render();											///< @brief 渲染所有组件
-	void clean();											///< @brief 清理所有组件
-	void handleInput();										///< @brief 处理输入
+	void update(float deltaTime, engine::core::Context& context);	///< @brief 更新所有组件
+	void render(engine::core::Context& context);						///< @brief 渲染所有组件
+	void clean();													///< @brief 清理所有组件
+	void handleInput(engine::core::Context& context);				///< @brief 处理输入
 
 private:
 	static constexpr std::string_view mLogTag = "GameObject";
@@ -117,7 +121,7 @@ inline T* GameObject::addComponent(Args && ...args) {
 	if (hasComponent<T>()) {
 		return getComponent<T>();
 	}
-	// 如果不存在则创建组件
+	// 如果不存在则创建组件, args为组件构造时带的参数
 	auto component = std::make_unique<T>(std::forward<Args>(args)...);
 	T* ptr = component.get();
 	component->setOwner(this);

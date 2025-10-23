@@ -7,19 +7,4 @@ void Component::setOwner(engine::object::GameObject* owner) {
 engine::object::GameObject* Component::getOwner() const {
 	return mOwner;
 }
-void Component::init()
-{
-}
-void Component::handleInput()
-{
-}
-void Component::update(float)
-{
-}
-void Component::render()
-{
-}
-void Component::clean()
-{
-}
 } // namespace engine::component

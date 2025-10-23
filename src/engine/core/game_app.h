@@ -25,10 +25,11 @@ class InputManager;
 namespace engine::core {
 class Time;
 class Config;
+class Context;
 /**
  * @brief 主游戏应用程序类, 初始化SDL, 管理游戏循环
  */
-class GameApp final {	// final表示不能被继承
+class GameApp final {	// final 表示不能被继承
 public:
 	GameApp();
 	~GameApp();
@@ -45,7 +46,7 @@ public:
 	GameApp& operator=(GameApp&&) = delete;
 
 private:
-	[[nodiscard]] bool init();	// nodiscord表示函数返回值不应该被忽略
+	[[nodiscard]] bool init();	// nodiscard 表示函数返回值不应该被忽略
 	void handleEvents();
 	void update(float delta);
 	void render();
@@ -59,6 +60,7 @@ private:
 	[[nodiscard]] bool initRenderer();
 	[[nodiscard]] bool initCamera();
 	[[nodiscard]] bool initInputManager();
+	[[nodiscard]] bool initContext();
 
 	// 测试函数
 	void testResourceManager();
@@ -81,6 +83,7 @@ private:
 	std::unique_ptr<engine::render::Renderer> mRenderer;
 	std::unique_ptr<engine::render::Camera> mCamera;
 	std::unique_ptr<engine::input::InputManager> mInputManager;
+	std::unique_ptr<engine::core::Context> mContext;
 };
 
 }

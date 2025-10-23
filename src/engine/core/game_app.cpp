@@ -4,11 +4,16 @@
 #include "game_app.h"
 #include "time.h"
 #include "config.h"
+#include "context.h"
 #include "../resource/resource_manager.h"
 #include "../render/renderer.h"
 #include "../render/camera.h"
 #include "../input/input_manager.h"
 #include "../object/game_object.h"
+#include "../component/sprite_component.h"
+#include "../component/transform_component.h"
+
+engine::object::GameObject gameObject("testGameObject");
 
 engine::core::GameApp::GameApp() = default;
 
@@ -50,6 +55,7 @@ bool engine::core::GameApp::init() {
 	if (!initRenderer()) return false;
 	if (!initCamera()) return false;
 	if (!initInputManager()) return false;
+	if (!initContext()) return false;
 
 	// 测试资源管理器
 	testResourceManager();
@@ -80,6 +86,7 @@ void engine::core::GameApp::render() {
 	mRenderer->clearScreen();
 	//2. 具体渲染代码
 	testRenderer();
+	gameObject.render(*mContext);
 	//3. 更新屏幕显示
 	mRenderer->present();
 }
@@ -204,6 +211,17 @@ bool engine::core::GameApp::initInputManager() {
 	return true;
 }
 
+bool engine::core::GameApp::initContext() {
+	try {
+		mContext = std::make_unique<engine::core::Context>(*mInputManager, *mRenderer, *mCamera, *mResourceManager);
+	}
+	catch (const std::exception& e) {
+		spdlog::error("{} 初始化上下文失败: {}", std::string(mLogTag), e.what());
+		return false;
+	}
+	return true;
+}
+
 //////////////////////////////////////////////////////////////////////////
 /// 测试用函数
 //////////////////////////////////////////////////////////////////////////
@@ -266,6 +284,8 @@ void engine::core::GameApp::testInputManager() {
 }
 
 void engine::core::GameApp::testGameObject() {
-	engine::object::GameObject gameObject("testGameObject");
-	gameObject.addComponent<engine::component::Component>();
+	gameObject.addComponent<engine::component::TransformComponent>(glm::vec2(100, 100));
+	gameObject.addComponent<engine::component::SpriteComponent>("assets/textures/Props/big-crate.png", *mResourceManager, engine::utils::Alignment::CENTER);
+	gameObject.getComponent<engine::component::TransformComponent>()->setScale(glm::vec2(2.f, 2.f));
+	gameObject.getComponent<engine::component::TransformComponent>()->setRotation(30.f);
 }

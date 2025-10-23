@@ -35,17 +35,17 @@ bool GameObject::isNeedRemove() const{
 	return mNeedRemove;
 }
 
-void GameObject::update(float deltaTime){
+void GameObject::update(float deltaTime, engine::core::Context& context){
 	// 遍历所有组件并调用他们的update方法
 	for (auto& pair : mComponents) {
-		pair.second->update(deltaTime);
+		pair.second->update(deltaTime, context);
 	}
 }
 
-void GameObject::render(){
+void GameObject::render(engine::core::Context& context){
 	// 遍历所有组件并调用他们的render方法
 	for (auto& pair : mComponents) {
-		pair.second->render();
+		pair.second->render(context);
 	}
 }
 
@@ -58,10 +58,10 @@ void GameObject::clean(){
 	mComponents.clear();
 }
 
-void GameObject::handleInput(){
+void GameObject::handleInput(engine::core::Context& context){
 	// 遍历所有组件并调用他们的handleInput方法
 	for (auto& pair : mComponents) {
-		pair.second->handleInput();
+		pair.second->handleInput(context);
 	}
 }
 } // namespace engine::object
