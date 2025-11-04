@@ -22,6 +22,10 @@ namespace engine::input {
 class InputManager;
 }
 
+namespace engine::scene {
+class SceneManager;
+}
+
 namespace engine::core {
 class Time;
 class Config;
@@ -61,6 +65,7 @@ private:
 	[[nodiscard]] bool initCamera();
 	[[nodiscard]] bool initInputManager();
 	[[nodiscard]] bool initContext();
+	[[nodiscard]] bool initSceneManager();
 
 	// 测试函数
 	void testResourceManager();
@@ -84,6 +89,7 @@ private:
 	std::unique_ptr<engine::render::Camera> mCamera;
 	std::unique_ptr<engine::input::InputManager> mInputManager;
 	std::unique_ptr<engine::core::Context> mContext;
+	std::unique_ptr<engine::scene::SceneManager> mSceneManager;
 };
 
 }

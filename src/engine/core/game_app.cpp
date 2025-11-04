@@ -9,11 +9,8 @@
 #include "../render/renderer.h"
 #include "../render/camera.h"
 #include "../input/input_manager.h"
-#include "../object/game_object.h"
-#include "../component/sprite_component.h"
-#include "../component/transform_component.h"
-
-engine::object::GameObject gameObject("testGameObject");
+#include "../scene/scene_manager.h"
+#include "../../game/scene/game_scene.h"
 
 engine::core::GameApp::GameApp() = default;
 
@@ -56,13 +53,13 @@ bool engine::core::GameApp::init() {
 	if (!initCamera()) return false;
 	if (!initInputManager()) return false;
 	if (!initContext()) return false;
+	if (!initSceneManager()) return false;
 
-	// 测试资源管理器
-	testResourceManager();
+	// 创建第一个场景并压入栈
+	auto scene = std::make_unique<game::scene::GameScene>("GameScene", *mContext, *mSceneManager);
 
 	mIsRunning = true;
 	spdlog::trace("{} 初始化成功", std::string(mLogTag));
-	testGameObject();
 	return true;
 }
 
@@ -73,20 +70,19 @@ void engine::core::GameApp::handleEvents() {
 		return;
 	}
 
-	testInputManager();
+	mSceneManager->handleInput();
 }
 
-void engine::core::GameApp::update([[maybe_unused]] float delta) {
+void engine::core::GameApp::update(float delta) {
 	// 游戏逻辑更新
-	testCamera();
+	mSceneManager->update(delta);
 }
 
 void engine::core::GameApp::render() {
 	//1. 清除屏幕
 	mRenderer->clearScreen();
 	//2. 具体渲染代码
-	testRenderer();
-	gameObject.render(*mContext);
+	mSceneManager->render();
 	//3. 更新屏幕显示
 	mRenderer->present();
 }
@@ -222,6 +218,18 @@ bool engine::core::GameApp::initContext() {
 	return true;
 }
 
+bool engine::core::GameApp::initSceneManager() {
+	try {
+		mSceneManager = std::make_unique<engine::scene::SceneManager>(*mContext);
+	}
+	catch (const std::exception& e) {
+		spdlog::error("{} 初始化场景管理器失败: {}", std::string(mLogTag), e.what());
+		return false;
+	}
+	spdlog::trace("{} 场景管理器初始化成功.", std::string(mLogTag));
+	return true;
+}
+
 //////////////////////////////////////////////////////////////////////////
 /// 测试用函数
 //////////////////////////////////////////////////////////////////////////
@@ -284,8 +292,8 @@ void engine::core::GameApp::testInputManager() {
 }
 
 void engine::core::GameApp::testGameObject() {
-	gameObject.addComponent<engine::component::TransformComponent>(glm::vec2(100, 100));
-	gameObject.addComponent<engine::component::SpriteComponent>("assets/textures/Props/big-crate.png", *mResourceManager, engine::utils::Alignment::CENTER);
-	gameObject.getComponent<engine::component::TransformComponent>()->setScale(glm::vec2(2.f, 2.f));
-	gameObject.getComponent<engine::component::TransformComponent>()->setRotation(30.f);
+	// gameObject.addComponent<engine::component::TransformComponent>(glm::vec2(100, 100));
+	// gameObject.addComponent<engine::component::SpriteComponent>("assets/textures/Props/big-crate.png", *mResourceManager, engine::utils::Alignment::CENTER);
+	// gameObject.getComponent<engine::component::TransformComponent>()->setScale(glm::vec2(2.f, 2.f));
+	// gameObject.getComponent<engine::component::TransformComponent>()->setRotation(30.f);*/
 }

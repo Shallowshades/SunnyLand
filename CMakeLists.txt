@@ -47,6 +47,9 @@ set(SOURCES
     src/engine/render/camera.cpp
     src/engine/render/renderer.cpp
     src/engine/render/sprite.cpp
+    src/engine/scene/scene.cpp
+    src/engine/scene/scene_manager.cpp
+    src/game/scene/game_scene.cpp
 )
 
 # 根据平台向"通用源文件"追加平台专属的文件
