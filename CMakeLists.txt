@@ -38,6 +38,7 @@ set(SOURCES
     src/engine/component/component.cpp
     src/engine/component/sprite_component.cpp
     src/engine/component/transform_component.cpp
+    src/engine/component/parallax_component.cpp
     src/engine/input/input_manager.cpp
     src/engine/object/game_object.cpp
     src/engine/resource/resource_manager.cpp
@@ -49,6 +50,7 @@ set(SOURCES
     src/engine/render/sprite.cpp
     src/engine/scene/scene.cpp
     src/engine/scene/scene_manager.cpp
+    src/engine/scene/level_loader.cpp
     src/game/scene/game_scene.cpp
 )
 

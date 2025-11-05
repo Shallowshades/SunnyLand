@@ -3,8 +3,8 @@
  * @brief  精灵图类
  * @version 1.0
  * 
- * @author 29230
- * @date   October 2025
+ * @author Shallowshades
+ * @date   2025.11.05
  *********************************************************************/
 #pragma once
 #ifndef SPRITE_H
@@ -16,7 +16,7 @@
 
 namespace engine::render {
 /**
- * @brief .
+ * @brief 精灵类.
  */
 class Sprite final {
 public:

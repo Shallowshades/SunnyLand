@@ -34,7 +34,8 @@ public:
 
 private:
 	// 测试函数
-	void createTestObject();
+	void testCreateObject();
+	void testCamera();
 
 private:
 	constexpr static std::string_view mLogTag = "GameScene";

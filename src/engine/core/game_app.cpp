@@ -44,7 +44,7 @@ void engine::core::GameApp::run() {
 
 bool engine::core::GameApp::init() {
 	spdlog::trace("{} 初始化...", std::string(mLogTag));
-	
+
 	if (!initConfig()) return false;
 	if (!initSDL()) return false;
 	if (!initTime()) return false;
@@ -57,6 +57,7 @@ bool engine::core::GameApp::init() {
 
 	// 创建第一个场景并压入栈
 	auto scene = std::make_unique<game::scene::GameScene>("GameScene", *mContext, *mSceneManager);
+	mSceneManager->requestPushScene(std::move(scene));
 
 	mIsRunning = true;
 	spdlog::trace("{} 初始化成功", std::string(mLogTag));
