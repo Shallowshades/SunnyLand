@@ -48,7 +48,7 @@ void Renderer::drawSprite(const Camera& camera, const Sprite& sprite, const glm:
 
 	// 视口裁剪; 如果精灵超出视口, 则不绘制
 	if (!isRectInViewPort(camera, destRect)) {
-		spdlog::info("{} 精灵超出视口范围, ID: {}", std::string(mLogTag), sprite.getTextureId());
+		// spdlog::info("{} 精灵超出视口范围, ID: {}", std::string(mLogTag), sprite.getTextureId());
 		return;
 	}
 

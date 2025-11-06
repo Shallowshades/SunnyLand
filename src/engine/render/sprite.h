@@ -20,6 +20,8 @@ namespace engine::render {
  */
 class Sprite final {
 public:
+	Sprite() = default;												///< @brief 默认构造函数
+
 	/**
 	 * @brief 构造一个精灵.
 	 * 
@@ -29,18 +31,18 @@ public:
 	 */
 	Sprite(const std::string& textureId, const std::optional<SDL_FRect>& sourceRect = std::nullopt, bool isFlipped = false);
 
-	const std::string& getTextureId() const;
-	const std::optional<SDL_FRect>& getSourceRect() const;
-	bool isFlipped() const;
+	const std::string& getTextureId() const;						///< @brief 获取纹理Id
+	const std::optional<SDL_FRect>& getSourceRect() const;			///< @brief 获取源矩形
+	bool isFlipped() const;											///< @brief 获取是否水平翻转
 
-	void setTextureId(const std::string& textureId);
-	void setSourceRect(const std::optional<SDL_FRect>& sourceRect);
-	void setFlipped(bool flipped);
+	void setTextureId(const std::string& textureId);				///< @brief 设置纹理Id
+	void setSourceRect(const std::optional<SDL_FRect>& sourceRect);	///< @brief 设置源矩阵
+	void setFlipped(bool flipped);									///< @brief 设置是否水平翻转
 
 private:
-	std::string mTextureId;
-	std::optional<SDL_FRect> mSourceRect;
-	bool mIsFlipped;
+	std::string mTextureId;											///< @brief 纹理资源的标识符
+	std::optional<SDL_FRect> mSourceRect;							///< @brief 可选: 要绘制的纹理部分
+	bool mIsFlipped;												///< @brief 是否水平翻转
 };
 } // namespace engine::render
 

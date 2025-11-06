@@ -39,6 +39,7 @@ set(SOURCES
     src/engine/component/sprite_component.cpp
     src/engine/component/transform_component.cpp
     src/engine/component/parallax_component.cpp
+    src/engine/component/tilelayer_component.cpp
     src/engine/input/input_manager.cpp
     src/engine/object/game_object.cpp
     src/engine/resource/resource_manager.cpp

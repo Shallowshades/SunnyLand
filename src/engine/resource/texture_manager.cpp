@@ -21,6 +21,9 @@ namespace engine::resource {
 
 		// 如果没有加载则尝试加载纹理
 		SDL_Texture* rawTexture = IMG_LoadTexture(mRenderer, filePath.c_str());
+		if (!SDL_SetTextureScaleMode(rawTexture, SDL_SCALEMODE_NEAREST)) {
+			spdlog::warn("{} 无法设置纹理缩放模式为最临近插值", std::string(mLogTag));
+		}
 		if (!rawTexture) {
 			spdlog::error("{} 加载纹理失败: '{}' : {}", mLogTag.data(), filePath, SDL_GetError());
 			return nullptr;
