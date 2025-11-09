@@ -20,6 +20,16 @@ SpriteComponent::SpriteComponent(const std::string& textureId, engine::resource:
 	}
 }
 
+SpriteComponent::SpriteComponent(engine::render::Sprite&& sprite, engine::resource::ResourceManager& resourceManager, engine::utils::Alignment alignment) 
+	: mResourceManager(&resourceManager), mSprite(std::move(sprite)), mAlignment(alignment)
+{
+	if (!mResourceManager) {
+		spdlog::critical("{} 创建SpriteComponent时ResourceManager为空! 此组件无效!", std::string(mLogTag));
+		// 游戏主循环不要使用try...catch / throw, 会极大的影响性能
+	}
+	spdlog::trace("{} 创建SpriteComponent, 纹理ID: {}", std::string(mLogTag), mSprite.getTextureId());
+}
+
 void SpriteComponent::updateOffset() {
 	if (mSpriteSize.x <= 0 || mSpriteSize.y <= 0) {
 		mOffset = { 0.f, 0.f };

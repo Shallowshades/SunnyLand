@@ -2,10 +2,12 @@
 #include "../component/parallax_component.h"
 #include "../component/transform_component.h"
 #include "../component/tilelayer_component.h"
+#include "../component/sprite_component.h"
 #include "../object/game_object.h"
 #include "../object/game_object.h"
 #include "../scene/scene.h"
 #include "../core/context.h"
+#include "../resource/resource_manager.h"
 #include "../render/sprite.h"
 #include "../utils/math.h"
 #include <nlohmann/json.hpp>
@@ -138,9 +140,57 @@ void LevelLoader::loadTileLayer(const nlohmann::json& layerJson, Scene& scene) {
 	gameObject->addComponent<engine::component::TileLayerComponent>(mTileSize, mMapSize, std::move(tiles));
 	// 添加到场景
 	scene.addGameObject(std::move(gameObject));
+	spdlog::info("{} : 加载瓦片图层 : '{}' 完成", std::string(mLogTag), layerName);
 }
 
 void LevelLoader::loadObjectLayer(const nlohmann::json& layerJson, Scene& scene) {
+	if (!layerJson.contains("objects") || !layerJson["objects"].is_array()) {
+		spdlog::error("{} 对象图层 '{}' 缺少 'objects' 属性", std::string(mLogTag), layerJson.value("name", "Unnamed"));
+		return;
+	}
+
+	// 获取对象数据
+	const auto& objects = layerJson["objects"];
+	// 遍历对象数据
+	for (const auto& object : objects) {
+		// 获取对象id
+		auto gid = object.value("gid", 0);
+		if (gid == 0) {
+			// TODO: gid为0,代表不存在,则代表自己绘制的形状(碰撞盒,触发器等)
+		}
+		else {
+			// gid 存在, 则按照图片解析流程
+			auto tileInfo = getTileInfoByGid(gid);
+			if (tileInfo.mSprite.getTextureId().empty()) {
+				spdlog::error("{} : gid 为 {} 的瓦片没有图像纹理.", std::string(mLogTag), gid);
+				continue;
+			}
+			// 获取Transform相关信息
+			auto position = glm::vec2(object.value("x", 0.f), object.value("y", 0.f));
+			auto dstSize = glm::vec2(object.value("width", 0.f), object.value("height", 0.f));
+			// 对象层对齐点位为左下角, SDL 绘制点为左上角, 需处理
+			position = glm::vec2(position.x, position.y - dstSize.y);
+
+			auto rotation = object.value("rotation", 0.f);
+			auto srcRect = tileInfo.mSprite.getSourceRect();
+			if (!srcRect) {
+				spdlog::error("{} : gid 为 {} 的瓦片没有源矩阵.", std::string(mLogTag), gid);
+				continue;
+			}
+			auto srcSize = glm::vec2(srcRect->w, srcRect->h);
+			auto scale = dstSize / srcSize;
+
+			// 获取对象名称
+			const std::string& objectName = object.value("name", "Unnamed");
+			// 创建游戏对象并添加组件
+			auto gameObject = std::make_unique<engine::object::GameObject>(objectName);
+			gameObject->addComponent<engine::component::TransformComponent>(position, scale, rotation);
+			gameObject->addComponent<engine::component::SpriteComponent>(std::move(tileInfo.mSprite), scene.getContext().getResourceManager());
+			// 添加到场景中
+			scene.addGameObject(std::move(gameObject));
+			spdlog::info("{} : 加载对象 '{}' 完成", std::string(mLogTag), objectName);
+		}
+	}
 }
 
 engine::component::TileInfo LevelLoader::getTileInfoByGid(int gid) {
