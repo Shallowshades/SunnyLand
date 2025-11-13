@@ -50,7 +50,7 @@ void GameObject::render(engine::core::Context& context){
 }
 
 void GameObject::clean(){
-	spdlog::trace("{} cleaning GameObject...", std::string(mLogTag));
+	spdlog::trace("{} cleaning GameObject '{}', '{}' ...", std::string(mLogTag), mName, mTag);
 	// 遍历所有组件并调用他们的clean方法
 	for (auto& pair : mComponents) {
 		pair.second->clean();

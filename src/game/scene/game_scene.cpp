@@ -3,6 +3,8 @@
 #include "../../engine/object/game_object.h"
 #include "../../engine/component/transform_component.h"
 #include "../../engine/component/sprite_component.h"
+#include "../../engine/component/physics_component.h"
+#include "../../engine/physics/physics_engine.h"
 #include "../../engine/scene/level_loader.h"
 #include "../../engine/input/input_manager.h"
 #include "../../engine/render/camera.h"
@@ -39,7 +41,8 @@ void GameScene::render(){
 
 void GameScene::handleInput(){
 	Scene::handleInput();
-	testCamera();
+	// testCamera();
+	testObject();
 }
 
 void GameScene::clean(){
@@ -49,11 +52,13 @@ void GameScene::clean(){
 void GameScene::testCreateObject() {
 	spdlog::trace("{} 创建测试对象", std::string(mLogTag));
 	auto testObject = std::make_unique<engine::object::GameObject>("testObject");
+	gTestObject = testObject.get();
 
 	// 添加组件
 	testObject->addComponent<engine::component::TransformComponent>(glm::vec2(100.f, 100.f));
 	testObject->addComponent<engine::component::SpriteComponent>("assets/textures/Props/big-crate.png", mContext.getResourceManager());
-	
+	testObject->addComponent<engine::component::PhysicsComponent>(&mContext.getPhysicsEngine());
+
 	// 添加到场景中
 	addGameObject(std::move(testObject));
 	spdlog::trace("{} testObject 创建并添加到GameScene中", std::string(mLogTag));
@@ -73,6 +78,23 @@ void GameScene::testCamera() {
 	}
 	if (inputManager.isActionDown("MoveRight")) {
 		camera.move(glm::vec2(1.f, 0.f));
+	}
+}
+
+void GameScene::testObject() {
+	if (!gTestObject) {
+		return;
+	}
+
+	auto& inputManager = mContext.getInputManager();
+	if (inputManager.isActionDown("MoveLeft")) {
+		gTestObject->getComponent<engine::component::TransformComponent>()->translate(glm::vec2(-1.f, 0.f));
+	}
+	if (inputManager.isActionDown("MoveRight")) {
+		gTestObject->getComponent<engine::component::TransformComponent>()->translate(glm::vec2(1.f, 0.f));
+	}
+	if (inputManager.isActionPressed("Jump")) {
+		gTestObject->getComponent<engine::component::PhysicsComponent>()->setVelocity(glm::vec2(0, -400.f));
 	}
 }
 } // namespace game::scene

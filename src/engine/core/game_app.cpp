@@ -9,6 +9,7 @@
 #include "../render/renderer.h"
 #include "../render/camera.h"
 #include "../input/input_manager.h"
+#include "../physics/physics_engine.h"
 #include "../scene/scene_manager.h"
 #include "../../game/scene/game_scene.h"
 
@@ -52,6 +53,7 @@ bool engine::core::GameApp::init() {
 	if (!initRenderer()) return false;
 	if (!initCamera()) return false;
 	if (!initInputManager()) return false;
+	if (!initPhysicsEngine()) return false;
 	if (!initContext()) return false;
 	if (!initSceneManager()) return false;
 
@@ -90,6 +92,9 @@ void engine::core::GameApp::render() {
 
 void engine::core::GameApp::close() {
 	spdlog::trace("{} 关闭...", std::string(mLogTag));
+
+	// 先关闭场景管理器, 确保所有场景都被清理
+	mSceneManager->clean();
 
 	// 为了确保正确的销毁顺序, 有些智能指针对象需要手动管理
 	mResourceManager.reset();
@@ -208,9 +213,21 @@ bool engine::core::GameApp::initInputManager() {
 	return true;
 }
 
+bool engine::core::GameApp::initPhysicsEngine() {
+	try {
+		mPhysicsEngine = std::make_unique<engine::physics::PhysicsEngine>();
+	}
+	catch (const std::exception& e) {
+		spdlog::error("{} : 初始化物理引擎失败 : {}", std::string(mLogTag), e.what());
+		return false;
+	}
+	spdlog::trace("{} : 物理引擎初始化成功.", std::string(mLogTag));
+	return true;
+}
+
 bool engine::core::GameApp::initContext() {
 	try {
-		mContext = std::make_unique<engine::core::Context>(*mInputManager, *mRenderer, *mCamera, *mResourceManager);
+		mContext = std::make_unique<engine::core::Context>(*mInputManager, *mRenderer, *mCamera, *mResourceManager, *mPhysicsEngine);
 	}
 	catch (const std::exception& e) {
 		spdlog::error("{} 初始化上下文失败: {}", std::string(mLogTag), e.what());
