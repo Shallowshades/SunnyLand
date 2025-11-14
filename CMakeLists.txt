@@ -41,7 +41,10 @@ set(SOURCES
     src/engine/component/parallax_component.cpp
     src/engine/component/tilelayer_component.cpp
     src/engine/component/physics_component.cpp
+    src/engine/component/collider_component.cpp
     src/engine/physics/physics_engine.cpp
+    src/engine/physics/collider.cpp
+    src/engine/physics/collision.cpp
     src/engine/input/input_manager.cpp
     src/engine/object/game_object.cpp
     src/engine/resource/resource_manager.cpp

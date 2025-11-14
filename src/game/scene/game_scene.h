@@ -38,6 +38,7 @@ private:
 	void testCreateObject();
 	void testCamera();
 	void testObject();
+	void testCollisionPairs();
 
 private:
 	constexpr static std::string_view mLogTag = "GameScene";

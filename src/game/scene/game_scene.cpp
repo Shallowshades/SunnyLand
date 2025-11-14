@@ -4,6 +4,7 @@
 #include "../../engine/component/transform_component.h"
 #include "../../engine/component/sprite_component.h"
 #include "../../engine/component/physics_component.h"
+#include "../../engine/component/collider_component.h"
 #include "../../engine/physics/physics_engine.h"
 #include "../../engine/scene/level_loader.h"
 #include "../../engine/input/input_manager.h"
@@ -33,6 +34,7 @@ void GameScene::init() {
 
 void GameScene::update(float deltaTime){
 	Scene::update(deltaTime);
+	testCollisionPairs();
 }
 
 void GameScene::render(){
@@ -58,9 +60,21 @@ void GameScene::testCreateObject() {
 	testObject->addComponent<engine::component::TransformComponent>(glm::vec2(100.f, 100.f));
 	testObject->addComponent<engine::component::SpriteComponent>("assets/textures/Props/big-crate.png", mContext.getResourceManager());
 	testObject->addComponent<engine::component::PhysicsComponent>(&mContext.getPhysicsEngine());
+	testObject->addComponent<engine::component::ColliderComponent>(std::make_unique<engine::physics::AABBCollider>(glm::vec2(32.f)));
 
 	// 添加到场景中
 	addGameObject(std::move(testObject));
+
+	// 添加组件2
+	auto testObject2 = std::make_unique<engine::object::GameObject>("testObject2");
+	testObject2->addComponent<engine::component::TransformComponent>(glm::vec2(50.f, 50.f));
+	testObject2->addComponent<engine::component::SpriteComponent>("assets/textures/Props/big-crate.png", mContext.getResourceManager());
+	testObject2->addComponent<engine::component::PhysicsComponent>(&mContext.getPhysicsEngine(), false);
+	testObject2->addComponent<engine::component::ColliderComponent>(std::make_unique<engine::physics::AABBCollider>(glm::vec2(16.f)));
+
+	// 添加到场景中
+	addGameObject(std::move(testObject2));
+
 	spdlog::trace("{} testObject 创建并添加到GameScene中", std::string(mLogTag));
 }
 
@@ -95,6 +109,13 @@ void GameScene::testObject() {
 	}
 	if (inputManager.isActionPressed("Jump")) {
 		gTestObject->getComponent<engine::component::PhysicsComponent>()->setVelocity(glm::vec2(0, -400.f));
+	}
+}
+
+void GameScene::testCollisionPairs() {
+	auto collisionPairs = mContext.getPhysicsEngine().getCollisionPairs();
+	for (auto& pair : collisionPairs) {
+		spdlog::info("{} : 碰撞对: {} 和 {}", std::string(mLogTag), pair.first->getName(), pair.second->getName());
 	}
 }
 } // namespace game::scene

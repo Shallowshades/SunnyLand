@@ -13,9 +13,11 @@
 
 #include <string>
 #include <vector>
+#include <utility>
 #include <glm/vec2.hpp>
 
 namespace engine::component { class PhysicsComponent; }
+namespace engine::object { class GameObject; }
 
 namespace engine::physics {
 /**
@@ -35,11 +37,13 @@ public:
 	const glm::vec2& getGravity() const;										///< @brief 获取重力
 	void setMaxSpeed(float maxSpeed);											///< @brief 设置最大速度
 	float getMaxSpeed() const;													///< @brief 获取最大速度
+	const auto& getCollisionPairs() const { return mCollisionPairs; }			///< @brief 获取本帧检测到的所有游戏对象碰撞对
 
 	void registerComponent(engine::component::PhysicsComponent* component);		///< @brief 注册组件
 	void unregisterComponent(engine::component::PhysicsComponent* component);	///< @brief 移除组件
 
 	void update(float delta);													///< @brief 更新
+	void checkObjectCollisions();												///< @brief 检测并处理对象之间的碰撞, 并记录需要游戏逻辑处理的碰撞对
 
 private:
 	static constexpr std::string_view mLogTag = "PhysicsEngine";				///< @brief 日志标识
@@ -47,6 +51,9 @@ private:
 	std::vector<engine::component::PhysicsComponent*> mComponents;				///< @brief 在物理系统中注册的组件数组
 	glm::vec2 mGravity = { 0.f, 980.f };										///< @brief 重力加速度
 	float mMaxSpeed = 500.f;													///< @brief 最大速度限值
+	
+	// @brief 存储本帧发生的GameObject碰撞对(每次update开始时清空)
+	std::vector<std::pair<engine::object::GameObject*, engine::object::GameObject*>> mCollisionPairs;
 };
 }
 

@@ -5,7 +5,9 @@
 
 namespace engine::core {
 Config::Config(const std::string& filePath) {
-	loadFromFile(filePath);
+	if (!loadFromFile(filePath)) {
+		spdlog::error("{} : 载入配置文件失败!", std::string(mLogTag));
+	}
 }
 
 bool Config::loadFromFile(const std::string& filePath) {
