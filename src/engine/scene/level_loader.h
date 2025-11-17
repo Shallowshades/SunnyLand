@@ -13,10 +13,14 @@
 
 #include <map>
 #include <string>
+#include <optional>
 #include <glm/vec2.hpp>
 #include <nlohmann/json.hpp>
 
-namespace engine::component { struct TileInfo; }
+namespace engine::component { 
+	struct TileInfo; 
+	enum class TileType;
+}
 
 namespace engine::scene {
 class Scene;
@@ -41,6 +45,23 @@ private:
 	void loadTileLayer(const nlohmann::json& layerJson, Scene& scene);		///< @brief 加载瓦片图层
 	void loadObjectLayer(const nlohmann::json& layerJson, Scene& scene);	///< @brief 加载对象图层
 	
+	/**
+	 * @brief 根据瓦片json对象获取瓦片类型.
+	 * 
+	 * @param tileJson瓦片json数据
+	 * @return 瓦片类型
+	 */
+	engine::component::TileType getTileType(const nlohmann::json& tileJson);
+
+	/**
+	 * @brief 根据(单一图片)图块集中的id获取瓦片类型.
+	 * 
+	 * @param tilesetJson 图块集json数据
+	 * @param localId 图块集中的id
+	 * @return 瓦片类型
+	 */
+	engine::component::TileType getTileTypeById(const nlohmann::json& tilesetJson, int localId);
+
 	/**
 	 * @brief 根据全局Id, 获取瓦片信息.
 	 * 

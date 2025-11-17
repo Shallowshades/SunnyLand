@@ -193,6 +193,33 @@ void LevelLoader::loadObjectLayer(const nlohmann::json& layerJson, Scene& scene)
 	}
 }
 
+engine::component::TileType LevelLoader::getTileType(const nlohmann::json& tileJson) {
+	if (tileJson.contains("properties")) {
+		auto& properties = tileJson["properties"];
+		for (auto& property : properties) {
+			if (property.contains("name") && property["name"] == "solid") {
+				auto isSolid = property.value("value", false);
+				return isSolid ? engine::component::TileType::SOLID : engine::component::TileType::NORMAL;
+			}
+
+			// TODO: 更多的自定义逻辑处理
+		}
+	}
+	return engine::component::TileType::NORMAL;
+}
+
+engine::component::TileType LevelLoader::getTileTypeById(const nlohmann::json& tilesetJson, int localId) {
+	if (tilesetJson.contains("tiles")) {
+		auto& tiles = tilesetJson["tiles"];
+		for (auto& tile : tiles) {
+			if (tile.contains("id") && tile["id"] == localId) {
+				return getTileType(tile);
+			}
+		}
+	}
+	return engine::component::TileType::NORMAL;
+}
+
 engine::component::TileInfo LevelLoader::getTileInfoByGid(int gid) {
 	if (gid == 0) {
 		return engine::component::TileInfo();
@@ -232,7 +259,9 @@ engine::component::TileInfo LevelLoader::getTileInfoByGid(int gid) {
 			static_cast<float>(mTileSize.y)
 		};
 		engine::render::Sprite sprite{ textureId, textureRect };
-		return engine::component::TileInfo(sprite, engine::component::TileType::NORMAL);
+		// 无具体的瓦片json, 需id查找
+		auto tileType = getTileTypeById(tileset, localId);
+		return engine::component::TileInfo(sprite, tileType);
 	}
 	// 多图片
 	else {
@@ -263,7 +292,9 @@ engine::component::TileInfo LevelLoader::getTileInfoByGid(int gid) {
 					static_cast<float>(tileJson.value("height", imageHeight))
 				};
 				engine::render::Sprite sprite{ textureId, textureRect };
-				return engine::component::TileInfo(sprite, engine::component::TileType::NORMAL);
+				// 有具体的json, 直接解析自定义属性
+				auto tileType = getTileType(tileJson);
+				return engine::component::TileInfo(sprite, tileType);
 			}
 		}
 	}
