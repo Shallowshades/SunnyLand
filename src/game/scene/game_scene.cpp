@@ -36,8 +36,12 @@ void GameScene::init() {
 		}
 	}
 
-	// 测试创建游戏对象
-	testCreateObject();
+	// 获取玩家对象
+	mPlayer = findGameObjectByName("player");
+	if (!mPlayer) {
+		spdlog::error("{} : 未找到玩家对象", std::string(mLogTag));
+		return;
+	}
 
 	Scene::init();
 	spdlog::trace("{} 初始化完成", std::string(mLogTag));
@@ -55,39 +59,39 @@ void GameScene::render(){
 void GameScene::handleInput(){
 	Scene::handleInput();
 	// testCamera();
-	testObject();
+	testPlayer();
 }
 
 void GameScene::clean(){
 	Scene::clean();
 }
 
-void GameScene::testCreateObject() {
-	spdlog::trace("{} 创建测试对象", std::string(mLogTag));
-	auto testObject = std::make_unique<engine::object::GameObject>("testObject");
-	gTestObject = testObject.get();
-
-	// 添加组件
-	testObject->addComponent<engine::component::TransformComponent>(glm::vec2(100.f, 100.f));
-	testObject->addComponent<engine::component::SpriteComponent>("assets/textures/Props/big-crate.png", mContext.getResourceManager());
-	testObject->addComponent<engine::component::PhysicsComponent>(&mContext.getPhysicsEngine());
-	testObject->addComponent<engine::component::ColliderComponent>(std::make_unique<engine::physics::AABBCollider>(glm::vec2(32.f)));
-
-	// 添加到场景中
-	addGameObject(std::move(testObject));
-
-	// 添加组件2
-	auto testObject2 = std::make_unique<engine::object::GameObject>("testObject2");
-	testObject2->addComponent<engine::component::TransformComponent>(glm::vec2(50.f, 50.f));
-	testObject2->addComponent<engine::component::SpriteComponent>("assets/textures/Props/big-crate.png", mContext.getResourceManager());
-	testObject2->addComponent<engine::component::PhysicsComponent>(&mContext.getPhysicsEngine(), false);
-	testObject2->addComponent<engine::component::ColliderComponent>(std::make_unique<engine::physics::AABBCollider>(glm::vec2(16.f)));
-
-	// 添加到场景中
-	addGameObject(std::move(testObject2));
-
-	spdlog::trace("{} testObject 创建并添加到GameScene中", std::string(mLogTag));
-}
+//void GameScene::testCreateObject() {
+//	spdlog::trace("{} 创建测试对象", std::string(mLogTag));
+//	auto testObject = std::make_unique<engine::object::GameObject>("testObject");
+//	gTestObject = testObject.get();
+//
+//	// 添加组件
+//	testObject->addComponent<engine::component::TransformComponent>(glm::vec2(100.f, 100.f));
+//	testObject->addComponent<engine::component::SpriteComponent>("assets/textures/Props/big-crate.png", mContext.getResourceManager());
+//	testObject->addComponent<engine::component::PhysicsComponent>(&mContext.getPhysicsEngine());
+//	testObject->addComponent<engine::component::ColliderComponent>(std::make_unique<engine::physics::AABBCollider>(glm::vec2(32.f)));
+//
+//	// 添加到场景中
+//	addGameObject(std::move(testObject));
+//
+//	// 添加组件2
+//	auto testObject2 = std::make_unique<engine::object::GameObject>("testObject2");
+//	testObject2->addComponent<engine::component::TransformComponent>(glm::vec2(50.f, 50.f));
+//	testObject2->addComponent<engine::component::SpriteComponent>("assets/textures/Props/big-crate.png", mContext.getResourceManager());
+//	testObject2->addComponent<engine::component::PhysicsComponent>(&mContext.getPhysicsEngine(), false);
+//	testObject2->addComponent<engine::component::ColliderComponent>(std::make_unique<engine::physics::AABBCollider>(glm::vec2(16.f)));
+//
+//	// 添加到场景中
+//	addGameObject(std::move(testObject2));
+//
+//	spdlog::trace("{} testObject 创建并添加到GameScene中", std::string(mLogTag));
+//}
 
 void GameScene::testCamera() {
 	auto& camera = mContext.getCamera();
@@ -106,14 +110,14 @@ void GameScene::testCamera() {
 	}
 }
 
-void GameScene::testObject() {
-	if (!gTestObject) {
+void GameScene::testPlayer() {
+	if (!mPlayer) {
 		return;
 	}
 
 	auto& inputManager = mContext.getInputManager();
 	
-	auto* pc = gTestObject->getComponent<engine::component::PhysicsComponent>();
+	auto* pc = mPlayer->getComponent<engine::component::PhysicsComponent>();
 	if (!pc) {
 		return;
 	}

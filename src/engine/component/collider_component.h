@@ -46,7 +46,7 @@ public:
 	 */
 	void updateOffset();
 
-	const TransformComponent* getTransform() const;							///< @brief 获取变换组件
+	TransformComponent* getTransform() const;							///< @brief 获取变换组件
 	const engine::physics::Collider* getCollider() const;					///< @brief 获取碰撞体对象
 	const glm::vec2& getOffset() const;										///< @brief 获取当前计算出的偏移量
 	engine::utils::Alignment getAlignment() const;							///< @brief 获取设置的对齐锚点

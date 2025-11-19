@@ -49,8 +49,13 @@ public:
 	void unregisterCollisionLayer(engine::component::TileLayerComponent* layer);		///< @brief 注销用于碰撞检测的瓦片组件
 
 	void update(float delta);															///< @brief 更新
+	
+private:
 	void checkObjectCollisions();														///< @brief 检测并处理对象之间的碰撞, 并记录需要游戏逻辑处理的碰撞对
 	void resolveTileCollisions(engine::component::PhysicsComponent* pc, float delta);	///< @brief 检测并处理游戏对象和瓦片层之间的碰撞
+	
+	///< @brief 处理移动物体与SOLID物体的碰撞
+	void resolveSolidObjectCollisions(engine::object::GameObject* moveObject, engine::object::GameObject* solidObject);
 
 private:
 	static constexpr std::string_view mLogTag = "PhysicsEngine";						///< @brief 日志标识

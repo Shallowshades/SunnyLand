@@ -16,6 +16,7 @@
 #include <optional>
 #include <glm/vec2.hpp>
 #include <nlohmann/json.hpp>
+#include "../utils/math.h"
 
 namespace engine::component { 
 	struct TileInfo; 
@@ -46,6 +47,23 @@ private:
 	void loadObjectLayer(const nlohmann::json& layerJson, Scene& scene);	///< @brief 加载对象图层
 	
 	/**
+	 * @brief 获取瓦片属性.
+	 * 
+	 * @param tileJson 瓦片json数据
+	 * @param propertyName 属性名称
+	 * @return 属性值, 如果属性不存在则返回 std::nullopt
+	 */
+	template<typename T>
+	std::optional<T> getTileProperty(const nlohmann::json& tileJson, const std::string& propertyName);
+
+	/**
+	 * @brief 获取瓦片碰撞器矩形.
+	 * @param tileJson 瓦片json数据
+	 * @return 碰撞器矩形, 如果碰撞器不存在则返回std::nullopt
+	 */
+	std::optional<engine::utils::Rect> getColliderRect(const nlohmann::json& tileJson);
+
+	/**
 	 * @brief 根据瓦片json对象获取瓦片类型.
 	 * 
 	 * @param tileJson瓦片json数据
@@ -69,6 +87,14 @@ private:
 	 * @return engine::component::TileInfo 瓦片信息
 	 */
 	engine::component::TileInfo getTileInfoByGid(int gid);
+
+	/**
+	 * @brief 根据全局ID获取瓦片json对象 (用于对象层获取瓦片信息).
+	 * 
+	 * @param gid 全局 ID
+	 * @return 瓦片 json 对象
+	 */
+	std::optional<nlohmann::json> getTileJsonByGid(int gid) const;
 
 	/**
 	 * @brief 加载Tiled tileset 文件 (.tsj).
@@ -97,6 +123,22 @@ private:
 	glm::ivec2 mTileSize;													///< @brief 瓦片尺寸(像素)
 	std::map<int, nlohmann::json> mTilesetData;								///< @brief 瓦片集数据
 };
+
+template<typename T>
+inline std::optional<T> scene::LevelLoader::getTileProperty(const nlohmann::json& tileJson, const std::string& propertyName) {
+	if (!tileJson.contains("properties")) {
+		return std::nullopt;
+	}
+	const auto& properties = tileJson["properties"];
+	for (const auto& property : properties) {
+		if (property.contains("name") && property["name"] == propertyName) {
+			if (property.contains("value")) {
+				return property["value"].get<T>();
+			}
+		}
+	}
+	return std::nullopt;
+}
 } // namespace engine::scene
 
 #endif // !LEVEL_LOADER_H

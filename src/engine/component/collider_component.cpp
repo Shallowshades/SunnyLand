@@ -65,7 +65,7 @@ void ColliderComponent::updateOffset() {
 	}
 }
 
-const TransformComponent* ColliderComponent::getTransform() const {
+TransformComponent* ColliderComponent::getTransform() const {
 	return mTransform;
 }
 

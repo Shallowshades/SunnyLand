@@ -124,9 +124,16 @@ void PhysicsEngine::checkObjectCollisions() {
 
 			// 保护逻辑结束, 开始执行碰撞检测逻辑
 			if (collision::checkCollision(*aCC, *bCC)) {
-				// TODO: 碰撞对的条件
-
-				mCollisionPairs.emplace_back(aObject, bObject);
+				// 如果是可移动物体与SOLID物体碰撞, 则直接处理位置变化, 不用记录碰撞对
+				if (aObject->getTag() != "solid" && bObject->getTag() == "solid") {
+					resolveSolidObjectCollisions(aObject, bObject);
+				}
+				else if (aObject->getTag() == "solid" && bObject->getTag() != "solid") {
+					resolveSolidObjectCollisions(bObject, aObject);
+				}
+				else {
+					mCollisionPairs.emplace_back(aObject, bObject);
+				}
 			}
 		}
 	}
@@ -240,8 +247,63 @@ void PhysicsEngine::resolveTileCollisions(engine::component::PhysicsComponent* p
 		}
 
 		// 更新物体位置, 并限制最大速度
-		tc->setPosition(newObjectPosition);
+		tc->translate(newObjectPosition - objectPosition); // 使用translate方法, 避免直接设置位置, 因为碰撞盒可能有偏移量
 		pc->setVelocity(glm::clamp(pc->getVelocity(), -mMaxSpeed, mMaxSpeed));
+	}
+}
+
+void PhysicsEngine::resolveSolidObjectCollisions(engine::object::GameObject* moveObject, engine::object::GameObject* solidObject) {
+	// 组件的有效性已检测
+	auto* moveTC = moveObject->getComponent<engine::component::TransformComponent>();
+	auto* movePC = moveObject->getComponent<engine::component::PhysicsComponent>();
+	auto* moveCC = moveObject->getComponent<engine::component::ColliderComponent>();
+	auto* solidCC = solidObject->getComponent<engine::component::ColliderComponent>();
+
+	// TODO: 轴分离碰撞检测
+	// 
+	auto moveAABB = moveCC->getWorldAABB();
+	auto solidAABB = solidCC->getWorldAABB();
+	// 使用最小平移向量解决碰撞问题
+	auto moveCenter = moveAABB.position + moveAABB.size / 2.f;
+	auto solidCenter = solidAABB.position + solidAABB.size / 2.f;
+	// 计算两个包围盒的重叠部分
+	auto overlap = glm::vec2(moveAABB.size / 2.f + solidAABB.size / 2.f) - glm::abs(moveCenter - solidCenter);
+	if (overlap.x < 0.1f && overlap.y < 0.1f) {
+		return;
+	}
+
+	if (overlap.x < overlap.y) {
+		if (moveCenter.x < solidCenter.x) {
+			// 移动物体在左边, 让它贴着右边SOLID物体(相当于向左移出重叠部分), y 方向正常移动
+			moveTC->translate(glm::vec2(-overlap.x, 0.f));
+			// 如果速度为正(向右移动), 则归零(if 判断不可少, 否则可能出现错误吸附)
+			if (movePC->getVelocity().x > 0.f) {
+				movePC->setVelocity(glm::vec2(0.f, movePC->getVelocity().y));
+			}
+		}
+		else {
+			// 移动物体在右边, 让它贴着左边SOLID物体(相当于向右移出重叠部分), y 方向正常移动
+			moveTC->translate(glm::vec2(overlap.x, 0.f));
+			if (movePC->getVelocity().x < 0.f) {
+				movePC->setVelocity(glm::vec2(0.f, movePC->getVelocity().y));
+			}
+		}
+	}
+	else {
+		if (moveCenter.y < solidCenter.y) {
+			// 移动物体在上面, 让它贴着下面SOLID物体(相当于向上移出重叠部分), x 方向正常移动
+			moveTC->translate(glm::vec2(0.f, -overlap.y));
+			if (movePC->getVelocity().y > 0.f) {
+				movePC->setVelocity(glm::vec2(movePC->getVelocity().x, 0.f));
+			}
+		}
+		else {
+			// 移动物体在下面, 让它贴着上面SOLID物体(相当于向下移出重叠部分), x 方向正常移动
+			moveTC->translate(glm::vec2(0.f, overlap.y));
+			if (movePC->getVelocity().y < 0.f) {
+				movePC->setVelocity(glm::vec2(movePC->getVelocity().x, 0.f));
+			}
+		}
 	}
 }
 }

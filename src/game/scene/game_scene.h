@@ -22,7 +22,6 @@ namespace game::scene {
  * @brief 主要的游戏场景, 包含玩家, 敌人, 关卡元素等.
  */
 class GameScene final : public engine::scene::Scene {
-	engine::object::GameObject* gTestObject = nullptr;
 public:
 	GameScene(std::string name, engine::core::Context& context, engine::scene::SceneManager& sceneManager);
 
@@ -35,13 +34,14 @@ public:
 
 private:
 	// 测试函数
-	void testCreateObject();
 	void testCamera();
-	void testObject();
+	void testPlayer();
 	void testCollisionPairs();
 
 private:
 	constexpr static std::string_view mLogTag = "GameScene";
+
+	engine::object::GameObject* mPlayer = nullptr;					///< @brief 玩家对象指针
 };
 } // namespace game::scene
 
