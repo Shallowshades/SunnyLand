@@ -271,7 +271,35 @@ engine::component::TileType LevelLoader::getTileType(const nlohmann::json& tileJ
 				auto isSolid = property.value("value", false);
 				return isSolid ? engine::component::TileType::SOLID : engine::component::TileType::NORMAL;
 			}
-
+			else if (property.contains("name") && property["name"] == "slope") {
+				auto slopeType = property.value("value", "");
+				if (slopeType == "0_1") {
+					return engine::component::TileType::SLOPE_0_1;
+				}
+				else if (slopeType == "1_0") {
+					return engine::component::TileType::SLOPE_1_0;
+				}
+				else if (slopeType == "0_2") {
+					return engine::component::TileType::SLOPE_0_2;
+				}
+				else if (slopeType == "2_0") {
+					return engine::component::TileType::SLOPE_2_0;
+				}
+				else if (slopeType == "2_1") {
+					return engine::component::TileType::SLOPE_2_1;
+				}
+				else if (slopeType == "1_2") {
+					return engine::component::TileType::SLOPE_1_2;
+				}
+				else {
+					spdlog::error("{} : 未知的斜坡类型: {}", std::string(mLogTag), slopeType);
+					return engine::component::TileType::NORMAL;
+				}
+			}
+			else if (property.contains("name") && property["name"] == "unisolid") {
+				auto isUnisolid = property.value("value", false);
+				return isUnisolid ? engine::component::TileType::UNISOLID : engine::component::TileType::NORMAL;
+			}
 			// TODO: 更多的自定义逻辑处理
 		}
 	}

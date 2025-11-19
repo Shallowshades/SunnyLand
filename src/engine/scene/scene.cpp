@@ -3,6 +3,7 @@
 #include "../object/game_object.h"
 #include "../core/context.h"
 #include "../physics/physics_engine.h"
+#include "../render/camera.h"
 #include <algorithm>
 #include <spdlog/spdlog.h>
 
@@ -26,6 +27,8 @@ void Scene::update(float deltaTime) {
 
 	// 先更新物理引擎
 	mContext.getPhysicsEngine().update(deltaTime);
+	// 更新相机
+	mContext.getCamera().update(deltaTime);
 
 	// 更新所有游戏对象, 并删除需要移除的对象
 	for (auto iter = mGameObjects.begin(); iter != mGameObjects.end();) {

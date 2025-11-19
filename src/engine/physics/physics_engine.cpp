@@ -26,6 +26,14 @@ float PhysicsEngine::getMaxSpeed() const {
 	return mMaxSpeed;
 }
 
+void PhysicsEngine::setWorldBound(const engine::utils::Rect& worldBounds) {
+	mWorldBounds = worldBounds;
+}
+
+const std::optional<engine::utils::Rect>& PhysicsEngine::getWorldBounds() const {
+	return mWorldBounds;
+}
+
 void PhysicsEngine::registerComponent(engine::component::PhysicsComponent* component) {
 	mComponents.push_back(component);
 	spdlog::trace("{} : 物理组件注册完成", std::string(mLogTag));
@@ -81,6 +89,9 @@ void PhysicsEngine::update(float delta) {
 
 		// 处理对象间的碰撞
 		resolveTileCollisions(physicsComponent, delta);
+
+		// 应用世界边界
+		applyWorldBounds(physicsComponent);
 	}
 
 	// 处理对象间碰撞
@@ -190,6 +201,17 @@ void PhysicsEngine::resolveTileCollisions(engine::component::PhysicsComponent* p
 				newObjectPosition.x = tileX * tileSize.x - objectSize.x;
 				pc->setVelocity(glm::vec2(0.f, pc->getVelocity().y));
 			}
+			else {
+				// 检测右下角斜坡瓦片
+				auto widthRight = newObjectPosition.x + objectSize.x - tileX * tileSize.x;
+				auto heightRight = getTileHeightAtWidth(widthRight, tileTypeBottom, tileSize);
+				if (heightRight > 0.f) {
+					// 如果有碰撞(角点的世界y坐标 < 斜坡地面的世界y坐标), 就让物体贴着斜坡表面
+					if (newObjectPosition.y > (tileYBottom + 1) * layer->getTileSize().y - objectSize.y - heightRight) {
+						newObjectPosition.y = (tileYBottom + 1) * layer->getTileSize().y - objectSize.y - heightRight;
+					}
+				}
+			}
 		}
 
 		// 向左移动
@@ -208,6 +230,17 @@ void PhysicsEngine::resolveTileCollisions(engine::component::PhysicsComponent* p
 				newObjectPosition.x = static_cast<float>((tileX + 1) * tileSize.x);
 				pc->setVelocity(glm::vec2(0.f, pc->getVelocity().y));
 			}
+			else {
+				// 检测左下角斜坡瓦片
+				auto widthLeft = newObjectPosition.x - tileX * tileSize.x;
+				auto heightLeft = getTileHeightAtWidth(widthLeft, tileTypeBottom, tileSize);
+				if (heightLeft > 0.f) {
+					// 如果有碰撞(角点的世界y坐标 < 斜坡地面的世界y坐标), 就让物体贴着斜坡表面
+					if (newObjectPosition.y > (tileYBottom + 1) * layer->getTileSize().y - objectSize.y - heightLeft) {
+						newObjectPosition.y = (tileYBottom + 1) * layer->getTileSize().y - objectSize.y - heightLeft;
+					}
+				}
+			}
 		}
 
 		// 向下移动
@@ -221,10 +254,25 @@ void PhysicsEngine::resolveTileCollisions(engine::component::PhysicsComponent* p
 			auto tileXRight = static_cast<int>(floor((objectPosition.x + objectSize.x - tolerance) / tileSize.x));
 			auto tileTypeRight = layer->getTileTypeAt(glm::vec2(tileXRight, tileY));
 
-			if (tileTypeLeft == engine::component::TileType::SOLID || tileTypeRight == engine::component::TileType::SOLID) {
+			if (tileTypeLeft == engine::component::TileType::SOLID || tileTypeRight == engine::component::TileType::SOLID
+				|| tileTypeLeft == engine::component::TileType::UNISOLID || tileTypeRight == engine::component::TileType::UNISOLID) {
 				// 触底: Y 速度归零, Y 方向移动到贴着墙的位置
 				newObjectPosition.y = tileY * tileSize.y - objectSize.y;
 				pc->setVelocity(glm::vec2(pc->getVelocity().x, 0.f));
+			}
+			else {
+				// 检测斜坡瓦片(下方两个角点都要检测)
+				auto widthLeft = objectPosition.x - tileX * tileSize.x;
+				auto widthRight = objectPosition.x + objectSize.x - tileXRight * tileSize.x;
+				auto heightLeft = getTileHeightAtWidth(widthLeft, tileTypeLeft, tileSize);
+				auto heightRight = getTileHeightAtWidth(widthRight, tileTypeRight, tileSize);
+				auto height = glm::max(heightLeft, heightRight);
+				if (height > 0.f) {
+					if (newObjectPosition.y > (tileY + 1) * layer->getTileSize().y - objectSize.y - height) {
+						newObjectPosition.y = (tileY + 1) * layer->getTileSize().y - objectSize.y - height;
+						pc->setVelocity(glm::vec2(pc->getVelocity().x, 0.f));
+					}
+				}
 			}
 		}
 
@@ -304,6 +352,61 @@ void PhysicsEngine::resolveSolidObjectCollisions(engine::object::GameObject* mov
 				movePC->setVelocity(glm::vec2(movePC->getVelocity().x, 0.f));
 			}
 		}
+	}
+}
+
+void PhysicsEngine::applyWorldBounds(engine::component::PhysicsComponent* pc) {
+	if (!pc || !mWorldBounds) {
+		return;
+	}
+
+	// 只限定左,上,右边界, 不限定下边界, 以碰撞盒作为判断依据
+	auto* object = pc->getOwner();
+	auto* cc = object->getComponent<engine::component::ColliderComponent>();
+	auto* tc = object->getComponent<engine::component::TransformComponent>();
+	auto worldAABB = cc->getWorldAABB();
+	auto objectPosition = worldAABB.position;
+	auto objectSize = worldAABB.size;
+
+	// 检测左边界
+	if (objectPosition.x < mWorldBounds->position.x) {
+		pc->setVelocity(glm::vec2(0.f, pc->getVelocity().y));
+		objectPosition.x = mWorldBounds->position.x;
+	}
+
+	// 检测上边界
+	if (objectPosition.y < mWorldBounds->position.y) {
+		pc->setVelocity(glm::vec2(pc->getVelocity().x, 0.f));
+		objectPosition.y = mWorldBounds->position.y;
+	}
+
+	// 检测右边界
+	if (objectPosition.x + objectSize.x > mWorldBounds->position.x + mWorldBounds->size.x) {
+		pc->setVelocity(glm::vec2(0.f, pc->getVelocity().y));
+		objectPosition.x = mWorldBounds->position.x + mWorldBounds->size.x - objectSize.x;
+	}
+
+	// 更新物体位置(使用translate方法, 新位置 - 旧位置)
+	tc->translate(objectPosition - worldAABB.position);
+}
+
+float PhysicsEngine::getTileHeightAtWidth(float width, engine::component::TileType type, glm::vec2 tileSize) {
+	auto relX = glm::clamp(width / tileSize.x, 0.f, 1.f);
+	switch (type) {
+	case engine::component::TileType::SLOPE_0_1:
+		return relX * tileSize.y;
+	case engine::component::TileType::SLOPE_0_2:
+		return relX * tileSize.y * 0.5f;
+	case engine::component::TileType::SLOPE_2_1:
+		return relX * tileSize.y * 0.5f + tileSize.y * 0.5f;
+	case engine::component::TileType::SLOPE_1_0:
+		return (1.f - relX) * tileSize.y;
+	case engine::component::TileType::SLOPE_2_0:
+		return (1.f - relX) * tileSize.y * 0.5f;
+	case engine::component::TileType::SLOPE_1_2:
+		return (1.f - relX) * tileSize.y * 0.5f + tileSize.y * 0.5f;
+	default:
+		return 0.f;		// 默认返回0, 表示没有斜坡
 	}
 }
 }

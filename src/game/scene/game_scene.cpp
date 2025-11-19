@@ -43,6 +43,20 @@ void GameScene::init() {
 		return;
 	}
 
+	// 相机跟随玩家
+	auto* playerTransform = mPlayer->getComponent<engine::component::TransformComponent>();
+	if (playerTransform) {
+		mContext.getCamera().setTarget(playerTransform);
+	}
+
+	if (mainLayer) {
+		// 设置相机边界
+		auto worldSize = mainLayer->getComponent<engine::component::TileLayerComponent>()->getWorldSize();
+		mContext.getCamera().setLimitBounds(engine::utils::Rect(glm::vec2(0.f), worldSize));
+		// 设置世界边界
+		mContext.getPhysicsEngine().setWorldBound(engine::utils::Rect(glm::vec2(0.f), worldSize));
+	}
+
 	Scene::init();
 	spdlog::trace("{} 初始化完成", std::string(mLogTag));
 }
