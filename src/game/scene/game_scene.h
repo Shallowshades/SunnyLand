@@ -23,23 +23,28 @@ namespace game::scene {
  */
 class GameScene final : public engine::scene::Scene {
 public:
+	/**
+	 * @brief 构造函数.
+	 * 
+	 * @param name 场景名称
+	 * @param context 上下文引用
+	 * @param sceneManager 场景管理器引用
+	 */
 	GameScene(std::string name, engine::core::Context& context, engine::scene::SceneManager& sceneManager);
 
 	// 重写核心方法
-	void init() override;
-	void update(float deltaTime) override;
-	void render() override;
-	void handleInput() override;
-	void clean() override;
+	void init() override;											///< @brief 初始化
+	void update(float deltaTime) override;							///< @brief 更新
+	void render() override;											///< @brief 渲染
+	void handleInput() override;									///< @brief 处理输入
+	void clean() override;											///< @brief 清理
 
 private:
-	// 测试函数
-	void testCamera();
-	void testPlayer();
-	void testCollisionPairs();
+	[[nodiscard]] bool initLevel();									///< @brief 初始化关卡
+	[[nodiscard]] bool initPlayer();								///< @brief 初始化玩家
 
 private:
-	constexpr static std::string_view mLogTag = "GameScene";
+	constexpr static std::string_view mLogTag = "GameScene";		///< @brief 日志标识
 
 	engine::object::GameObject* mPlayer = nullptr;					///< @brief 玩家对象指针
 };

@@ -64,6 +64,45 @@ void PhysicsComponent::setVelocity(const glm::vec2& velocity) {
 	mVelocity = velocity;
 }
 
+void PhysicsComponent::resetCollisionFlags() {
+	mCollidedBelow = false;
+	mCollidedAbove = false;
+	mCollidedLeft = false;
+	mCollidedRight = false;
+}
+
+void PhysicsComponent::setCollidedBelow(bool collided) {
+	mCollidedBelow = collided;
+}
+
+void PhysicsComponent::setCollidedAbove(bool collided) {
+	mCollidedAbove = collided;
+}
+
+void PhysicsComponent::setCollidedLeft(bool collided) {
+	mCollidedLeft = collided;
+}
+
+void PhysicsComponent::setCollidedRight(bool collided) {
+	mCollidedRight = collided;
+}
+
+bool PhysicsComponent::hasCollidedBelow() const {
+	return mCollidedBelow;
+}
+
+bool PhysicsComponent::hasCollidedAbove() const {
+	return mCollidedAbove;
+}
+
+bool PhysicsComponent::hasCollidedLeft() const {
+	return mCollidedLeft;
+}
+
+bool PhysicsComponent::hasCollidedRight() const {
+	return mCollidedRight;
+}
+
 void PhysicsComponent::init() {
 	if (!mOwner) {
 		spdlog::error("{} : 物理组件初始化前需要一个GameObject作为所有者!", std::string(mLogTag));

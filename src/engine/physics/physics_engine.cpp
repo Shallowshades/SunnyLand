@@ -68,6 +68,9 @@ void PhysicsEngine::update(float delta) {
 			continue;
 		}
 
+		// 重置碰撞标识
+		physicsComponent->resetCollisionFlags();
+
 		// 应用重力 (如果组件受重力影响) : F = m * g
 		if (physicsComponent->isUseGravity()) {
 			physicsComponent->addForce(physicsComponent->getMass() * mGravity);
@@ -200,6 +203,7 @@ void PhysicsEngine::resolveTileCollisions(engine::component::PhysicsComponent* p
 				// 撞墙: X 速度归零, X 方向移动到贴着墙的位置
 				newObjectPosition.x = tileX * tileSize.x - objectSize.x;
 				pc->setVelocity(glm::vec2(0.f, pc->getVelocity().y));
+				pc->setCollidedRight(true);
 			}
 			else {
 				// 检测右下角斜坡瓦片
@@ -209,6 +213,7 @@ void PhysicsEngine::resolveTileCollisions(engine::component::PhysicsComponent* p
 					// 如果有碰撞(角点的世界y坐标 < 斜坡地面的世界y坐标), 就让物体贴着斜坡表面
 					if (newObjectPosition.y > (tileYBottom + 1) * layer->getTileSize().y - objectSize.y - heightRight) {
 						newObjectPosition.y = (tileYBottom + 1) * layer->getTileSize().y - objectSize.y - heightRight;
+						pc->setCollidedBelow(true);
 					}
 				}
 			}
@@ -229,6 +234,7 @@ void PhysicsEngine::resolveTileCollisions(engine::component::PhysicsComponent* p
 				// 撞墙: X 速度归零, X 方向移动到贴着墙的位置
 				newObjectPosition.x = static_cast<float>((tileX + 1) * tileSize.x);
 				pc->setVelocity(glm::vec2(0.f, pc->getVelocity().y));
+				pc->setCollidedLeft(true);
 			}
 			else {
 				// 检测左下角斜坡瓦片
@@ -238,6 +244,7 @@ void PhysicsEngine::resolveTileCollisions(engine::component::PhysicsComponent* p
 					// 如果有碰撞(角点的世界y坐标 < 斜坡地面的世界y坐标), 就让物体贴着斜坡表面
 					if (newObjectPosition.y > (tileYBottom + 1) * layer->getTileSize().y - objectSize.y - heightLeft) {
 						newObjectPosition.y = (tileYBottom + 1) * layer->getTileSize().y - objectSize.y - heightLeft;
+						pc->setCollidedBelow(true);
 					}
 				}
 			}
@@ -259,6 +266,7 @@ void PhysicsEngine::resolveTileCollisions(engine::component::PhysicsComponent* p
 				// 触底: Y 速度归零, Y 方向移动到贴着墙的位置
 				newObjectPosition.y = tileY * tileSize.y - objectSize.y;
 				pc->setVelocity(glm::vec2(pc->getVelocity().x, 0.f));
+				pc->setCollidedBelow(true);
 			}
 			else {
 				// 检测斜坡瓦片(下方两个角点都要检测)
@@ -271,6 +279,7 @@ void PhysicsEngine::resolveTileCollisions(engine::component::PhysicsComponent* p
 					if (newObjectPosition.y > (tileY + 1) * layer->getTileSize().y - objectSize.y - height) {
 						newObjectPosition.y = (tileY + 1) * layer->getTileSize().y - objectSize.y - height;
 						pc->setVelocity(glm::vec2(pc->getVelocity().x, 0.f));
+						pc->setCollidedBelow(true);
 					}
 				}
 			}
@@ -291,6 +300,11 @@ void PhysicsEngine::resolveTileCollisions(engine::component::PhysicsComponent* p
 				// 撞顶: Y 速度归零, Y 方向移动到贴着墙的位置
 				newObjectPosition.y = static_cast<float>((tileY + 1) * tileSize.y);
 				pc->setVelocity(glm::vec2(pc->getVelocity().x, 0.f));
+				pc->setCollidedAbove(true);
+			}
+			else {
+				// TODO: 检测斜坡瓦片(上方两个角点都要检测)
+				// 上方为斜坡时, 存在会无视碰撞的问题
 			}
 		}
 
@@ -327,6 +341,7 @@ void PhysicsEngine::resolveSolidObjectCollisions(engine::object::GameObject* mov
 			// 如果速度为正(向右移动), 则归零(if 判断不可少, 否则可能出现错误吸附)
 			if (movePC->getVelocity().x > 0.f) {
 				movePC->setVelocity(glm::vec2(0.f, movePC->getVelocity().y));
+				movePC->setCollidedRight(true);
 			}
 		}
 		else {
@@ -334,6 +349,7 @@ void PhysicsEngine::resolveSolidObjectCollisions(engine::object::GameObject* mov
 			moveTC->translate(glm::vec2(overlap.x, 0.f));
 			if (movePC->getVelocity().x < 0.f) {
 				movePC->setVelocity(glm::vec2(0.f, movePC->getVelocity().y));
+				movePC->setCollidedLeft(true);
 			}
 		}
 	}
@@ -343,6 +359,7 @@ void PhysicsEngine::resolveSolidObjectCollisions(engine::object::GameObject* mov
 			moveTC->translate(glm::vec2(0.f, -overlap.y));
 			if (movePC->getVelocity().y > 0.f) {
 				movePC->setVelocity(glm::vec2(movePC->getVelocity().x, 0.f));
+				movePC->setCollidedBelow(true);
 			}
 		}
 		else {
@@ -350,6 +367,7 @@ void PhysicsEngine::resolveSolidObjectCollisions(engine::object::GameObject* mov
 			moveTC->translate(glm::vec2(0.f, overlap.y));
 			if (movePC->getVelocity().y < 0.f) {
 				movePC->setVelocity(glm::vec2(movePC->getVelocity().x, 0.f));
+				movePC->setCollidedAbove(true);
 			}
 		}
 	}
@@ -372,18 +390,21 @@ void PhysicsEngine::applyWorldBounds(engine::component::PhysicsComponent* pc) {
 	if (objectPosition.x < mWorldBounds->position.x) {
 		pc->setVelocity(glm::vec2(0.f, pc->getVelocity().y));
 		objectPosition.x = mWorldBounds->position.x;
+		pc->setCollidedLeft(true);
 	}
 
 	// 检测上边界
 	if (objectPosition.y < mWorldBounds->position.y) {
 		pc->setVelocity(glm::vec2(pc->getVelocity().x, 0.f));
 		objectPosition.y = mWorldBounds->position.y;
+		pc->setCollidedAbove(true);
 	}
 
 	// 检测右边界
 	if (objectPosition.x + objectSize.x > mWorldBounds->position.x + mWorldBounds->size.x) {
 		pc->setVelocity(glm::vec2(0.f, pc->getVelocity().y));
 		objectPosition.x = mWorldBounds->position.x + mWorldBounds->size.x - objectSize.x;
+		pc->setCollidedRight(true);
 	}
 
 	// 更新物体位置(使用translate方法, 新位置 - 旧位置)

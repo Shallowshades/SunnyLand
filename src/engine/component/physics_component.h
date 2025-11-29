@@ -57,6 +57,18 @@ public:
 	void setUseGravity(bool useGravity);								///< @brief 设置组件是否受重力影响
 	void setVelocity(const glm::vec2& velocity);						///< @brief 设置速度
 
+	// 碰撞状态访问与修改
+	void resetCollisionFlags();											///< @brief 重置所有碰撞标识
+	void setCollidedBelow(bool collided);								///< @brief 设置下方碰撞标识
+	void setCollidedAbove(bool collided);								///< @brief 设置上方碰撞标识
+	void setCollidedLeft(bool collided);								///< @brief 设置左方碰撞标识
+	void setCollidedRight(bool collided);								///< @brief 设置右方碰撞标识
+
+	bool hasCollidedBelow() const;										///< @brief 获取下方碰撞标识
+	bool hasCollidedAbove() const;										///< @brief 获取上方碰撞标识
+	bool hasCollidedLeft() const;										///< @brief 获取左方碰撞标识
+	bool hasCollidedRight() const;										///< @brief 获取右方碰撞标识
+
 private:
 	void init() override;												///< @brief 初始化
 	void update(float, engine::core::Context&) override;				///< @brief 更新
@@ -71,6 +83,12 @@ private:
 	float mMass = 1.0f;													///< @brief 物理质量(默认1.0)
 	bool mUseGravity = true;											///< @brief 物体是否受重力影响
 	bool mEnbled = true;												///< @brief 组件是否激活
+
+	// 碰撞状态标识
+	bool mCollidedBelow = false;										///< @brief 底部碰撞
+	bool mCollidedAbove = false;										///< @brief 顶部碰撞
+	bool mCollidedLeft = false;											///< @brief 左方碰撞
+	bool mCollidedRight = false;										///< @brief 右方碰撞
 };
 }
 

@@ -1,0 +1,52 @@
+#include "idle_state.h"
+#include "walk_state.h"
+#include "jump_state.h"
+#include "fall_state.h"
+#include "../player_component.h"
+#include "../../../engine/core/context.h"
+#include "../../../engine/input/input_manager.h"
+#include "../../../engine/component/physics_component.h"
+#include <spdlog/spdlog.h>
+
+namespace game::component::state {
+IdleState::IdleState(PlayerComponent* playerComponent) 
+	: PlayerState(playerComponent)
+{
+}
+
+void IdleState::enter() {
+
+}
+
+void IdleState::exit() {
+
+}
+
+std::unique_ptr<PlayerState> IdleState::handleInput(engine::core::Context& context) {
+	auto inputManager = context.getInputManager();
+	// 如果按下了左右移动键, 则切换到WalkState
+	if (inputManager.isActionDown("MoveLeft") || inputManager.isActionDown("MoveRight")) {
+		return std::make_unique<WalkState>(mPlayerComponent);
+	}
+	// 如果按下"Jump"则切换到JumpState
+	if (inputManager.isActionPressed("Jump")) {
+		return std::make_unique<JumpState>(mPlayerComponent);
+	}
+	return nullptr;
+}
+
+std::unique_ptr<PlayerState> IdleState::update(float delta, engine::core::Context& context) {
+	// 应用摩擦力(水平方向)
+	auto physicsComponent = mPlayerComponent->getPhysicsComponent();
+	auto frictionFactor = mPlayerComponent->getFrictionFactor();
+	auto velocity = physicsComponent->getVelocity();
+	velocity.x *= frictionFactor;
+	physicsComponent->setVelocity(velocity);
+
+	// 如果下方没有碰撞, 则切换到FallState
+	if (physicsComponent->hasCollidedBelow()) {
+		return std::make_unique<FallState>(mPlayerComponent);
+	}
+	return nullptr;
+}
+} // namespace game::component::state

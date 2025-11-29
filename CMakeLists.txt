@@ -58,6 +58,12 @@ set(SOURCES
     src/engine/scene/scene_manager.cpp
     src/engine/scene/level_loader.cpp
     src/game/scene/game_scene.cpp
+    src/game/component/player_component.cpp
+    src/game/component/state/player_state.cpp
+    src/game/component/state/idle_state.cpp
+    src/game/component/state/walk_state.cpp
+    src/game/component/state/jump_state.cpp
+    src/game/component/state/fall_state.cpp
 )
 
 # 根据平台向"通用源文件"追加平台专属的文件

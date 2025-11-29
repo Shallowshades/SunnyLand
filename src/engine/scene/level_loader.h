@@ -39,7 +39,7 @@ public:
 	 * @param scene 要加载数据的目标 Scene 对象
 	 * @return bool 是否加载成功
 	 */
-	bool loadLevel(const std::string& mapPath, Scene& scene);
+	[[nodiscard]] bool loadLevel(const std::string& mapPath, Scene& scene);
 
 private:
 	void loadImageLayer(const nlohmann::json& layerJson, Scene& scene);		///< @brief 加载图片图层
