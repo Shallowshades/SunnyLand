@@ -12,7 +12,7 @@
 #define PLAYER_STATE_H
 
 #include <memory>
-#include <string>
+#include <string_view>
 
 namespace engine::core { class Context; }
 namespace game::component { class PlayerComponent; }
@@ -33,6 +33,8 @@ public:
 	PlayerState(PlayerState&&) = delete;											///< @brief 删除移动构造
 	PlayerState& operator=(PlayerState&&) = delete;									///< @brief 删除移动赋值构造
 
+	void playAnimation(const std::string& animationName);							///< @brief 播放指定名称的动画, 使用动画组件的方法
+
 protected:
 	// 核心状态方法
 	virtual void enter() = 0;														///< @brief 进入
@@ -41,6 +43,7 @@ protected:
 	virtual std::unique_ptr<PlayerState> update(float, engine::core::Context&) = 0;	///< @brief 更新
 	// handleInput 和 update 返回值为下一个状态, 如果不需要切换状态, 则返回nullptr
 protected:
+	static constexpr std::string_view mLogTag = "PlayerState";						///< @brief 日志标识
 	PlayerComponent* mPlayerComponent = nullptr;									///< @brief 指向拥有此状态的玩家组件
 };
 }

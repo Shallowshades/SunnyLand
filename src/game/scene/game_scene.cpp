@@ -7,6 +7,7 @@
 #include "../../engine/component/physics_component.h"
 #include "../../engine/component/collider_component.h"
 #include "../../engine/component/tilelayer_component.h"
+#include "../../engine/component/animation_component.h"
 #include "../../engine/physics/physics_engine.h"
 #include "../../engine/scene/level_loader.h"
 #include "../../engine/input/input_manager.h"
@@ -36,6 +37,12 @@ void GameScene::init() {
 
 	if (!initPlayer()) {
 		spdlog::error("{} : 玩家初始化失败, 无法继续", std::string(mLogTag));
+		mContext.getInputManager().setShouldQuit(true);
+		return;
+	}
+
+	if (!initEnemyAndItem()) {
+		spdlog::error("{} : 敌人和道具初始化失败, 无法继续.", std::string(mLogTag));
 		mContext.getInputManager().setShouldQuit(true);
 		return;
 	}
@@ -117,5 +124,51 @@ bool GameScene::initPlayer() {
 	mContext.getCamera().setTarget(playerTransform);
 	spdlog::trace("{} : Player 初始化完成", std::string(mLogTag));
 	return true;
+}
+
+bool GameScene::initEnemyAndItem() {
+	bool success = true;
+	for (auto& gameObject : mGameObjects) {
+		if (gameObject->getName() == "eagle") {
+			if (auto* ac = gameObject->getComponent<engine::component::AnimationComponent>(); ac) {
+				ac->playAnimation("fly");
+			}
+			else {
+				spdlog::error("{} : eagle 对象缺少动画组件, 无法播放动画", std::string(mLogTag));
+				success = false;
+			}
+		}
+
+		if (gameObject->getName() == "frog") {
+			if (auto* ac = gameObject->getComponent<engine::component::AnimationComponent>(); ac) {
+				ac->playAnimation("idle");
+			}
+			else {
+				spdlog::error("{} : frog 对象缺少动画组件, 无法播放动画", std::string(mLogTag));
+				success = false;
+			}
+		}
+
+		if (gameObject->getName() == "opossum") {
+			if (auto* ac = gameObject->getComponent<engine::component::AnimationComponent>(); ac) {
+				ac->playAnimation("walk");
+			}
+			else {
+				spdlog::error("{} : opossum 对象缺少动画组件, 无法播放动画", std::string(mLogTag));
+				success = false;
+			}
+		}
+
+		if (gameObject->getTag() == "item") {
+			if (auto* ac = gameObject->getComponent<engine::component::AnimationComponent>(); ac) {
+				ac->playAnimation("idle");
+			}
+			else {
+				spdlog::error("{} : item 对象缺少动画组件, 无法播放动画", std::string(mLogTag));
+				success = false;
+			}
+		}
+	}
+	return success;
 }
 } // namespace game::scene

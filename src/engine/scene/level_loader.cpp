@@ -5,12 +5,14 @@
 #include "../component/sprite_component.h"
 #include "../component/collider_component.h"
 #include "../component/physics_component.h"
+#include "../component/animation_component.h"
 #include "../object/game_object.h"
 #include "../object/game_object.h"
 #include "../scene/scene.h"
 #include "../core/context.h"
 #include "../resource/resource_manager.h"
 #include "../render/sprite.h"
+#include "../render/animation.h"
 #include "../utils/math.h"
 #include <nlohmann/json.hpp>
 #include <fstream>
@@ -188,7 +190,7 @@ void LevelLoader::loadObjectLayer(const nlohmann::json& layerJson, Scene& scene)
 			auto gameObject = std::make_unique<engine::object::GameObject>(objectName);
 			gameObject->addComponent<engine::component::TransformComponent>(position, scale, rotation);
 			gameObject->addComponent<engine::component::SpriteComponent>(std::move(tileInfo.mSprite), scene.getContext().getResourceManager());
-			
+
 			// 获取瓦片json信息
 			// 1. 必然存在, 因为getTileInfoByGid(gid)函数已经顺利执行
 			// 2. 这里再获取json, 实际上检索了两次, 未来可用优化
@@ -232,10 +234,79 @@ void LevelLoader::loadObjectLayer(const nlohmann::json& layerJson, Scene& scene)
 				}
 			}
 
+			// 获取动画信息并设置
+			auto animationString = getTileProperty<std::string>(tileJson, "animation");
+			if (animationString) {
+				// 解析string为json对象
+				nlohmann::json animationJson;
+				try {
+					animationJson = nlohmann::json::parse(animationString.value());
+				}
+				catch (const nlohmann::json::parse_error& e) {
+					spdlog::error("{} : 解析动画json字符串失败: {}", std::string(mLogTag), e.what());
+					continue;
+				}
+				// 添加动画组件
+				auto* ac = gameObject->addComponent<engine::component::AnimationComponent>();
+				// 添加动画到动画组件
+				addAnimation(animationJson, ac, srcSize);
+			}
+
 			// 添加到场景中
 			scene.addGameObject(std::move(gameObject));
 			spdlog::info("{} : 加载对象 '{}' 完成", std::string(mLogTag), objectName);
 		}
+	}
+}
+
+void LevelLoader::addAnimation(const nlohmann::json& animationJson, engine::component::AnimationComponent* ac, const glm::vec2& spriteSize) {
+	// 检查动画json必须是一个对象, 并且动画组件不能为空
+	if (!animationJson.is_object() || !ac) {
+		spdlog::error("{} : 无效的动画json或动画组件指针", std::string(mLogTag));
+		return;
+	}
+
+	// 遍历动画json对象中的每个键值对 (动画名称 : 动画信息)
+	for (const auto& keyValue : animationJson.items()) {
+		const std::string& animationName = keyValue.key();
+		const auto& animationInfo = keyValue.value();
+		if (!animationInfo.is_object()) {
+			spdlog::warn("{} : 动画 '{}' 的信息无效或为空.", std::string(mLogTag), animationName);
+			continue;
+		}
+
+		// 获取可能存在的动画帧信息
+		auto durationMs = animationInfo.value("duration", 100);			// 默认持续时间为100ms
+		auto duration = static_cast<float>(durationMs) / 1000.f;		// 转换为秒
+		auto row = animationInfo.value("row", 0);						// 默认行数为0
+		// 帧信息(数组)是必须存在的
+		if (!animationInfo.contains("frames") || !animationInfo["frames"].is_array()) {
+			spdlog::warn("{} : 动画 '{}' 缺少 'frames' 数组", std::string(mLogTag), animationName);
+			continue;
+		}
+
+		// 创建一个动画对象(默认为循环播放)
+		auto animation = std::make_unique<engine::render::Animation>(animationName);
+		// 遍历数组并进行添加帧信息到动画对象
+		for (const auto& frame : animationInfo["frames"]) {
+			if (!frame.is_number_integer()) {
+				spdlog::warn("{} : 动画 '{}' 中 frames 数组格式错误!", std::string(mLogTag), animationName);
+				continue;
+			}
+			auto column = frame.get<int>();
+			// 计算源矩阵
+			SDL_FRect srcRect = {
+				column * spriteSize.x,
+				row * spriteSize.y,
+				spriteSize.x,
+				spriteSize.y
+			};
+			// 添加动画帧到动画
+			animation->addFrame(srcRect, duration);
+		}
+		// 将动画对象添加动画组件中
+		ac->addAnimation(std::move(animation));
+		spdlog::trace("{} : 添加动画 '{}'到游戏对象", std::string(mLogTag), animationName);
 	}
 }
 

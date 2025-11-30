@@ -17,6 +17,7 @@ JumpState::JumpState(PlayerComponent* playerComponent)
 }
 
 void JumpState::enter() {
+	playAnimation("jump");		// 播放跳跃动画
 	auto physicsComponent = mPlayerComponent->getPhysicsComponent();
 	auto velocity = physicsComponent->getVelocity();
 	velocity.y = -mPlayerComponent->getJumpForce();

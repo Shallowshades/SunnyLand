@@ -18,7 +18,7 @@ WalkState::WalkState(PlayerComponent* playerComponent)
 }
 
 void WalkState::enter() {
-
+	playAnimation("walk");		// 播放步行动画
 }
 
 void WalkState::exit() {

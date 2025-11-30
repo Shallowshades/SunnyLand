@@ -22,6 +22,7 @@ namespace engine::component {
 	class TransformComponent;
 	class PhysicsComponent;
 	class SpriteComponent;
+	class AnimationComponent;
 }
 namespace game::component::state {
 	class PlayerState;
@@ -47,6 +48,7 @@ public:
 	engine::component::TransformComponent* getTransformComponent() const;					///< @brief 获取变换组件指针
 	engine::component::SpriteComponent* getSpriteComponent() const;							///< @brief 获取精灵组件指针
 	engine::component::PhysicsComponent* getPhysicsComponent() const;						///< @brief 获取物理组件指针
+	engine::component::AnimationComponent* getAnimationComponent() const;					///< @brief 获取动画组件指针
 
 	void setIsDead(bool isDead);															///< @brief 设置玩家是否死亡
 	bool getIsDead() const;																	///< @brief 获取玩家是否死亡
@@ -71,6 +73,7 @@ private:
 	engine::component::TransformComponent* mTransformComponent = nullptr;					///< @brief 变换组件指针
 	engine::component::SpriteComponent* mSpriteComponent = nullptr;							///< @brief 精灵组件指针
 	engine::component::PhysicsComponent* mPhysicsComponent = nullptr;						///< @brief 物理组件指针
+	engine::component::AnimationComponent* mAnimationComponent = nullptr;					///< @brief 动画组件指针
 
 	std::unique_ptr<state::PlayerState> mCurrentState;										///< @brief 玩家当前状态
 	bool mIsDead = false;																	///< @brief 玩家是否死亡

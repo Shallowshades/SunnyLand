@@ -17,7 +17,7 @@ FallState::FallState(PlayerComponent* playerComponent)
 }
 
 void FallState::enter() {
-
+	playAnimation("fall");	// 播放下落动画
 }
 
 void FallState::exit() {

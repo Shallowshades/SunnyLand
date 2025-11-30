@@ -6,7 +6,7 @@
 #include "../../engine/component/transform_component.h"
 #include "../../engine/component/sprite_component.h"
 #include "../../engine/component/physics_component.h"
-#include "../../engine/component/physics_component.h"
+#include "../../engine/component/animation_component.h"
 #include "../../engine/object/game_object.h"
 #include "../../engine/input/input_manager.h"
 
@@ -21,6 +21,10 @@ engine::component::SpriteComponent* PlayerComponent::getSpriteComponent() const 
 
 engine::component::PhysicsComponent* PlayerComponent::getPhysicsComponent() const {
 	return mPhysicsComponent;
+}
+
+engine::component::AnimationComponent* PlayerComponent::getAnimationComponent() const {
+	return mAnimationComponent;
 }
 
 void PlayerComponent::setIsDead(bool isDead) {
@@ -88,7 +92,8 @@ void PlayerComponent::init() {
 	mTransformComponent = mOwner->getComponent<engine::component::TransformComponent>();
 	mPhysicsComponent = mOwner->getComponent<engine::component::PhysicsComponent>();
 	mSpriteComponent = mOwner->getComponent<engine::component::SpriteComponent>();
-	if (!mTransformComponent || !mPhysicsComponent || !mSpriteComponent) {
+	mAnimationComponent = mOwner->getComponent<engine::component::AnimationComponent>();
+	if (!mTransformComponent || !mPhysicsComponent || !mSpriteComponent || !mAnimationComponent) {
 		spdlog::error("{} : 对象缺少必要组件", std::string(mLogTag));
 	}
 

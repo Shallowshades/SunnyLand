@@ -42,6 +42,7 @@ set(SOURCES
     src/engine/component/tilelayer_component.cpp
     src/engine/component/physics_component.cpp
     src/engine/component/collider_component.cpp
+    src/engine/component/animation_component.cpp
     src/engine/physics/physics_engine.cpp
     src/engine/physics/collider.cpp
     src/engine/physics/collision.cpp
@@ -54,6 +55,7 @@ set(SOURCES
     src/engine/render/camera.cpp
     src/engine/render/renderer.cpp
     src/engine/render/sprite.cpp
+    src/engine/render/animation.cpp
     src/engine/scene/scene.cpp
     src/engine/scene/scene_manager.cpp
     src/engine/scene/level_loader.cpp

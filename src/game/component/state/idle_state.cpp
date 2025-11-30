@@ -15,7 +15,7 @@ IdleState::IdleState(PlayerComponent* playerComponent)
 }
 
 void IdleState::enter() {
-
+	playAnimation("idle");		// 播放待机动画
 }
 
 void IdleState::exit() {
@@ -44,7 +44,7 @@ std::unique_ptr<PlayerState> IdleState::update(float delta, engine::core::Contex
 	physicsComponent->setVelocity(velocity);
 
 	// 如果下方没有碰撞, 则切换到FallState
-	if (physicsComponent->hasCollidedBelow()) {
+	if (!physicsComponent->hasCollidedBelow()) {
 		return std::make_unique<FallState>(mPlayerComponent);
 	}
 	return nullptr;
