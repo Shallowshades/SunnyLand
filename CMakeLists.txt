@@ -43,6 +43,7 @@ set(SOURCES
     src/engine/component/physics_component.cpp
     src/engine/component/collider_component.cpp
     src/engine/component/animation_component.cpp
+    src/engine/component/health_component.cpp
     src/engine/physics/physics_engine.cpp
     src/engine/physics/collider.cpp
     src/engine/physics/collision.cpp
@@ -66,6 +67,8 @@ set(SOURCES
     src/game/component/state/walk_state.cpp
     src/game/component/state/jump_state.cpp
     src/game/component/state/fall_state.cpp
+    src/game/component/state/hurt_state.cpp
+    src/game/component/state/dead_state.cpp
 )
 
 # 根据平台向"通用源文件"追加平台专属的文件

@@ -52,7 +52,7 @@ std::unique_ptr<PlayerState> FallState::handleInput(engine::core::Context& conte
 	return nullptr;
 }
 
-std::unique_ptr<PlayerState> FallState::update(float delta, engine::core::Context& context) {
+std::unique_ptr<PlayerState> FallState::update(float, engine::core::Context&) {
 	// 限制最大速度
 	auto physicsComponent = mPlayerComponent->getPhysicsComponent();
 	auto maxSpeed = mPlayerComponent->getMaxSpeed();

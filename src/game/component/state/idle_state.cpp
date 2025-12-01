@@ -35,7 +35,7 @@ std::unique_ptr<PlayerState> IdleState::handleInput(engine::core::Context& conte
 	return nullptr;
 }
 
-std::unique_ptr<PlayerState> IdleState::update(float delta, engine::core::Context& context) {
+std::unique_ptr<PlayerState> IdleState::update(float, engine::core::Context&) {
 	// 应用摩擦力(水平方向)
 	auto physicsComponent = mPlayerComponent->getPhysicsComponent();
 	auto frictionFactor = mPlayerComponent->getFrictionFactor();

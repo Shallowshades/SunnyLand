@@ -162,7 +162,7 @@ void PhysicsEngine::resolveTileCollisions(engine::component::PhysicsComponent* p
 
 	auto* tc = object->getComponent<engine::component::TransformComponent>();
 	auto* cc = object->getComponent<engine::component::ColliderComponent>();
-	if (!tc || !cc || !cc->getIsActive() || cc->getIsTrigger()) {
+	if (!tc || !cc || cc->getIsTrigger()) {
 		return;
 	}
 	// 使用最小包围盒进行碰撞检测
@@ -176,6 +176,15 @@ void PhysicsEngine::resolveTileCollisions(engine::component::PhysicsComponent* p
 	auto tolerance = 1.f;
 	auto ds = pc->getVelocity() * delta;
 	auto newObjectPosition = objectPosition + ds;
+
+	// 如果碰撞器未激活, 直接让物体正常移动, 然后返回
+	if (!cc->getIsActive()) {
+		tc->translate(ds);
+		auto velocity = pc->getVelocity();
+		velocity = glm::clamp(velocity, -mMaxSpeed, mMaxSpeed);
+		pc->setVelocity(velocity);
+		return;
+	}
 
 	// 遍历所有注册的碰撞瓦片层
 	for (auto* layer : mCollisionTileLayers) {

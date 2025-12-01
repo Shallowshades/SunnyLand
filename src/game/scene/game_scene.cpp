@@ -61,6 +61,7 @@ void GameScene::render(){
 
 void GameScene::handleInput(){
 	Scene::handleInput();
+	testHealth();
 }
 
 void GameScene::clean(){
@@ -170,5 +171,12 @@ bool GameScene::initEnemyAndItem() {
 		}
 	}
 	return success;
+}
+
+void GameScene::testHealth() {
+	auto inputManager = mContext.getInputManager();
+	if (inputManager.isActionPressed("Attack")) {
+		mPlayer->getComponent<game::component::PlayerComponent>()->takeDamage(1);
+	}
 }
 } // namespace game::scene

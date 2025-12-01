@@ -23,6 +23,7 @@ namespace engine::component {
 	class PhysicsComponent;
 	class SpriteComponent;
 	class AnimationComponent;
+	class HealthComponent;
 }
 namespace game::component::state {
 	class PlayerState;
@@ -49,6 +50,7 @@ public:
 	engine::component::SpriteComponent* getSpriteComponent() const;							///< @brief 获取精灵组件指针
 	engine::component::PhysicsComponent* getPhysicsComponent() const;						///< @brief 获取物理组件指针
 	engine::component::AnimationComponent* getAnimationComponent() const;					///< @brief 获取动画组件指针
+	engine::component::HealthComponent* getHealthComponent() const;							///< @brief 获取生命组件指针
 
 	void setIsDead(bool isDead);															///< @brief 设置玩家是否死亡
 	bool getIsDead() const;																	///< @brief 获取玩家是否死亡
@@ -60,8 +62,11 @@ public:
 	float getFrictionFactor() const;														///< @brief 获取摩擦系数
 	void setJumpForce(float jumpForce);														///< @brief 设置弹跳力
 	float getJumpForce() const;																///< @brief 获取弹跳力
+	void setStunnedDuration(float duration);												///< @brief 设置硬直时间
+	float getStunnedDuration() const;														///< @brief 获取硬直时间
 
 	void setState(std::unique_ptr<state::PlayerState> newState);							///< @brief 设置玩家当前状态
+	bool takeDamage(int damageAmount);														///< @brief 尝试造成伤害
 
 private:
 	void init() override;																	///< @brief 初始化
@@ -74,6 +79,7 @@ private:
 	engine::component::SpriteComponent* mSpriteComponent = nullptr;							///< @brief 精灵组件指针
 	engine::component::PhysicsComponent* mPhysicsComponent = nullptr;						///< @brief 物理组件指针
 	engine::component::AnimationComponent* mAnimationComponent = nullptr;					///< @brief 动画组件指针
+	engine::component::HealthComponent* mHealthComponent = nullptr;							///< @brief 生命组件指针
 
 	std::unique_ptr<state::PlayerState> mCurrentState;										///< @brief 玩家当前状态
 	bool mIsDead = false;																	///< @brief 玩家是否死亡
@@ -83,6 +89,9 @@ private:
 	float mMaxSpeed = 120.f;																///< @brief 最大移动速度 (像素/秒)
 	float mFrictionFactor = 0.85f;															///< @brief 摩擦系数 (Idle 时缓冲效果, 每帧乘以此系数)
 	float mJumpForce = 350.f;																///< @brief 跳跃力 (按下Jump时给的瞬间的向上的力)
+
+	// 属性相关参数
+	float mStunnedDuration = 0.4f;															///< @brief 玩家被击中后的硬直时间 (单位: 秒)
 };
 } // game::component
 

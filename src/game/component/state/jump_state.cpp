@@ -58,7 +58,7 @@ std::unique_ptr<PlayerState> JumpState::handleInput(engine::core::Context& conte
 	return nullptr;
 }
 
-std::unique_ptr<PlayerState> JumpState::update(float delta, engine::core::Context& context) {
+std::unique_ptr<PlayerState> JumpState::update(float, engine::core::Context&) {
 	// 限制最大速度
 	auto physicsComponent = mPlayerComponent->getPhysicsComponent();
 	auto maxSpeed = mPlayerComponent->getMaxSpeed();
