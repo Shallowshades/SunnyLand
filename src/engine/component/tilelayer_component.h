@@ -34,6 +34,7 @@ enum class TileType {
 	SLOPE_2_1,							///@brief 斜坡瓦片, 高度: 左1/2 右1
 	SLOPE_1_2,							///@brief 斜坡瓦片, 高度: 左1 右1/2
 	SLOPE_2_0,							///@brief 斜坡瓦片, 高度: 左1/2 右0
+	HAZARD,								///@brief 危险瓦片 (例如火焰, 尖刺)
 	// TODO: 更多类型
 };
 

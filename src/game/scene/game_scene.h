@@ -13,6 +13,7 @@
 
 #include <memory>
 #include "../../engine/scene/scene.h"
+#include <glm/vec2.hpp>
 
 namespace engine::object { class GameObject; }
 
@@ -44,8 +45,22 @@ private:
 	[[nodiscard]] bool initPlayer();								///< @brief 初始化玩家
 	[[nodiscard]] bool initEnemyAndItem();							///< @brief 初始化敌人和道具
 
-	// 测试函数
-	void testHealth();												///< @brief 测试生命值组件
+	///< @brief 处理游戏对象间的碰撞逻辑(从物理引擎获取信息).
+	void handleObjectCollisions();
+	///< @brief 处理瓦片触发事件(从物理引擎获取信息).
+	void handleTileTriggers();
+	///< @brief 处理玩家与敌人碰撞处理
+	void playerVSEnemyCollision(engine::object::GameObject* player, engine::object::GameObject* enemy);
+	///< @brief 处理玩家与物品碰撞处理
+	void playerVSItemCollision(engine::object::GameObject* player, engine::object::GameObject* item);
+
+	/**
+	 * @brief 创建一个特效对象(一次性).
+	 * 
+	 * @param centerPosition 特效中心位置
+	 * @param tag 特效标签(决定特效类型, 例如"enemy", "item")
+	 */
+	void createEffect(const glm::vec2& centerPosition, const std::string& tag);
 private:
 	constexpr static std::string_view mLogTag = "GameScene";		///< @brief 日志标识
 

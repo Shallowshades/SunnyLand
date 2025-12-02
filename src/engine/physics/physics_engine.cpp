@@ -5,7 +5,7 @@
 #include "../component/collider_component.h"
 #include "../component/tilelayer_component.h"
 #include "../object/game_object.h"
-#include <algorithm>
+#include <set>
 #include <spdlog/spdlog.h>
 #include <glm/common.hpp>
 
@@ -58,8 +58,9 @@ void PhysicsEngine::unregisterCollisionLayer(engine::component::TileLayerCompone
 }
 
 void PhysicsEngine::update(float delta) {
-	// 每帧开始时, 清空碰撞对列表
+	// 每帧开始时, 清空碰撞对列表和瓦片触发事件列表
 	mCollisionPairs.clear();
+	mTileTriggerEvents.clear();
 
 	// 遍历所有注册的物理组件
 	for (auto* physicsComponent : mComponents) {
@@ -99,6 +100,9 @@ void PhysicsEngine::update(float delta) {
 
 	// 处理对象间碰撞
 	checkObjectCollisions();
+
+	// 检测瓦片触发事件 (检测前已经处理完位移)
+	checkTileTriggers();
 }
 
 void PhysicsEngine::checkObjectCollisions() {
@@ -153,6 +157,59 @@ void PhysicsEngine::checkObjectCollisions() {
 	}
 }
 
+void PhysicsEngine::checkTileTriggers() {
+	for (auto pc : mComponents) {
+		if (!pc || !pc->isEnabled()) {
+			continue;
+		}
+
+		auto obj = pc->getOwner();
+		if (!obj) {
+			continue;
+		}
+
+		auto cc = obj->getComponent<engine::component::ColliderComponent>();
+		// 如果游戏对象本就是触发器, 则不需要检查瓦片触发事件
+		if (!cc || !cc->getIsActive() || cc->getIsTrigger()) {
+			continue;
+		}
+
+		// 获取物体的世界AABB
+		auto worldAABB = cc->getWorldAABB();
+		// 使用set来跟踪循环遍历已经触发过瓦片类型, 防止重复添加 (例如, 玩家同时踩到两个刺, 只需要受一次伤害)
+		std::set<engine::component::TileType> triggerSet;
+		// 遍历所有注册的碰撞瓦片层分别进行检测
+		for (auto layer : mCollisionTileLayers) {
+			if (!layer) {
+				continue;
+			}
+
+			auto tileSize = layer->getTileSize();
+			constexpr float tolerance = 1.f;
+			// 获取瓦片坐标范围
+			auto startX = static_cast<int>(floor(worldAABB.position.x / tileSize.x));
+			auto endX = static_cast<int>(ceil((worldAABB.position.x + worldAABB.size.x - tolerance) / tileSize.x));
+			auto startY = static_cast<int>(floor(worldAABB.position.y / tileSize.y));
+			auto endY = static_cast<int>(ceil((worldAABB.position.y + worldAABB.size.y - tolerance) / tileSize.y));
+			// 遍历瓦片坐标范围进行检测
+			for (int x = startX; x < endX; ++x) {
+				for (int y = startY; y < endY; ++y) {
+					auto tileType = layer->getTileTypeAt(glm::vec2(x, y));
+					// 未来可以添加更多触发器类型的瓦片, 目前只有HAZARD
+					if (tileType == engine::component::TileType::HAZARD) {
+						triggerSet.insert(tileType);
+					}
+				}
+			}
+			// 遍历触发事件集合, 添加到瓦片触发事件
+			for (const auto& type : triggerSet) {
+				mTileTriggerEvents.emplace_back(obj, type);
+				spdlog::trace("{} : 触发事件数组中添加了游戏对象 {} 和 瓦片触发类型: {}", std::string(mLogTag), obj->getName(), static_cast<int>(type));
+			}
+		}
+	}
+}
+
 void PhysicsEngine::resolveTileCollisions(engine::component::PhysicsComponent* pc, float delta) {
 	// 检查组件是否有效
 	auto* object = pc->getOwner();
@@ -173,7 +230,8 @@ void PhysicsEngine::resolveTileCollisions(engine::component::PhysicsComponent* p
 		return;
 	}
 
-	auto tolerance = 1.f;
+	// 检查右边缘和下边缘时, 需要减一像素, 否则会检查到下一行/列的瓦片
+	constexpr float tolerance = 1.f;
 	auto ds = pc->getVelocity() * delta;
 	auto newObjectPosition = objectPosition + ds;
 

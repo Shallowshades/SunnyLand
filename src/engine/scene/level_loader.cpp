@@ -221,6 +221,10 @@ void LevelLoader::loadObjectLayer(const nlohmann::json& layerJson, Scene& scene)
 			if (tag) {
 				gameObject->setTag(tag.value());
 			}
+			// 如果是危险瓦片, 且没有手动设置标签, 则自动设置标签为 "hazard"
+			else if (tileInfo.mType == engine::component::TileType::HAZARD) {
+				gameObject->setTag("hazard");
+			}
 
 			// 获取重力信息并设置
 			auto gravity = getTileProperty<bool>(tileJson, "gravity");
@@ -377,6 +381,10 @@ engine::component::TileType LevelLoader::getTileType(const nlohmann::json& tileJ
 			else if (property.contains("name") && property["name"] == "unisolid") {
 				auto isUnisolid = property.value("value", false);
 				return isUnisolid ? engine::component::TileType::UNISOLID : engine::component::TileType::NORMAL;
+			}
+			else if (property.contains("name") && property["name"] == "hazard") {
+				auto isHazard = property.value("value", false);
+				return isHazard ? engine::component::TileType::HAZARD : engine::component::TileType::NORMAL;
 			}
 			// TODO: 更多的自定义逻辑处理
 		}

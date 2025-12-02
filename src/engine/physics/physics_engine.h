@@ -46,6 +46,7 @@ public:
 	void setWorldBound(const engine::utils::Rect& worldBounds);							///< @brief 设置世界边界
 	const std::optional<engine::utils::Rect>& getWorldBounds() const;					///< @brief 获取世界边界
 	const auto& getCollisionPairs() const { return mCollisionPairs; }					///< @brief 获取本帧检测到的所有游戏对象碰撞对
+	const auto& getTileTriggerEvents() const { return mTileTriggerEvents; }					///< @brief 获取本帧检测到的所有游戏对象碰撞对
 
 	void registerComponent(engine::component::PhysicsComponent* component);				///< @brief 注册组件
 	void unregisterComponent(engine::component::PhysicsComponent* component);			///< @brief 移除组件
@@ -57,6 +58,7 @@ public:
 	
 private:
 	void checkObjectCollisions();														///< @brief 检测并处理对象之间的碰撞, 并记录需要游戏逻辑处理的碰撞对
+	void checkTileTriggers();															///< @brief 检测所有游戏对象与瓦片层的触发器类型瓦片碰撞, 并记录触发事件. (位移处理完毕后再调用)
 	void resolveTileCollisions(engine::component::PhysicsComponent* pc, float delta);	///< @brief 检测并处理游戏对象和瓦片层之间的碰撞
 	
 	///< @brief 处理移动物体与SOLID物体的碰撞
@@ -83,6 +85,8 @@ private:
 
 	// @brief 存储本帧发生的GameObject碰撞对(每次update开始时清空)
 	std::vector<std::pair<engine::object::GameObject*, engine::object::GameObject*>> mCollisionPairs;
+	// @brief 存储本帧发生发生的瓦片触发事件 (游戏对象指针, 触发瓦片类型, 每次更新时清空)
+	std::vector<std::pair<engine::object::GameObject*, engine::component::TileType>> mTileTriggerEvents;
 };
 }
 
