@@ -1,5 +1,9 @@
 #include "game_scene.h"
 #include "../component/player_component.h"
+#include "../component/ai_component.h"
+#include "../component/ai/patrol_behavior.h"
+#include "../component/ai/updown_behavior.h"
+#include "../component/ai/jump_behavior.h"
 #include "../../engine/core/context.h"
 #include "../../engine/object/game_object.h"
 #include "../../engine/component/transform_component.h"
@@ -134,32 +138,26 @@ bool GameScene::initEnemyAndItem() {
 	bool success = true;
 	for (auto& gameObject : mGameObjects) {
 		if (gameObject->getName() == "eagle") {
-			if (auto* ac = gameObject->getComponent<engine::component::AnimationComponent>(); ac) {
-				ac->playAnimation("fly");
-			}
-			else {
-				spdlog::error("{} : eagle 对象缺少动画组件, 无法播放动画", std::string(mLogTag));
-				success = false;
+			if (auto aic = gameObject->addComponent<game::component::AIComponent>(); aic) {
+				auto maxY = gameObject->getComponent<engine::component::TransformComponent>()->getPosition().y;
+				auto minY = maxY - 80.f;
+				aic->setBehavior(std::make_unique<game::component::ai::UpdownBehavior>(minY, maxY));
 			}
 		}
 
 		if (gameObject->getName() == "frog") {
-			if (auto* ac = gameObject->getComponent<engine::component::AnimationComponent>(); ac) {
-				ac->playAnimation("idle");
-			}
-			else {
-				spdlog::error("{} : frog 对象缺少动画组件, 无法播放动画", std::string(mLogTag));
-				success = false;
+			if (auto aic = gameObject->addComponent<game::component::AIComponent>(); aic) {
+				auto maxX = gameObject->getComponent<engine::component::TransformComponent>()->getPosition().x - 10.f;
+				auto minX = maxX - 90.f;
+				aic->setBehavior(std::make_unique<game::component::ai::JumpBehavior>(minX, maxX));
 			}
 		}
 
 		if (gameObject->getName() == "opossum") {
-			if (auto* ac = gameObject->getComponent<engine::component::AnimationComponent>(); ac) {
-				ac->playAnimation("walk");
-			}
-			else {
-				spdlog::error("{} : opossum 对象缺少动画组件, 无法播放动画", std::string(mLogTag));
-				success = false;
+			if (auto aic = gameObject->addComponent<game::component::AIComponent>(); aic) {
+				auto maxX = gameObject->getComponent<engine::component::TransformComponent>()->getPosition().x;
+				auto minX = maxX - 200.f;
+				aic->setBehavior(std::make_unique<game::component::ai::PatrolBehavior>(minX, maxX));
 			}
 		}
 

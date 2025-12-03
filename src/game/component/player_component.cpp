@@ -66,12 +66,12 @@ float PlayerComponent::getFrictionFactor() const {
 	return mFrictionFactor;
 }
 
-void PlayerComponent::setJumpForce(float jumpForce) {
-	mJumpForce = jumpForce;
+void PlayerComponent::setJumpVelocity(float jumpForce) {
+	mJumpVelocity = jumpForce;
 }
 
-float PlayerComponent::getJumpForce() const {
-	return mJumpForce;
+float PlayerComponent::getJumpVelocity() const {
+	return mJumpVelocity;
 }
 
 void PlayerComponent::setStunnedDuration(float duration) {

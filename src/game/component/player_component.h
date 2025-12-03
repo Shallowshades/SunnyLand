@@ -60,8 +60,8 @@ public:
 	float getMaxSpeed() const;																///< @brief 获取最大移动速度
 	void setFrictionFactor(float frictionFactor);											///< @brief 设置摩擦系数
 	float getFrictionFactor() const;														///< @brief 获取摩擦系数
-	void setJumpForce(float jumpForce);														///< @brief 设置弹跳力
-	float getJumpForce() const;																///< @brief 获取弹跳力
+	void setJumpVelocity(float jumpForce);														///< @brief 设置弹跳力
+	float getJumpVelocity() const;																///< @brief 获取弹跳力
 	void setStunnedDuration(float duration);												///< @brief 设置硬直时间
 	float getStunnedDuration() const;														///< @brief 获取硬直时间
 
@@ -88,7 +88,7 @@ private:
 	float mMoveForce = 200.f;																///< @brief 水平移动力
 	float mMaxSpeed = 120.f;																///< @brief 最大移动速度 (像素/秒)
 	float mFrictionFactor = 0.85f;															///< @brief 摩擦系数 (Idle 时缓冲效果, 每帧乘以此系数)
-	float mJumpForce = 350.f;																///< @brief 跳跃力 (按下Jump时给的瞬间的向上的力)
+	float mJumpVelocity = 350.f;																///< @brief 跳跃力 (按下Jump时给的瞬间的向上的力)
 
 	// 属性相关参数
 	float mStunnedDuration = 0.4f;															///< @brief 玩家被击中后的硬直时间 (单位: 秒)

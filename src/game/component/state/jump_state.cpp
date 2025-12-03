@@ -20,7 +20,7 @@ void JumpState::enter() {
 	playAnimation("jump");		// 播放跳跃动画
 	auto physicsComponent = mPlayerComponent->getPhysicsComponent();
 	auto velocity = physicsComponent->getVelocity();
-	velocity.y = -mPlayerComponent->getJumpForce();
+	velocity.y = -mPlayerComponent->getJumpVelocity();
 	physicsComponent->setVelocity(velocity);
 
 	spdlog::debug("{} : 玩家组件进入JumpState, 设置初始垂直速度为: {}", std::string(mLogTag), velocity.y);

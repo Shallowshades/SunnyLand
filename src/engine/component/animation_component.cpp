@@ -83,7 +83,7 @@ void AnimationComponent::init() {
 	}
 }
 
-void AnimationComponent::update(float delta, engine::core::Context& context) {
+void AnimationComponent::update(float delta, engine::core::Context&) {
 	// 如果没有正在播放的动画, 或者没有当前动画, 或者没有精灵组件, 或者当前动画没有帧, 则直接返回
 	if (!mIsPlaying || !mCurrentAnimation || !mSpriteComponent || mCurrentAnimation->getIsEmpty()) {
 		spdlog::trace("{} : 游戏对象动画组件更新时没有正在播放的动画或者精灵组件为空", std::string(mLogTag));

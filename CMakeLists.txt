@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # 设置编译选项
 if (MSVC)
-    add_compile_options(/W4)
+    add_compile_options(/W3)
 else()
     add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
@@ -62,6 +62,7 @@ set(SOURCES
     src/engine/scene/level_loader.cpp
     src/game/scene/game_scene.cpp
     src/game/component/player_component.cpp
+    src/game/component/ai_component.cpp
     src/game/component/state/player_state.cpp
     src/game/component/state/idle_state.cpp
     src/game/component/state/walk_state.cpp
@@ -69,6 +70,10 @@ set(SOURCES
     src/game/component/state/fall_state.cpp
     src/game/component/state/hurt_state.cpp
     src/game/component/state/dead_state.cpp
+    src/game/component/ai/ai_behavior.cpp
+    src/game/component/ai/patrol_behavior.cpp
+    src/game/component/ai/updown_behavior.cpp
+    src/game/component/ai/jump_behavior.cpp
 )
 
 # 根据平台向"通用源文件"追加平台专属的文件
