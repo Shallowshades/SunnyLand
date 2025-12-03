@@ -70,6 +70,7 @@ set(SOURCES
     src/game/component/state/fall_state.cpp
     src/game/component/state/hurt_state.cpp
     src/game/component/state/dead_state.cpp
+    src/game/component/state/climb_state.cpp
     src/game/component/ai/ai_behavior.cpp
     src/game/component/ai/patrol_behavior.cpp
     src/game/component/ai/updown_behavior.cpp

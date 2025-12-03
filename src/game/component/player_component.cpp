@@ -82,6 +82,14 @@ float PlayerComponent::getStunnedDuration() const {
 	return mStunnedDuration;
 }
 
+void PlayerComponent::setClimbSpeed(float speed) {
+	mClimbSpeed = speed;
+}
+
+float PlayerComponent::getClimbSpeed() const {
+	return mClimbSpeed;
+}
+
 void PlayerComponent::setState(std::unique_ptr<state::PlayerState> newState) {
 	if (!newState) {
 		spdlog::warn("{} : 尝试设置空的玩家状态", std::string(mLogTag));

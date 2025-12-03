@@ -69,6 +69,7 @@ void PhysicsComponent::resetCollisionFlags() {
 	mCollidedAbove = false;
 	mCollidedLeft = false;
 	mCollidedRight = false;
+	mCollidedLadder = false;
 }
 
 void PhysicsComponent::setCollidedBelow(bool collided) {
@@ -87,6 +88,10 @@ void PhysicsComponent::setCollidedRight(bool collided) {
 	mCollidedRight = collided;
 }
 
+void PhysicsComponent::setCollidedLadder(bool collided) {
+	mCollidedLadder = collided;
+}
+
 bool PhysicsComponent::hasCollidedBelow() const {
 	return mCollidedBelow;
 }
@@ -101,6 +106,10 @@ bool PhysicsComponent::hasCollidedLeft() const {
 
 bool PhysicsComponent::hasCollidedRight() const {
 	return mCollidedRight;
+}
+
+bool PhysicsComponent::hasCollidedLadder() const {
+	return mCollidedLadder;
 }
 
 void PhysicsComponent::init() {

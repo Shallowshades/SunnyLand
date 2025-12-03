@@ -199,6 +199,10 @@ void PhysicsEngine::checkTileTriggers() {
 					if (tileType == engine::component::TileType::HAZARD) {
 						triggerSet.insert(tileType);
 					}
+					// 梯子类型不必记录到事件容器, 物理引擎自己处理
+					else if (tileType == engine::component::TileType::LADDER) {
+						pc->setCollidedLadder(true);
+					}
 				}
 			}
 			// 遍历触发事件集合, 添加到瓦片触发事件

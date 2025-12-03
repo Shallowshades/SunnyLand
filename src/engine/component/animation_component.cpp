@@ -43,6 +43,10 @@ void AnimationComponent::stopAnimation() {
 	mIsPlaying = false;
 }
 
+void AnimationComponent::resumeAnimation() {
+	mIsPlaying = true;
+}
+
 std::string AnimationComponent::getCurrentAnimationName() const {
 	if (mCurrentAnimation) {
 		return mCurrentAnimation->getName();
