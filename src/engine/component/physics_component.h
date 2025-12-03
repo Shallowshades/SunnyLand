@@ -64,12 +64,14 @@ public:
 	void setCollidedLeft(bool collided);								///< @brief 设置左方碰撞标识
 	void setCollidedRight(bool collided);								///< @brief 设置右方碰撞标识
 	void setCollidedLadder(bool collided);								///< @brief 设置梯子碰撞标识
+	void setOnTopLadder(bool collided);									///< @brief 设置是否在梯子顶层
 
 	bool hasCollidedBelow() const;										///< @brief 获取下方碰撞标识
 	bool hasCollidedAbove() const;										///< @brief 获取上方碰撞标识
 	bool hasCollidedLeft() const;										///< @brief 获取左方碰撞标识
 	bool hasCollidedRight() const;										///< @brief 获取右方碰撞标识
 	bool hasCollidedLadder() const;										///< @brief 获取梯子碰撞标识
+	bool isOnTopLadder() const;											///< @brief 获取是否在梯子顶层
 
 private:
 	void init() override;												///< @brief 初始化
@@ -92,6 +94,7 @@ private:
 	bool mCollidedLeft = false;											///< @brief 左方碰撞
 	bool mCollidedRight = false;										///< @brief 右方碰撞
 	bool mCollidedLadder = false;										///< @brief 梯子碰撞
+	bool mIsOnTopLadder = false;										///< @brief 梯子顶层
 };
 }
 

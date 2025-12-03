@@ -73,7 +73,7 @@ std::unique_ptr<PlayerState> JumpState::update(float, engine::core::Context&) {
 	physicsComponent->setVelocity(velocity);
 
 	// 如果速度为正, 则切换到 FallState
-	if (velocity.y > 0.f) {
+	if (velocity.y >= 0.f) {
 		return std::make_unique<FallState>(mPlayerComponent);
 	}
 	return nullptr;

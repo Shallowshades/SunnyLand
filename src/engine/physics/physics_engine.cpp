@@ -339,6 +339,22 @@ void PhysicsEngine::resolveTileCollisions(engine::component::PhysicsComponent* p
 				pc->setVelocity(glm::vec2(pc->getVelocity().x, 0.f));
 				pc->setCollidedBelow(true);
 			}
+			// 如果两个角点都位于梯子上, 则判断是不是处于梯子顶层
+			else if (tileTypeLeft == engine::component::TileType::LADDER && tileTypeRight == engine::component::TileType::LADDER) {
+				// 检测左角点/右角点上方的瓦片类型
+				auto tileTypeUpLeft = layer->getTileTypeAt({ tileX, tileY - 1 });
+				auto tileTypeUpRight = layer->getTileTypeAt({ tileXRight, tileY - 1 });
+				// 如果上方不是梯子, 证明处于梯子顶层
+				if (tileTypeUpRight != engine::component::TileType::LADDER && tileTypeUpLeft != engine::component::TileType::LADDER) {
+					// 通过是否使用重力来区分是否处于攀爬状态
+					if (pc->isUseGravity()) {
+						pc->setOnTopLadder(true);
+						pc->setCollidedBelow(true);
+						newObjectPosition.y = tileY * layer->getTileSize().y - objectSize.y;
+						pc->setVelocity({ pc->getVelocity().x, 0.f });
+					}
+				}
+			}
 			else {
 				// 检测斜坡瓦片(下方两个角点都要检测)
 				auto widthLeft = objectPosition.x - tileX * tileSize.x;

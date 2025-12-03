@@ -7,6 +7,7 @@
 #include "../../../engine/core/context.h"
 #include "../../../engine/input/input_manager.h"
 #include "../../../engine/component/physics_component.h"
+#include "../../../engine/component/transform_component.h"
 #include <spdlog/spdlog.h>
 
 namespace game::component::state {
@@ -29,6 +30,13 @@ std::unique_ptr<PlayerState> IdleState::handleInput(engine::core::Context& conte
 
 	// 如果按下上键, 且与梯子重合, 则切换到ClimbState
 	if (physicsComponent->hasCollidedLadder() && inputManager.isActionDown("MoveUp")) {
+		return std::make_unique<ClimbState>(mPlayerComponent);
+	}
+
+	// 如果按下下键, 则切换到攀爬状态
+	if (physicsComponent->isOnTopLadder() && inputManager.isActionDown("MoveDown")) {
+		// 需要向下移动一点, 确保下一帧能与梯子碰撞 (否则会切换回下落状态)
+		physicsComponent->getTransform()->translate(glm::vec2(0.f, 2.f));
 		return std::make_unique<ClimbState>(mPlayerComponent);
 	}
 
