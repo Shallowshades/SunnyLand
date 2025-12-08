@@ -69,6 +69,7 @@ public:
 
 	void setState(std::unique_ptr<state::PlayerState> newState);							///< @brief 设置玩家当前状态
 	bool takeDamage(int damageAmount);														///< @brief 尝试造成伤害
+	bool isOnGround() const;																///< @brief 检查玩家是否在地面上(考虑了Coyote Time)
 
 private:
 	void init() override;																	///< @brief 初始化
@@ -95,6 +96,14 @@ private:
 
 	// 属性相关参数
 	float mStunnedDuration = 0.4f;															///< @brief 玩家被击中后的硬直时间 (单位: 秒)
+
+	// 土狼时间(Coyote Time): 允许玩家在离地后短暂时间内仍然可以跳跃
+	static constexpr float mCoyoteTime = 0.1f;												///< @brief Coyote Time (单位：秒）
+	float mCoyoteTimer = 0.0f;																///< @brief Coyote Time 计时器
+
+	// 无敌闪烁时间
+	static constexpr float mFlashInterval = 0.1f;											///< @brief 闪烁间隔时间（单位：秒）
+	float mFlashTimer = 0.0f;																///< @brief 闪烁计时器，用于无敌状态下的闪烁效果
 };
 } // game::component
 

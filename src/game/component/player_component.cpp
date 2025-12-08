@@ -130,6 +130,10 @@ bool PlayerComponent::takeDamage(int damageAmount) {
 	return true;
 }
 
+bool PlayerComponent::isOnGround() const {
+	return mCoyoteTimer <= mCoyoteTime || mPhysicsComponent->hasCollidedBelow();
+}
+
 void PlayerComponent::init() {
 	if (!mOwner) {
 		spdlog::error("{} : 没有所属游戏对象", std::string(mLogTag));
@@ -172,10 +176,39 @@ void PlayerComponent::update(float delta, engine::core::Context& context) {
 		return;
 	}
 
+	// 一旦开始离地, 开始计时 Coyote Timer
+	if (!mPhysicsComponent->hasCollidedBelow()) {
+		mCoyoteTimer += delta;
+	}
+	// 撞到地面，重置 Coyote Timer
+	else {
+		mCoyoteTimer = 0.f;
+	}
+
+	// 如果处于无敌状态，则进行闪烁
+	if (mHealthComponent->isInvincible()) {
+		mFlashTimer += delta;
+		if (mFlashTimer >= 2 * mFlashInterval) {
+			// 闪烁计时器在 0～2倍闪烁间隔 中循环
+			mFlashTimer -= 2 * mFlashInterval;
+		}
+		// 一半时间可见，一半时间不可见。
+		if (mFlashTimer < mFlashInterval) {
+			mSpriteComponent->setHidden(true);
+		}
+		else {
+			mSpriteComponent->setHidden(false);
+		}
+	}
+	// 非无敌状态时确保精灵可见
+	else if (mSpriteComponent->isHidden()) {
+		mSpriteComponent->setHidden(false);
+	}
+
 	auto nextState = mCurrentState->update(delta, context);
 	if (nextState) {
 		setState(std::move(nextState));
 	}
 }
 
-}
+} // namespace game::component
