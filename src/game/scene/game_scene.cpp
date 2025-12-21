@@ -23,7 +23,7 @@
 #include <SDL3/SDL_rect.h>
 
 namespace game::scene {
-game::scene::GameScene::GameScene(std::string name, engine::core::Context& context, engine::scene::SceneManager& sceneManager) 
+game::scene::GameScene::GameScene(const std::string& name, engine::core::Context& context, engine::scene::SceneManager& sceneManager) 
 	: Scene(name, context, sceneManager)
 {
 	spdlog::trace("{} 构造完成", std::string(mLogTag));

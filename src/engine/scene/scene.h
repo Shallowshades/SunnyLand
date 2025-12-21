@@ -39,7 +39,7 @@ public:
 	 * @param context 场景上下文
 	 * @param sceneManager 场景管理器
 	 */
-	Scene(std::string name, engine::core::Context& context, engine::scene::SceneManager& sceneManager);
+	Scene(const std::string& name, engine::core::Context& context, engine::scene::SceneManager& sceneManager);
 	virtual ~Scene();
 
 	// 禁用拷贝和移动语义

@@ -31,7 +31,7 @@ public:
 	 * @param context 上下文引用
 	 * @param sceneManager 场景管理器引用
 	 */
-	GameScene(std::string name, engine::core::Context& context, engine::scene::SceneManager& sceneManager);
+	GameScene(const std::string& name, engine::core::Context& context, engine::scene::SceneManager& sceneManager);
 
 	// 重写核心方法
 	void init() override;											///< @brief 初始化

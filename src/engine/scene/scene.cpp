@@ -8,7 +8,7 @@
 #include <spdlog/spdlog.h>
 
 namespace engine::scene {
-engine::scene::Scene::Scene(std::string name, engine::core::Context& context, engine::scene::SceneManager& sceneManager)
+engine::scene::Scene::Scene(const std::string& name, engine::core::Context& context, engine::scene::SceneManager& sceneManager)
 	: mSceneName(std::move(name)), mContext(context), mSceneManager(sceneManager), mIsInitialized(false)
 {
 	spdlog::trace("{} : {} 构造完成", std::string(mLogTag), mSceneName);
