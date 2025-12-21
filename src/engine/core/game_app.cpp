@@ -6,6 +6,7 @@
 #include "config.h"
 #include "context.h"
 #include "../resource/resource_manager.h"
+#include "../audio/audio_player.h"
 #include "../render/renderer.h"
 #include "../render/camera.h"
 #include "../input/input_manager.h"
@@ -50,6 +51,7 @@ bool engine::core::GameApp::init() {
 	if (!initSDL()) return false;
 	if (!initTime()) return false;
 	if (!initResourceManager()) return false;
+	if (!initAudioPlayer()) return false;
 	if (!initRenderer()) return false;
 	if (!initCamera()) return false;
 	if (!initInputManager()) return false;
@@ -177,6 +179,18 @@ bool engine::core::GameApp::initResourceManager() {
 	return true;
 }
 
+bool engine::core::GameApp::initAudioPlayer() {
+	try {
+		mAudioPlayer = std::make_unique<engine::audio::AudioPlayer>(mResourceManager.get());
+	}
+	catch (const std::exception& e) {
+		spdlog::error("{} : 音频播放器初始化失败: {}", std::string(mLogTag), e.what());
+		return false;
+	}
+	spdlog::trace("{} : 音频播放器初始化成功.", std::string(mLogTag));
+	return true;
+}
+
 bool engine::core::GameApp::initRenderer() {
 	try {
 		mRenderer = std::make_unique<engine::render::Renderer>(mSDLRenderer, mResourceManager.get());
@@ -227,7 +241,7 @@ bool engine::core::GameApp::initPhysicsEngine() {
 
 bool engine::core::GameApp::initContext() {
 	try {
-		mContext = std::make_unique<engine::core::Context>(*mInputManager, *mRenderer, *mCamera, *mResourceManager, *mPhysicsEngine);
+		mContext = std::make_unique<engine::core::Context>(*mInputManager, *mRenderer, *mCamera, *mResourceManager, *mPhysicsEngine, *mAudioPlayer);
 	}
 	catch (const std::exception& e) {
 		spdlog::error("{} 初始化上下文失败: {}", std::string(mLogTag), e.what());

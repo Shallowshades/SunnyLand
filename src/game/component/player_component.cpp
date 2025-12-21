@@ -1,6 +1,7 @@
 #include <utility>
 #include <typeinfo>
 #include <spdlog/spdlog.h>
+#include <glm/common.hpp>
 #include "player_component.h"
 #include "state/idle_state.h"
 #include "state/hurt_state.h"
@@ -10,6 +11,7 @@
 #include "../../engine/component/physics_component.h"
 #include "../../engine/component/animation_component.h"
 #include "../../engine/component/health_component.h"
+#include "../../engine/component/audio_component.h"
 #include "../../engine/object/game_object.h"
 #include "../../engine/input/input_manager.h"
 
@@ -32,6 +34,10 @@ engine::component::AnimationComponent* PlayerComponent::getAnimationComponent() 
 
 engine::component::HealthComponent* PlayerComponent::getHealthComponent() const {
 	return mHealthComponent;
+}
+
+engine::component::AudioComponent* PlayerComponent::getAudioComponent() const {
+	return mAudioComponent;
 }
 
 void PlayerComponent::setIsDead(bool isDead) {
@@ -146,7 +152,8 @@ void PlayerComponent::init() {
 	mSpriteComponent = mOwner->getComponent<engine::component::SpriteComponent>();
 	mAnimationComponent = mOwner->getComponent<engine::component::AnimationComponent>();
 	mHealthComponent = mOwner->getComponent<engine::component::HealthComponent>();
-	if (!mTransformComponent || !mPhysicsComponent || !mSpriteComponent || !mAnimationComponent || !mHealthComponent) {
+	mAudioComponent = mOwner->getComponent<engine::component::AudioComponent>();
+	if (!mTransformComponent || !mPhysicsComponent || !mSpriteComponent || !mAnimationComponent || !mHealthComponent || !mAudioComponent) {
 		spdlog::error("{} : 对象缺少必要组件", std::string(mLogTag));
 	}
 

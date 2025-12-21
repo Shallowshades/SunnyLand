@@ -31,6 +31,7 @@ find_package(spdlog REQUIRED)
 # 设置通用源文件
 set(SOURCES
     src/main.cpp
+    src/engine/audio/audio_player.cpp
     src/engine/core/game_app.cpp
     src/engine/core/time.cpp
     src/engine/core/config.cpp
@@ -44,6 +45,7 @@ set(SOURCES
     src/engine/component/collider_component.cpp
     src/engine/component/animation_component.cpp
     src/engine/component/health_component.cpp
+    src/engine/component/audio_component.cpp
     src/engine/physics/physics_engine.cpp
     src/engine/physics/collider.cpp
     src/engine/physics/collision.cpp

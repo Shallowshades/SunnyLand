@@ -19,6 +19,7 @@ namespace engine::component {
 	class PhysicsComponent;
 	class SpriteComponent;
 	class AnimationComponent;
+	class AudioComponent;
 }
 
 namespace game::component {
@@ -49,6 +50,7 @@ public:
 	engine::component::PhysicsComponent* getPhysicsComponent() const;				///< @brief 获取物理组件
 	engine::component::SpriteComponent* getSpriteComponent() const;					///< @brief 获取精灵组件
 	engine::component::AnimationComponent* getAnimationComponent() const;			///< @brief 获取动画组件
+	engine::component::AudioComponent* getAudioComponent() const;					///< @brief 获取音频组件
 
 protected:
 	// 核心循环方法
@@ -64,5 +66,6 @@ private:
 	engine::component::PhysicsComponent* mPhysicsComponent = nullptr;				///< @brief 物理组件
 	engine::component::SpriteComponent* mSpriteComponent = nullptr;					///< @brief 精灵组件
 	engine::component::AnimationComponent* mAnimationComponent = nullptr;			///< @brief 动画组件
+	engine::component::AudioComponent* mAudioComponent = nullptr;					///< @brief 音频组件
 };
 }

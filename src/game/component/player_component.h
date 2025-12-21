@@ -24,6 +24,7 @@ namespace engine::component {
 	class SpriteComponent;
 	class AnimationComponent;
 	class HealthComponent;
+	class AudioComponent;
 }
 namespace game::component::state {
 	class PlayerState;
@@ -51,6 +52,7 @@ public:
 	engine::component::PhysicsComponent* getPhysicsComponent() const;						///< @brief 获取物理组件指针
 	engine::component::AnimationComponent* getAnimationComponent() const;					///< @brief 获取动画组件指针
 	engine::component::HealthComponent* getHealthComponent() const;							///< @brief 获取生命组件指针
+	engine::component::AudioComponent* getAudioComponent() const;							///< @brief 获取音频组件指针
 
 	void setIsDead(bool isDead);															///< @brief 设置玩家是否死亡
 	bool getIsDead() const;																	///< @brief 获取玩家是否死亡
@@ -83,6 +85,7 @@ private:
 	engine::component::PhysicsComponent* mPhysicsComponent = nullptr;						///< @brief 物理组件指针
 	engine::component::AnimationComponent* mAnimationComponent = nullptr;					///< @brief 动画组件指针
 	engine::component::HealthComponent* mHealthComponent = nullptr;							///< @brief 生命组件指针
+	engine::component::AudioComponent* mAudioComponent = nullptr;							///< @brief 音频组件指针
 
 	std::unique_ptr<state::PlayerState> mCurrentState;										///< @brief 玩家当前状态
 	bool mIsDead = false;																	///< @brief 玩家是否死亡

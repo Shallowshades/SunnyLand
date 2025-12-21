@@ -28,6 +28,10 @@ namespace engine::physics {
 	class PhysicsEngine;
 }
 
+namespace engine::audio {
+	class AudioPlayer;
+}
+
 namespace engine::core {
 /**
  * brief 持有对核心引擎模块引用的上下文对象.
@@ -48,7 +52,8 @@ public:
 		engine::render::Renderer& renderer,
 		engine::render::Camera& camera,
 		engine::resource::ResourceManager& resourceManager,
-		engine::physics::PhysicsEngine& physicsEngine);
+		engine::physics::PhysicsEngine& physicsEngine,
+		engine::audio::AudioPlayer& audioPlayer);
 
 	// 禁用拷贝和移动语义
 	Context(const Context&) = delete;										///< @brief 删除拷贝构造
@@ -61,6 +66,7 @@ public:
 	engine::render::Camera& getCamera() const;								///< @brief 获取相机
 	engine::resource::ResourceManager& getResourceManager() const;			///< @brief 获取资源管理器
 	engine::physics::PhysicsEngine& getPhysicsEngine() const;				///< @brief 获取物理引擎
+	engine::audio::AudioPlayer& getAudioPlayer() const;						///< @brief 获取音频播放器
 private:
 	// 引用, 确保每个模块都有效, 使用时不需要检查指针是否为空
 	engine::input::InputManager& mInputManager;								///< @brief 输入管理器			
@@ -68,6 +74,7 @@ private:
 	engine::render::Camera& mCamera;										///< @brief 相机
 	engine::resource::ResourceManager& mResourceManager;					///< @brief 资源管理器
 	engine::physics::PhysicsEngine& mPhysicsEngine;							///< @brief 物理引擎
+	engine::audio::AudioPlayer& mAudioPlayer;								///< @brief 音频播放器
 };
 }
 

@@ -30,6 +30,10 @@ namespace engine::scene {
 class SceneManager;
 }
 
+namespace engine::audio {
+class AudioPlayer;
+}
+
 namespace engine::core {
 class Time;
 class Config;
@@ -65,6 +69,7 @@ private:
 	[[nodiscard]] bool initSDL();
 	[[nodiscard]] bool initTime();
 	[[nodiscard]] bool initResourceManager();
+	[[nodiscard]] bool initAudioPlayer();
 	[[nodiscard]] bool initRenderer();
 	[[nodiscard]] bool initCamera();
 	[[nodiscard]] bool initInputManager();
@@ -96,6 +101,7 @@ private:
 	std::unique_ptr<engine::core::Context> mContext;
 	std::unique_ptr<engine::scene::SceneManager> mSceneManager;
 	std::unique_ptr<engine::physics::PhysicsEngine> mPhysicsEngine;
+	std::unique_ptr<engine::audio::AudioPlayer> mAudioPlayer;
 };
 
 }

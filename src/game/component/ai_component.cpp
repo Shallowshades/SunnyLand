@@ -6,6 +6,7 @@
 #include "../../engine/component/sprite_component.h"
 #include "../../engine/component/animation_component.h"
 #include "../../engine/component/health_component.h"
+#include "../../engine/component/audio_component.h"
 #include <spdlog/spdlog.h>
 
 namespace game::component {
@@ -49,17 +50,22 @@ engine::component::AnimationComponent* AIComponent::getAnimationComponent() cons
 	return mAnimationComponent;
 }
 
+engine::component::AudioComponent* AIComponent::getAudioComponent() const {
+	return mAudioComponent;
+}
+
 void AIComponent::init() {
 	if (!mOwner) {
 		spdlog::error("{} : 玩家组件没有所属游戏对象", std::string(mLogTag));
 		return;
 	}
 
-	// 获取并缓存必要的组件指针
+	// 获取并缓存必要的组件指针 (音频组件并非必须存在)
 	mTransformComponent = mOwner->getComponent<engine::component::TransformComponent>();
 	mPhysicsComponent = mOwner->getComponent<engine::component::PhysicsComponent>();
 	mSpriteComponent = mOwner->getComponent<engine::component::SpriteComponent>();
 	mAnimationComponent = mOwner->getComponent<engine::component::AnimationComponent>();
+	mAudioComponent = mOwner->getComponent<engine::component::AudioComponent>();
 	
 	// 检查必要组件
 	if (!mTransformComponent || !mPhysicsComponent || !mSpriteComponent || !mAnimationComponent) {

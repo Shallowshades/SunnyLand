@@ -6,6 +6,7 @@
 #include "../../../engine/core/context.h"
 #include "../../../engine/component/physics_component.h"
 #include "../../../engine/component/sprite_component.h"
+#include "../../../engine/component/audio_component.h"
 #include <glm/common.hpp>
 
 namespace game::component::state {
@@ -26,6 +27,10 @@ void HurtState::enter() {
 		knockbackVelocity.x = -knockbackVelocity.x;
 	}
 	physicsComponent->setVelocity(knockbackVelocity);
+
+	if (auto* audioComponent = mPlayerComponent->getAudioComponent(); audioComponent) {
+		audioComponent->playSound("hurt");
+	}
 }
 
 void HurtState::exit() {

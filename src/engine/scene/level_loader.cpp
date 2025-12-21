@@ -7,6 +7,7 @@
 #include "../component/physics_component.h"
 #include "../component/animation_component.h"
 #include "../component/health_component.h"
+#include "../component/audio_component.h"
 #include "../object/game_object.h"
 #include "../object/game_object.h"
 #include "../scene/scene.h"
@@ -257,6 +258,21 @@ void LevelLoader::loadObjectLayer(const nlohmann::json& layerJson, Scene& scene)
 				addAnimation(animationJson, ac, srcSize);
 			}
 
+			// 获取音效信息
+			auto soundString = getTileProperty<std::string>(tileJson, "sound");
+			if (soundString) {
+				nlohmann::json soundJson;
+				try {
+					soundJson = nlohmann::json::parse(soundString.value());
+				}
+				catch (const nlohmann::json::parse_error& e) {
+					spdlog::error("{} : 解析音效JSON字符串失败: {}", std::string(mLogTag), e.what());
+					continue;
+				}
+				auto* audioComponent = gameObject->addComponent<engine::component::AudioComponent>(&scene.getContext().getAudioPlayer(), &scene.getContext().getCamera());
+				addSound(soundJson, audioComponent);
+			}
+
 			// 获取生命值信息并设置
 			auto health = getTileProperty<int>(tileJson, "health");
 			if (health) {
@@ -318,6 +334,23 @@ void LevelLoader::addAnimation(const nlohmann::json& animationJson, engine::comp
 		// 将动画对象添加动画组件中
 		ac->addAnimation(std::move(animation));
 		spdlog::trace("{} : 添加动画 '{}'到游戏对象", std::string(mLogTag), animationName);
+	}
+}
+
+void LevelLoader::addSound(const nlohmann::json& soundJson, engine::component::AudioComponent* audioComponent) {
+	if (!soundJson.is_object() || !audioComponent) {
+		spdlog::error("{} : 无效的音效JSON或AudioComponent指针", std::string(mLogTag));
+		return;
+	}
+	// 遍历音效JSON对象中的每个键值对 (音效id : 音效路径)
+	for (const auto& sound : soundJson.items()) {
+		const std::string& soundId = sound.key();
+		const std::string& soundPath = sound.value();
+		if (soundId.empty() || soundPath.empty()) {
+			spdlog::warn("{} : 音效 '{}' 缺少必要信息.", std::string(mLogTag), soundId);
+			continue;
+		}
+		audioComponent->addSound(soundId, soundPath);
 	}
 }
 

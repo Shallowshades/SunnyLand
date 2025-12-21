@@ -18,6 +18,7 @@
 #include "../../engine/input/input_manager.h"
 #include "../../engine/render/camera.h"
 #include "../../engine/render/animation.h"
+#include "../../engine/audio/audio_player.h"
 #include <spdlog/spdlog.h>
 #include <SDL3/SDL_rect.h>
 
@@ -52,6 +53,11 @@ void GameScene::init() {
 		mContext.getInputManager().setShouldQuit(true);
 		return;
 	}
+
+	// 设置音量
+	mContext.getAudioPlayer().setMusicVolume(0.2f);
+	mContext.getAudioPlayer().setSoundVolume(0.5f);
+	mContext.getAudioPlayer().playMusic("assets/audio/hurry_up_and_run.ogg", true, 1000);
 
 	Scene::init();
 	spdlog::trace("{} : 初始化完成", std::string(mLogTag));
@@ -253,6 +259,8 @@ void GameScene::playerVSEnemyCollision(engine::object::GameObject* player, engin
 		auto velocity = player->getComponent<engine::component::PhysicsComponent>()->getVelocity();
 		velocity.y = -300.f;
 		player->getComponent<engine::component::PhysicsComponent>()->setVelocity(velocity);
+		// 播放音效
+		mContext.getAudioPlayer().playSound("assets/audio/punch2a.mp3");
 	}
 	else {
 		spdlog::info("{} : 敌人 {} 对玩家 {} 造成伤害", std::string(mLogTag), enemy->getName(), player->getName());
@@ -270,6 +278,8 @@ void GameScene::playerVSItemCollision(engine::object::GameObject* player, engine
 	}
 	auto itemAABB = item->getComponent<engine::component::ColliderComponent>()->getWorldAABB();
 	createEffect(itemAABB.position + itemAABB.size / 2.f, item->getTag());
+	// 播放吃到道具音效
+	mContext.getAudioPlayer().playSound("assets/audio/poka01.mp3");
 }
 
 void GameScene::createEffect(const glm::vec2& centerPosition, const std::string& tag) {

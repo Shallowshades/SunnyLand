@@ -4,15 +4,17 @@
 #include "../render/camera.h"
 #include "../resource/resource_manager.h"
 #include "../physics/physics_engine.h"
+#include "../audio/audio_player.h"
 #include <spdlog/spdlog.h>
 
 namespace engine::core {
-engine::core::Context::Context(engine::input::InputManager& inputManager, engine::render::Renderer& renderer, engine::render::Camera& camera, engine::resource::ResourceManager& resourceManager, engine::physics::PhysicsEngine& physicsEngine)
+engine::core::Context::Context(engine::input::InputManager& inputManager, engine::render::Renderer& renderer, engine::render::Camera& camera, engine::resource::ResourceManager& resourceManager, engine::physics::PhysicsEngine& physicsEngine, engine::audio::AudioPlayer& audioPlayer)
 	: mInputManager(inputManager)
 	, mRenderer(renderer)
 	, mCamera(camera)
 	, mResourceManager(resourceManager)
 	, mPhysicsEngine(physicsEngine)
+	, mAudioPlayer(audioPlayer)
 {
 	spdlog::trace("上下文创建并初始化, 包含输入管理器,渲染器,相机和资源管理器.");
 }
@@ -35,5 +37,9 @@ engine::resource::ResourceManager& Context::getResourceManager() const {
 
 engine::physics::PhysicsEngine& Context::getPhysicsEngine() const {
 	return mPhysicsEngine;
+}
+
+engine::audio::AudioPlayer& Context::getAudioPlayer() const {
+	return mAudioPlayer;
 }
 }

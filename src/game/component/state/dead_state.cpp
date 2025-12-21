@@ -4,6 +4,7 @@
 #include "../../../engine/component/animation_component.h"
 #include "../../../engine/component/physics_component.h"
 #include "../../../engine/component/collider_component.h"
+#include "../../../engine/component/audio_component.h"
 
 namespace game::component::state {
 DeadState::DeadState(PlayerComponent* playerComponent) 
@@ -24,6 +25,10 @@ void DeadState::enter() {
 	auto colliderComponent = mPlayerComponent->getOwner()->getComponent<engine::component::ColliderComponent>();
 	if (colliderComponent) {
 		colliderComponent->setActive(false);
+	}
+
+	if (auto* audioComponent = mPlayerComponent->getAudioComponent(); audioComponent) {
+		audioComponent->playSound("dead");
 	}
 }
 
