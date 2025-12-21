@@ -110,4 +110,4 @@ private:
 };
 } // game::component
 
-#endif PLAYER_COMPONENT_H
+#endif // PLAYER_COMPONENT_H
