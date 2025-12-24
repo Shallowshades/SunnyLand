@@ -88,7 +88,7 @@ void SceneManager::processPendingActions() {
 		popScene();
 		break;
 	case PendingAction::Replace:
-		pushScene(std::move(mPendingScene));
+		replaceScene(std::move(mPendingScene));
 		break;
 	default:
 		break;

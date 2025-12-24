@@ -15,6 +15,7 @@
 #include "../../engine/component/health_component.h"
 #include "../../engine/physics/physics_engine.h"
 #include "../../engine/scene/level_loader.h"
+#include "../../engine/scene/scene_manager.h"
 #include "../../engine/input/input_manager.h"
 #include "../../engine/render/camera.h"
 #include "../../engine/render/animation.h"
@@ -85,7 +86,8 @@ bool GameScene::initLevel() {
 	// 加载关卡(LevelLoader加载后即可销毁)
 	spdlog::info("{} 加载关卡", std::string(mLogTag));
 	engine::scene::LevelLoader levelLoader;
-	if (!levelLoader.loadLevel("assets/maps/level1.tmj", *this)) {
+	auto levelPath = levelNameToPath(mSceneName);
+	if (!levelLoader.loadLevel(levelPath, *this)) {
 		spdlog::error("{} : 关卡加载失败", std::string(mLogTag));
 		return false;
 	}
@@ -212,6 +214,13 @@ void GameScene::handleObjectCollisions() {
 			obj2->getComponent<game::component::PlayerComponent>()->takeDamage(1);
 			spdlog::debug("{} : 玩家 {} 受到了 HAZARD 对象伤害", std::string(mLogTag), obj2->getName());
 		}
+
+		// 处理玩家与关底触发器碰撞
+		else if (obj1->getName() == "player" && obj2->getTag() == "next_level") {
+			toNextLevel(obj2);
+		} else if (obj2->getName() == "player" && obj1->getTag() == "next_level") {
+			toNextLevel(obj1);
+		}
 	}
 }
 
@@ -280,6 +289,16 @@ void GameScene::playerVSItemCollision(engine::object::GameObject* player, engine
 	createEffect(itemAABB.position + itemAABB.size / 2.f, item->getTag());
 	// 播放吃到道具音效
 	mContext.getAudioPlayer().playSound("assets/audio/poka01.mp3");
+}
+
+void GameScene::toNextLevel(engine::object::GameObject* trigger) {
+	auto sceneName = trigger->getName();
+	auto nextScene = std::make_unique<game::scene::GameScene>(sceneName, mContext, mSceneManager);
+	mSceneManager.requestReplaceScene(std::move(nextScene));
+}
+
+std::string GameScene::levelNameToPath(const std::string& levelName) const {
+	return "assets/maps/" + levelName + ".tmj";
 }
 
 void GameScene::createEffect(const glm::vec2& centerPosition, const std::string& tag) {

@@ -53,6 +53,10 @@ private:
 	void playerVSEnemyCollision(engine::object::GameObject* player, engine::object::GameObject* enemy);
 	///< @brief 处理玩家与物品碰撞处理
 	void playerVSItemCollision(engine::object::GameObject* player, engine::object::GameObject* item);
+	///< @brief 进入下一个关卡
+	void toNextLevel(engine::object::GameObject* trigger);
+	///< @brief 根据关卡名称获取对应的地图文件
+	std::string levelNameToPath(const std::string& levelName) const;
 
 	/**
 	 * @brief 创建一个特效对象(一次性).

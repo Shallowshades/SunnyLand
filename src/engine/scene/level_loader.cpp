@@ -9,7 +9,6 @@
 #include "../component/health_component.h"
 #include "../component/audio_component.h"
 #include "../object/game_object.h"
-#include "../object/game_object.h"
 #include "../scene/scene.h"
 #include "../core/context.h"
 #include "../resource/resource_manager.h"
@@ -161,8 +160,42 @@ void LevelLoader::loadObjectLayer(const nlohmann::json& layerJson, Scene& scene)
 	for (const auto& object : objects) {
 		// 获取对象id
 		auto gid = object.value("gid", 0);
+		// gid为0,代表不存在,则代表自己绘制的形状(碰撞盒,触发器等)
 		if (gid == 0) {
-			// TODO: gid为0,代表不存在,则代表自己绘制的形状(碰撞盒,触发器等)
+			// 非矩形对象会有额外标识
+			if (object.value("point", false)) {
+				continue;	// TODO: 点对象的处理方式
+			} else if (object.value("ellipse", false)) {
+				continue;	// TODO: 椭圆对象的处理方式
+			} else if (object.value("polygon", false)) {
+				continue;	// TODO: 多边形对象的处理方式
+			}
+			// 没有这些标识则默认是矩形对象
+			else {
+				// 创建游戏对象并添加变换组件
+				const std::string& objectName = object.value("name", "Unnamed");
+				auto gameObject = std::make_unique<engine::object::GameObject>(objectName);
+				// 获取变换组件相关信息
+				auto position = glm::vec2(object.value("x", 0.f), object.value("y", 0.f));
+				auto dstSize = glm::vec2(object.value("width", 0.f), object.value("height", 0.f));
+				auto rotation = object.value("rotation", 0.f);
+				// 添加变换组件, 缩放为设定为1.0f
+				gameObject->addComponent<engine::component::TransformComponent>(position, glm::vec2(1.f), rotation);
+				// 添加碰撞组件和物理组件
+				// 碰撞盒大小与dstSize相同
+				auto collider = std::make_unique<engine::physics::AABBCollider>(dstSize);
+				auto* cc = gameObject->addComponent<engine::component::ColliderComponent>(std::move(collider));
+				// 自定义形状通常是trigger类型, 除非显示指定 (因此默认为真)
+				cc->setTrigger(object.value("trigger", true));
+				gameObject->addComponent<engine::component::PhysicsComponent>(&scene.getContext().getPhysicsEngine(), false);
+				// 获取标签信息并设置
+				if (auto tag = getTileProperty<std::string>(object, "tag"); tag) {
+					gameObject->setTag(tag.value());
+				}
+				// 添加到场景
+				scene.addGameObject(std::move(gameObject));
+				spdlog::info("{} : 加载对象: '{}' 完成 (类型: 自定义形状)", std::string(mLogTag), objectName);
+			}
 		}
 		else {
 			// gid 存在, 则按照图片解析流程
