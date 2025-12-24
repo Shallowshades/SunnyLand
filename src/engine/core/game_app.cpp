@@ -60,7 +60,7 @@ bool engine::core::GameApp::init() {
 	if (!initSceneManager()) return false;
 
 	// 创建第一个场景并压入栈
-	auto scene = std::make_unique<game::scene::GameScene>("level1", *mContext, *mSceneManager);
+	auto scene = std::make_unique<game::scene::GameScene>(*mContext, *mSceneManager);
 	mSceneManager->requestPushScene(std::move(scene));
 
 	mIsRunning = true;

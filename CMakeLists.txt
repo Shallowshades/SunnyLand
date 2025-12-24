@@ -77,6 +77,7 @@ set(SOURCES
     src/game/component/ai/patrol_behavior.cpp
     src/game/component/ai/updown_behavior.cpp
     src/game/component/ai/jump_behavior.cpp
+    src/game/data/session_data.cpp
 )
 
 # 根据平台向"通用源文件"追加平台专属的文件

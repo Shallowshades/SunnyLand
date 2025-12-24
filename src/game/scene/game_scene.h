@@ -16,6 +16,7 @@
 #include <glm/vec2.hpp>
 
 namespace engine::object { class GameObject; }
+namespace game::data { class SessionData; }
 
 namespace game::scene {
 
@@ -31,7 +32,7 @@ public:
 	 * @param context 上下文引用
 	 * @param sceneManager 场景管理器引用
 	 */
-	GameScene(const std::string& name, engine::core::Context& context, engine::scene::SceneManager& sceneManager);
+	GameScene(engine::core::Context& context, engine::scene::SceneManager& sceneManager, std::shared_ptr<game::data::SessionData> data = nullptr);
 
 	// 重写核心方法
 	void init() override;											///< @brief 初始化
@@ -49,6 +50,8 @@ private:
 	void handleObjectCollisions();
 	///< @brief 处理瓦片触发事件(从物理引擎获取信息).
 	void handleTileTriggers();
+	///< @brief 处理玩家受伤 (更新得分, UI)
+	void handlePlayerDamage(int damage);
 	///< @brief 处理玩家与敌人碰撞处理
 	void playerVSEnemyCollision(engine::object::GameObject* player, engine::object::GameObject* enemy);
 	///< @brief 处理玩家与物品碰撞处理
@@ -65,10 +68,14 @@ private:
 	 * @param tag 特效标签(决定特效类型, 例如"enemy", "item")
 	 */
 	void createEffect(const glm::vec2& centerPosition, const std::string& tag);
+
+	// 测试函数
+	void testSaveAndLoad();
 private:
 	constexpr static std::string_view mLogTag = "GameScene";		///< @brief 日志标识
 
 	engine::object::GameObject* mPlayer = nullptr;					///< @brief 玩家对象指针
+	std::shared_ptr<game::data::SessionData> mGameSessionData;		///< @brief 场景间共享数据, 因此使用shared_ptr
 };
 } // namespace game::scene
 

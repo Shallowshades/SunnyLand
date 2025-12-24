@@ -20,13 +20,19 @@
 #include "../../engine/render/camera.h"
 #include "../../engine/render/animation.h"
 #include "../../engine/audio/audio_player.h"
+#include "../data/session_data.h"
 #include <spdlog/spdlog.h>
 #include <SDL3/SDL_rect.h>
 
 namespace game::scene {
-game::scene::GameScene::GameScene(const std::string& name, engine::core::Context& context, engine::scene::SceneManager& sceneManager) 
-	: Scene(name, context, sceneManager)
+game::scene::GameScene::GameScene(engine::core::Context& context, engine::scene::SceneManager& sceneManager, std::shared_ptr<game::data::SessionData> data)
+	: Scene("GameScene", context, sceneManager)
+	, mGameSessionData(std::move(data))
 {
+	if (!mGameSessionData) {
+		mGameSessionData = std::make_unique<game::data::SessionData>();
+		spdlog::info("{} : 未提供 SessionData, 使用默认值", std::string(mLogTag));
+	}
 	spdlog::trace("{} 构造完成", std::string(mLogTag));
 }
 
@@ -76,6 +82,7 @@ void GameScene::render(){
 
 void GameScene::handleInput(){
 	Scene::handleInput();
+	testSaveAndLoad();
 }
 
 void GameScene::clean(){
@@ -86,7 +93,7 @@ bool GameScene::initLevel() {
 	// 加载关卡(LevelLoader加载后即可销毁)
 	spdlog::info("{} 加载关卡", std::string(mLogTag));
 	engine::scene::LevelLoader levelLoader;
-	auto levelPath = levelNameToPath(mSceneName);
+	auto levelPath = mGameSessionData->getMapPath();
 	if (!levelLoader.loadLevel(levelPath, *this)) {
 		spdlog::error("{} : 关卡加载失败", std::string(mLogTag));
 		return false;
@@ -232,12 +239,27 @@ void GameScene::handleTileTriggers() {
 		if (tileType == engine::component::TileType::HAZARD) {
 			// 碰撞危险瓦片, 受伤
 			if (obj->getName() == "player") {
-				obj->getComponent<game::component::PlayerComponent>()->takeDamage(1);
+				handlePlayerDamage(1);
 				spdlog::debug("{} : 玩家 {} 受到了 HAZARD 瓦片伤害", std::string(mLogTag), obj->getName());
 			}
 			// TODO: 其他对象类型的处理, 目前让敌人无视瓦片伤害
 		}
 	}
+}
+
+void GameScene::handlePlayerDamage(int damage) {
+	auto playerComponent = mPlayer->getComponent<game::component::PlayerComponent>();
+	if (!playerComponent->takeDamage(1)) {
+		return;
+	}
+
+	if (playerComponent->getIsDead()) {
+		spdlog::info("{} : 玩家 {} 死亡", std::string(mLogTag), mPlayer->getName());
+		// TODO: 可能的死亡逻辑处理
+	}
+
+	// 更新游戏数据
+	mGameSessionData->setCurrentHealth(playerComponent->getHealthComponent()->getCurrentHealth());
 }
 
 void GameScene::playerVSEnemyCollision(engine::object::GameObject* player, engine::object::GameObject* enemy) {
@@ -270,11 +292,12 @@ void GameScene::playerVSEnemyCollision(engine::object::GameObject* player, engin
 		player->getComponent<engine::component::PhysicsComponent>()->setVelocity(velocity);
 		// 播放音效
 		mContext.getAudioPlayer().playSound("assets/audio/punch2a.mp3");
+		// 加分
+		mGameSessionData->addScore(10);
 	}
 	else {
 		spdlog::info("{} : 敌人 {} 对玩家 {} 造成伤害", std::string(mLogTag), enemy->getName(), player->getName());
-		player->getComponent<game::component::PlayerComponent>()->takeDamage(1);
-		// TODO: 其他受伤逻辑
+		handlePlayerDamage(1);
 	}
 }
 
@@ -283,7 +306,7 @@ void GameScene::playerVSItemCollision(engine::object::GameObject* player, engine
 		player->getComponent<engine::component::HealthComponent>()->heal(1);
 	}
 	else if (item->getName() == "gem") {
-		// TODO: 加分
+		mGameSessionData->addScore(5);
 	}
 	auto itemAABB = item->getComponent<engine::component::ColliderComponent>()->getWorldAABB();
 	createEffect(itemAABB.position + itemAABB.size / 2.f, item->getTag());
@@ -293,7 +316,9 @@ void GameScene::playerVSItemCollision(engine::object::GameObject* player, engine
 
 void GameScene::toNextLevel(engine::object::GameObject* trigger) {
 	auto sceneName = trigger->getName();
-	auto nextScene = std::make_unique<game::scene::GameScene>(sceneName, mContext, mSceneManager);
+	auto mapPath = levelNameToPath(sceneName);
+	mGameSessionData->setNextLevel(mapPath);
+	auto nextScene = std::make_unique<game::scene::GameScene>(mContext, mSceneManager, mGameSessionData);
 	mSceneManager.requestReplaceScene(std::move(nextScene));
 }
 
@@ -326,5 +351,18 @@ void GameScene::createEffect(const glm::vec2& centerPosition, const std::string&
 	ac->playAnimation("effect");
 	safeAddGameObject(std::move(effectObject));
 	spdlog::debug("{} : 创建特效: {}", std::string(mLogTag), tag);
+}
+
+void GameScene::testSaveAndLoad() {
+	auto inputManager = mContext.getInputManager();
+	if (inputManager.isActionPressed("Attack")) {
+		mGameSessionData->saveToFile("assets/save.json");
+	}
+
+	if (inputManager.isActionPressed("Pause")) {
+		mGameSessionData->loadFromFile("assets/save.json");
+		spdlog::info("{} : 当前生命值: {}", std::string(mLogTag), mGameSessionData->getCurrentHealth());
+		spdlog::info("{} : 当前得分: {}", std::string(mLogTag), mGameSessionData->getCurrentScore());
+	}
 }
 } // namespace game::scene
