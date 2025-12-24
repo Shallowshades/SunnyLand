@@ -18,6 +18,7 @@
 #include "../../engine/scene/scene_manager.h"
 #include "../../engine/input/input_manager.h"
 #include "../../engine/render/camera.h"
+#include "../../engine/render/text_renderer.h"
 #include "../../engine/render/animation.h"
 #include "../../engine/audio/audio_player.h"
 #include "../data/session_data.h"
@@ -78,11 +79,11 @@ void GameScene::update(float deltaTime){
 
 void GameScene::render(){
 	Scene::render();
+	testTextRenderer();
 }
 
 void GameScene::handleInput(){
 	Scene::handleInput();
-	testSaveAndLoad();
 }
 
 void GameScene::clean(){
@@ -353,16 +354,11 @@ void GameScene::createEffect(const glm::vec2& centerPosition, const std::string&
 	spdlog::debug("{} : 创建特效: {}", std::string(mLogTag), tag);
 }
 
-void GameScene::testSaveAndLoad() {
-	auto inputManager = mContext.getInputManager();
-	if (inputManager.isActionPressed("Attack")) {
-		mGameSessionData->saveToFile("assets/save.json");
-	}
-
-	if (inputManager.isActionPressed("Pause")) {
-		mGameSessionData->loadFromFile("assets/save.json");
-		spdlog::info("{} : 当前生命值: {}", std::string(mLogTag), mGameSessionData->getCurrentHealth());
-		spdlog::info("{} : 当前得分: {}", std::string(mLogTag), mGameSessionData->getCurrentScore());
-	}
+void GameScene::testTextRenderer() {
+	auto& textRenderer = mContext.getTextRenderer();
+	const auto& camera = mContext.getCamera();
+	// UI和地图各渲染一次，测试是否正常
+	textRenderer.drawUIText("UI Text", "assets/fonts/VonwaonBitmap-16px.ttf", 32, glm::vec2(100.0f), { 0, 1.0f, 0, 1.0f });
+	textRenderer.drawText(camera, "Map Text", "assets/fonts/VonwaonBitmap-16px.ttf", 32, glm::vec2(200.0f));
 }
 } // namespace game::scene

@@ -18,6 +18,7 @@ namespace engine::input {
 namespace engine::render {
 	class Renderer;
 	class Camera;
+	class TextRenderer;
 }
 
 namespace engine::resource {
@@ -51,6 +52,7 @@ public:
 	Context(engine::input::InputManager& inputManager,
 		engine::render::Renderer& renderer,
 		engine::render::Camera& camera,
+		engine::render::TextRenderer& textRenderer,
 		engine::resource::ResourceManager& resourceManager,
 		engine::physics::PhysicsEngine& physicsEngine,
 		engine::audio::AudioPlayer& audioPlayer);
@@ -64,6 +66,7 @@ public:
 	engine::input::InputManager& getInputManager() const;					///< @brief 获取输入管理器	
 	engine::render::Renderer& getRenderer() const;							///< @brief 获取渲染器
 	engine::render::Camera& getCamera() const;								///< @brief 获取相机
+	engine::render::TextRenderer& getTextRenderer() const;					///< @brief 获取文字渲染器
 	engine::resource::ResourceManager& getResourceManager() const;			///< @brief 获取资源管理器
 	engine::physics::PhysicsEngine& getPhysicsEngine() const;				///< @brief 获取物理引擎
 	engine::audio::AudioPlayer& getAudioPlayer() const;						///< @brief 获取音频播放器
@@ -72,6 +75,7 @@ private:
 	engine::input::InputManager& mInputManager;								///< @brief 输入管理器			
 	engine::render::Renderer& mRenderer;									///< @brief 渲染器
 	engine::render::Camera& mCamera;										///< @brief 相机
+	engine::render::TextRenderer& mTextRenderer;							///< @brief 文字渲染器
 	engine::resource::ResourceManager& mResourceManager;					///< @brief 资源管理器
 	engine::physics::PhysicsEngine& mPhysicsEngine;							///< @brief 物理引擎
 	engine::audio::AudioPlayer& mAudioPlayer;								///< @brief 音频播放器

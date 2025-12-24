@@ -16,6 +16,7 @@ class ResourceManager;
 namespace engine::render {
 class Renderer;
 class Camera;
+class TextRenderer;
 }
 
 namespace engine::input {
@@ -71,6 +72,7 @@ private:
 	[[nodiscard]] bool initResourceManager();
 	[[nodiscard]] bool initAudioPlayer();
 	[[nodiscard]] bool initRenderer();
+	[[nodiscard]] bool initTextRenderer();
 	[[nodiscard]] bool initCamera();
 	[[nodiscard]] bool initInputManager();
 	[[nodiscard]] bool initPhysicsEngine();
@@ -97,6 +99,7 @@ private:
 	std::unique_ptr<engine::resource::ResourceManager> mResourceManager;
 	std::unique_ptr<engine::render::Renderer> mRenderer;
 	std::unique_ptr<engine::render::Camera> mCamera;
+	std::unique_ptr<engine::render::TextRenderer> mTextRenderer;
 	std::unique_ptr<engine::input::InputManager> mInputManager;
 	std::unique_ptr<engine::core::Context> mContext;
 	std::unique_ptr<engine::scene::SceneManager> mSceneManager;

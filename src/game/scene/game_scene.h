@@ -70,7 +70,7 @@ private:
 	void createEffect(const glm::vec2& centerPosition, const std::string& tag);
 
 	// 测试函数
-	void testSaveAndLoad();
+	void testTextRenderer();
 private:
 	constexpr static std::string_view mLogTag = "GameScene";		///< @brief 日志标识
 

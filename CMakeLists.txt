@@ -59,6 +59,7 @@ set(SOURCES
     src/engine/render/renderer.cpp
     src/engine/render/sprite.cpp
     src/engine/render/animation.cpp
+    src/engine/render/text_renderer.cpp
     src/engine/scene/scene.cpp
     src/engine/scene/scene_manager.cpp
     src/engine/scene/level_loader.cpp

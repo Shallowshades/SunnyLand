@@ -9,6 +9,7 @@
 #include "../audio/audio_player.h"
 #include "../render/renderer.h"
 #include "../render/camera.h"
+#include "../render/text_renderer.h"
 #include "../input/input_manager.h"
 #include "../physics/physics_engine.h"
 #include "../scene/scene_manager.h"
@@ -54,6 +55,7 @@ bool engine::core::GameApp::init() {
 	if (!initAudioPlayer()) return false;
 	if (!initRenderer()) return false;
 	if (!initCamera()) return false;
+	if (!initTextRenderer()) return false;
 	if (!initInputManager()) return false;
 	if (!initPhysicsEngine()) return false;
 	if (!initContext()) return false;
@@ -203,6 +205,18 @@ bool engine::core::GameApp::initRenderer() {
 	return true;
 }
 
+bool engine::core::GameApp::initTextRenderer() {
+	try {
+		mTextRenderer = std::make_unique<engine::render::TextRenderer>(mSDLRenderer, mResourceManager.get());
+	}
+	catch (const std::exception& e) {
+		spdlog::error("初始化文字渲染引擎失败: {}", e.what());
+		return false;
+	}
+	spdlog::trace("文字渲染引擎初始化成功。");
+	return true;
+}
+
 bool engine::core::GameApp::initCamera() {
 	try {
 		mCamera = std::make_unique<engine::render::Camera>(glm::vec2(mConfig->mWindowWidth / 2, mConfig->mWindowHeight / 2));
@@ -241,7 +255,7 @@ bool engine::core::GameApp::initPhysicsEngine() {
 
 bool engine::core::GameApp::initContext() {
 	try {
-		mContext = std::make_unique<engine::core::Context>(*mInputManager, *mRenderer, *mCamera, *mResourceManager, *mPhysicsEngine, *mAudioPlayer);
+		mContext = std::make_unique<engine::core::Context>(*mInputManager, *mRenderer, *mCamera, *mTextRenderer, *mResourceManager, *mPhysicsEngine, *mAudioPlayer);
 	}
 	catch (const std::exception& e) {
 		spdlog::error("{} 初始化上下文失败: {}", std::string(mLogTag), e.what());
