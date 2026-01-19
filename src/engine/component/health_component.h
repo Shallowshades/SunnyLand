@@ -37,7 +37,7 @@ public:
 	HealthComponent& operator=(HealthComponent&&) = delete;								///< @brief 删除移动赋值构造
 
 	bool takeDamage(int damageAmount);													///< @brief 伤害游戏对象
-	void heal(int healAmount);															///< @brief 治疗游戏对象
+	int heal(int healAmount);															///< @brief 治疗游戏对象, 返回治疗后的生命值
 
 	bool isAlive() const;																///< @brief 检查游戏对象是否存活
 	bool isInvincible() const;															///< @brief 检查游戏对象是否无敌

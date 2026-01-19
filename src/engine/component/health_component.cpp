@@ -34,15 +34,16 @@ bool HealthComponent::takeDamage(int damageAmount) {
 	return true;
 }
 
-void HealthComponent::heal(int healAmount) {
+int HealthComponent::heal(int healAmount) {
 	// 治疗量错误或者已经死亡
 	if (healAmount <= 0 || !isAlive()) {
-		return;
+		return mCurrentHealth;
 	}
 
 	mCurrentHealth += healAmount;
 	mCurrentHealth = std::min(mMaxHealth, mCurrentHealth);
 	spdlog::debug("{} : 游戏对象 '{}' 治疗了 {} 点生命, 当前生命值: {}/{}", std::string(mLogTag), (mOwner ? mOwner->getName() : "unknown"), healAmount, mCurrentHealth, mMaxHealth);
+	return mCurrentHealth;
 }
 
 bool HealthComponent::isAlive() const {

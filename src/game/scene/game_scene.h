@@ -17,6 +17,10 @@
 
 namespace engine::object { class GameObject; }
 namespace game::data { class SessionData; }
+namespace engine::ui {
+	class UIPanel;
+	class UILabel;
+}
 
 namespace game::scene {
 
@@ -70,11 +74,20 @@ private:
 	 */
 	void createEffect(const glm::vec2& centerPosition, const std::string& tag);
 
+	// UI 相关函数
+	void createScoreUI();											///< @brief 创建得分UI
+	void createHealthUI();											///< @brief 创建生命值UI
+	void addScoreWithUI(int score);									///< @brief 增加得分, 同时更新UI
+	void healWithUI(int amount);									///< @brief 增加生命, 同时更新UI
+	void updateHealthWithUI();										///< @brief 更新生命值UI (只适用于最大生命值不变的情况)
+
 private:
 	constexpr static std::string_view mLogTag = "GameScene";		///< @brief 日志标识
 
 	engine::object::GameObject* mPlayer = nullptr;					///< @brief 玩家对象指针
 	std::shared_ptr<game::data::SessionData> mGameSessionData;		///< @brief 场景间共享数据, 因此使用shared_ptr
+	engine::ui::UILabel* mScoreLabel;								///< @brief 场景间共享数据, 因此使用shared_ptr
+	engine::ui::UIPanel* mHealthPanel;								///< @brief 场景间共享数据, 因此使用shared_ptr
 };
 } // namespace game::scene
 
