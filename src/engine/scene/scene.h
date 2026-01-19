@@ -15,11 +15,7 @@
 #include <string>
 
 namespace engine::core { class Context; }
-namespace engine::render {
-	class Renderer;
-	class Camera;
-}
-namespace engine::input { class InputManager; }
+namespace engine::ui { class UIManager; }
 namespace engine::object { class GameObject; }
 namespace engine::scene { class SceneManager; }
 
@@ -104,6 +100,7 @@ protected:
 	std::string mSceneName;																///< @brief 场景名称
 	engine::core::Context& mContext;													///< @brief 上下文引用
 	engine::scene::SceneManager& mSceneManager;											///< @brief 场景管理器引用
+	std::unique_ptr<engine::ui::UIManager> mUIManager;									///< @brief UI管理器(初始化时自动创建)
 	bool mIsInitialized;																///< @brief 场景是否已被初始化
 	std::vector<std::unique_ptr<engine::object::GameObject>> mGameObjects;				///< @brief 场景中的游戏对象
 	std::vector<std::unique_ptr<engine::object::GameObject>> mPendingAdditions;			///< @brief 待添加的游戏对象

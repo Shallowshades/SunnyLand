@@ -21,9 +21,11 @@
 #include "../../engine/render/text_renderer.h"
 #include "../../engine/render/animation.h"
 #include "../../engine/audio/audio_player.h"
+#include "../../engine/ui/ui_manager.h"
+#include "../../engine/ui/ui_panel.h"
+#include "../../engine/utils/math.h"
 #include "../data/session_data.h"
 #include <spdlog/spdlog.h>
-#include <SDL3/SDL_rect.h>
 
 namespace game::scene {
 game::scene::GameScene::GameScene(engine::core::Context& context, engine::scene::SceneManager& sceneManager, std::shared_ptr<game::data::SessionData> data)
@@ -62,6 +64,12 @@ void GameScene::init() {
 		return;
 	}
 
+	if (!initUI()) {
+		spdlog::error("{} : UI初始化失败.", std::string(mLogTag));
+		mContext.getInputManager().setShouldQuit(true);
+		return;
+	}
+
 	// 设置音量
 	mContext.getAudioPlayer().setMusicVolume(0.2f);
 	mContext.getAudioPlayer().setSoundVolume(0.5f);
@@ -79,7 +87,6 @@ void GameScene::update(float deltaTime){
 
 void GameScene::render(){
 	Scene::render();
-	testTextRenderer();
 }
 
 void GameScene::handleInput(){
@@ -188,6 +195,18 @@ bool GameScene::initEnemyAndItem() {
 		}
 	}
 	return success;
+}
+
+bool GameScene::initUI() {
+	if (!mUIManager->init(glm::vec2(640.f, 360.f))) {
+		return false;
+	}
+
+	// 创建一个透明的方形UIPanel
+	mUIManager->addElement(std::make_unique<engine::ui::UIPanel>(glm::vec2(100.f, 100.f), 
+		                                                         glm::vec2(200.f, 200.f), 
+		                                                         engine::utils::FColor{ 0.5f, 0.f, 0.f, 0.3f }));
+	return true;
 }
 
 void GameScene::handleObjectCollisions() {
@@ -352,13 +371,5 @@ void GameScene::createEffect(const glm::vec2& centerPosition, const std::string&
 	ac->playAnimation("effect");
 	safeAddGameObject(std::move(effectObject));
 	spdlog::debug("{} : 创建特效: {}", std::string(mLogTag), tag);
-}
-
-void GameScene::testTextRenderer() {
-	auto& textRenderer = mContext.getTextRenderer();
-	const auto& camera = mContext.getCamera();
-	// UI和地图各渲染一次，测试是否正常
-	textRenderer.drawUIText("UI Text", "assets/fonts/VonwaonBitmap-16px.ttf", 32, glm::vec2(100.0f), { 0, 1.0f, 0, 1.0f });
-	textRenderer.drawText(camera, "Map Text", "assets/fonts/VonwaonBitmap-16px.ttf", 32, glm::vec2(200.0f));
 }
 } // namespace game::scene

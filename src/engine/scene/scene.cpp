@@ -4,12 +4,17 @@
 #include "../core/context.h"
 #include "../physics/physics_engine.h"
 #include "../render/camera.h"
+#include "../ui/ui_manager.h"
 #include <algorithm>
 #include <spdlog/spdlog.h>
 
 namespace engine::scene {
 engine::scene::Scene::Scene(const std::string& name, engine::core::Context& context, engine::scene::SceneManager& sceneManager)
-	: mSceneName(std::move(name)), mContext(context), mSceneManager(sceneManager), mIsInitialized(false)
+	: mSceneName(std::move(name))
+	, mContext(context)
+	, mSceneManager(sceneManager)
+	, mUIManager(std::make_unique<engine::ui::UIManager>())
+	, mIsInitialized(false)
 {
 	spdlog::trace("{} : {} 构造完成", std::string(mLogTag), mSceneName);
 }
@@ -46,6 +51,9 @@ void Scene::update(float deltaTime) {
 		}
 	}
 
+	// 更新UI管理器
+	mUIManager->update(deltaTime, mContext);
+
 	processPendingAdditions();
 }
 
@@ -60,12 +68,18 @@ void Scene::render() {
 			obj->render(mContext);
 		}
 	}
+
+	mUIManager->render(mContext);
 }
 
 void Scene::handleInput() {
 	if (!mIsInitialized) {
 		return;
 	}
+
+	// 处理UI管理器的输入
+	// 如果输入事件被UI处理则返回, 不再处理游戏对象输入
+	if (mUIManager->handleInput(mContext)) return;
 
 	// 遍历所有游戏对象, 并删除需要移除的对象
 	for (auto iter = mGameObjects.begin(); iter != mGameObjects.end();) {

@@ -16,9 +16,11 @@
 #include <glm/glm.hpp>
 
 #include "sprite.h"
+#include "../utils/math.h"
 
 struct SDL_Renderer;
 struct SDL_FRect;
+struct SDL_FColor;
 
 namespace engine::resource {
 	class ResourceManager;
@@ -69,6 +71,14 @@ public:
 	 */
 	void drawUISprite(const Sprite& sprite, const glm::vec2& position, const std::optional<glm::vec2>& size = std::nullopt);
 	
+	/**
+	 * @brief 绘制填充矩形.
+	 * 
+	 * @param rect 矩形区域
+	 * @param color 填充颜色
+	 */
+	void drawUIFilledRect(const engine::utils::Rect& rect, const engine::utils::FColor& color);
+
 	void present();															///< @brief 更新屏幕, 包装SDL_RenderPresent函数
 	void clearScreen();														///< @brief 清屏, 包装SDL_RenderClear函数
 

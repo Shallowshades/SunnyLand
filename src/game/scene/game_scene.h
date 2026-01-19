@@ -45,6 +45,7 @@ private:
 	[[nodiscard]] bool initLevel();									///< @brief 初始化关卡
 	[[nodiscard]] bool initPlayer();								///< @brief 初始化玩家
 	[[nodiscard]] bool initEnemyAndItem();							///< @brief 初始化敌人和道具
+	[[nodiscard]] bool initUI();									///< @brief 初始化UI
 
 	///< @brief 处理游戏对象间的碰撞逻辑(从物理引擎获取信息).
 	void handleObjectCollisions();
@@ -69,8 +70,6 @@ private:
 	 */
 	void createEffect(const glm::vec2& centerPosition, const std::string& tag);
 
-	// 测试函数
-	void testTextRenderer();
 private:
 	constexpr static std::string_view mLogTag = "GameScene";		///< @brief 日志标识
 

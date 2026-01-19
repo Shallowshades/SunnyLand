@@ -16,11 +16,21 @@
 
 namespace engine::utils {
 /**
- * @brief .
+ * @brief 矩形.
  */
 struct Rect {
 	glm::vec2 position;
 	glm::vec2 size;
+};
+
+/**
+ * @brief 颜色.
+ */
+struct FColor {
+	float r;
+	float g;
+	float b;
+	float a;
 };
 } // engine::utils
 
