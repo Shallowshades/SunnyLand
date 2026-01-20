@@ -68,7 +68,7 @@ private:
 
 	void updateActionState(const std::string& actionName, bool isInputActive, bool isRepeatEvent);				///< @brief 辅助更新动作状态
 	SDL_Scancode scancodeFromString(const std::string& keyName);												///< @brief 将字符串键名转换为SDL_Scancode
-	Uint32 mouseButtonFromString(const std::string& buttonName);											///< @brief 将字符串按钮名字转换为SDL_Button
+	Uint32 mouseButtonFromString(const std::string& buttonName);												///< @brief 将字符串按钮名字转换为SDL_Button
 private:
 	static constexpr std::string_view mLogTag = "InputManager";
 
@@ -76,8 +76,8 @@ private:
 	std::unordered_map<std::string, std::vector<std::string>> mActionsToKeyNameMappings;						///< @brief 存储动作名称到按键名称列表的映射
 	std::unordered_map<std::variant<SDL_Scancode, Uint32>, std::vector<std::string>> mInputToActionsMappings;	///< @brief 从键盘(Scancode)到关联的动作名称列表
 	std::unordered_map<std::string, ActionState> mActionStates;													///< @brief 存储每个动作的当前状态
-	bool mShouldQuit = false;																				///< @brief 推出标志
-	glm::vec2 mMousePosition;																		///< @brief 鼠标位置(针对屏幕坐标)
+	bool mShouldQuit = false;																					///< @brief 推出标志
+	glm::vec2 mMousePosition;																					///< @brief 鼠标位置(针对屏幕坐标)
 };
 } // engine::input
 

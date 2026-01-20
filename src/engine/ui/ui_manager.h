@@ -38,7 +38,7 @@ public:
 	UIManager();											///< @brief 构造函数将创建默认的根节点
 	~UIManager();
 
-	[[nodiscard]] bool init(const glm::vec2& window_size);  ///< @brief 初始化UI管理器，设置根元素的大小。
+	[[nodiscard]] bool init(const glm::vec2& windowSize);  ///< @brief 初始化UI管理器，设置根元素的大小。
 	void addElement(std::unique_ptr<UIElement> element);    ///< @brief 添加一个UI元素到根节点的child_容器中。
 	UIPanel* getRootElement() const;                        ///< @brief 获取根UIPanel元素的指针。
 	void clearElements();                                   ///< @brief 清除所有UI元素，通常用于重置UI状态。

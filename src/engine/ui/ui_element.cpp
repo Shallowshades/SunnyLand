@@ -27,13 +27,13 @@ bool UIElement::handleInput(engine::core::Context& context) {
 	return false;
 }
 
-void UIElement::update(float delta_time, engine::core::Context& context) {
+void UIElement::update(float deltaTime, engine::core::Context& context) {
 	if (!mVisible) return;
 
 	// 遍历所有子节点，并删除标记了移除的元素
 	for (auto it = mChildren.begin(); it != mChildren.end();) {
 		if (*it && !(*it)->isNeedRemove()) {
-			(*it)->update(delta_time, context);
+			(*it)->update(deltaTime, context);
 			++it;
 		}
 		else {
@@ -89,8 +89,8 @@ glm::vec2 UIElement::getScreenPosition() const {
 }
 
 engine::utils::Rect UIElement::getBounds() const {
-	auto abs_pos = getScreenPosition();
-	return engine::utils::Rect(abs_pos, mSize);
+	auto absPosition = getScreenPosition();
+	return engine::utils::Rect(absPosition, mSize);
 }
 
 bool UIElement::isPointInside(const glm::vec2& point) const {

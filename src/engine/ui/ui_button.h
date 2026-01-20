@@ -28,9 +28,9 @@ class UIButton final : public UIInteractive {
 public:
     /**
         * @brief 构造函数
-        * @param normal_sprite_id 正常状态的精灵ID
-        * @param hover_sprite_id 悬停状态的精灵ID
-        * @param pressed_sprite_id 按下状态的精灵ID
+        * @param normalSpriteId 正常状态的精灵ID
+        * @param hoverSpriteId 悬停状态的精灵ID
+        * @param pressedSpriteId 按下状态的精灵ID
         * @param position 位置
         * @param size 大小
         * @param callback 回调函数

@@ -12,8 +12,8 @@ UIManager::UIManager() {
 	spdlog::trace("UI管理器构造完成。");
 }
 
-bool UIManager::init(const glm::vec2& window_size) {
-	mRootElement->setSize(window_size);
+bool UIManager::init(const glm::vec2& windowSize) {
+	mRootElement->setSize(windowSize);
 	spdlog::trace("UI管理器已初始化根面板。");
 	return true;
 }
@@ -42,10 +42,10 @@ bool UIManager::handleInput(engine::core::Context& context) {
 	return false;
 }
 
-void UIManager::update(float delta_time, engine::core::Context& context) {
+void UIManager::update(float deltaTime, engine::core::Context& context) {
 	if (mRootElement && mRootElement->isVisible()) {
 		// 从根元素开始向下更新
-		mRootElement->update(delta_time, context);
+		mRootElement->update(deltaTime, context);
 	}
 }
 

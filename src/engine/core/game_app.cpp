@@ -13,7 +13,7 @@
 #include "../input/input_manager.h"
 #include "../physics/physics_engine.h"
 #include "../scene/scene_manager.h"
-#include "../../game/scene/game_scene.h"
+#include "../../game/scene/title_scene.h"
 
 engine::core::GameApp::GameApp() = default;
 
@@ -62,7 +62,7 @@ bool engine::core::GameApp::init() {
 	if (!initSceneManager()) return false;
 
 	// 创建第一个场景并压入栈
-	auto scene = std::make_unique<game::scene::GameScene>(*mContext, *mSceneManager);
+	auto scene = std::make_unique<game::scene::TitleScene>(*mContext, *mSceneManager);
 	mSceneManager->requestPushScene(std::move(scene));
 
 	mIsRunning = true;

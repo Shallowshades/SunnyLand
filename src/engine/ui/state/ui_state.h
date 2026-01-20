@@ -34,8 +34,8 @@ class UIState {
     friend class engine::ui::UIInteractive;
 public:
     /**
-        * @brief 构造函数传入父节点指针
-        */
+	* @brief 构造函数传入父节点指针
+	*/
     UIState(engine::ui::UIInteractive* owner);
     virtual ~UIState() = default;
 
