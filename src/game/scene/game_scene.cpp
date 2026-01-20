@@ -25,6 +25,7 @@
 #include "../../engine/ui/ui_panel.h"
 #include "../../engine/ui/ui_label.h"
 #include "../../engine/ui/ui_image.h"
+#include "../../engine/ui/ui_button.h"
 #include "../../engine/utils/math.h"
 #include "../data/session_data.h"
 #include <spdlog/spdlog.h>
@@ -206,6 +207,7 @@ bool GameScene::initUI() {
 
 	createScoreUI();
 	createHealthUI();
+	createTestButton();
 
 	return true;
 }
@@ -452,5 +454,20 @@ void GameScene::updateHealthWithUI() {
 	for (auto i = maxHealth; i < maxHealth * 2; ++i) {
 		mHealthPanel->getChildren()[i]->setVisible(i - maxHealth < currentHealth);
 	}
+}
+
+void GameScene::createTestButton() {
+	auto testButton = std::make_unique<engine::ui::UIButton>(mContext,
+		"assets/textures/UI/buttons/Start1.png",
+		"assets/textures/UI/buttons/Start2.png",
+		"assets/textures/UI/buttons/Start3.png",
+		glm::vec2(100.0f, 100.0f),
+		glm::vec2(0.0f),      // 采用图片大小
+		[this]() { this->testButtonClicked(); });
+	mUIManager->addElement(std::move(testButton));
+}
+
+void GameScene::testButtonClicked() {
+	spdlog::info("测试按钮被点击");
 }
 } // namespace game::scene
