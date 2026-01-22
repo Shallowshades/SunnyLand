@@ -1,10 +1,12 @@
 #include "game_scene.h"
+#include "menu_scene.h"
 #include "../component/player_component.h"
 #include "../component/ai_component.h"
 #include "../component/ai/patrol_behavior.h"
 #include "../component/ai/updown_behavior.h"
 #include "../component/ai/jump_behavior.h"
 #include "../../engine/core/context.h"
+#include "../../engine/core/game_state.h"
 #include "../../engine/object/game_object.h"
 #include "../../engine/component/transform_component.h"
 #include "../../engine/component/sprite_component.h"
@@ -48,6 +50,7 @@ void GameScene::init() {
 		return;
 	}
 	spdlog::trace("{} : 开始初始化", std::string(mLogTag));
+	mContext.getGameState().setState(engine::core::State::Playing);
 
 	if (!initLevel()) {
 		spdlog::error("{} : 关卡初始化失败, 无法继续.", std::string(mLogTag));
@@ -92,6 +95,11 @@ void GameScene::render(){
 
 void GameScene::handleInput(){
 	Scene::handleInput();
+	// 检查暂停动作
+	if (mContext.getInputManager().isActionPressed("Pause")) {
+		spdlog::debug("在GameScene中检测到暂停动作，正在推送MenuScene。");
+		mSceneManager.requestPushScene(std::make_unique<MenuScene>(mContext, mSceneManager, mGameSessionData));
+	}
 }
 
 void GameScene::clean(){
@@ -200,7 +208,7 @@ bool GameScene::initEnemyAndItem() {
 }
 
 bool GameScene::initUI() {
-	if (!mUIManager->init(glm::vec2(640.f, 360.f))) {
+	if (!mUIManager->init(mContext.getGameState().getLogicalSize())) {
 		return false;
 	}
 
@@ -326,13 +334,12 @@ void GameScene::playerVSEnemyCollision(engine::object::GameObject* player, engin
 
 void GameScene::playerVSItemCollision(engine::object::GameObject* player, engine::object::GameObject* item) {
 	if (item->getName() == "fruit") {
-		player->getComponent<engine::component::HealthComponent>()->heal(1);
 		healWithUI(1);
 	}
 	else if (item->getName() == "gem") {
-		mGameSessionData->addScore(5);
 		addScoreWithUI(5);
 	}
+	item->setNeedRemove(true);
 	auto itemAABB = item->getComponent<engine::component::ColliderComponent>()->getWorldAABB();
 	createEffect(itemAABB.position + itemAABB.size / 2.f, item->getTag());
 	// 播放吃到道具音效
@@ -361,7 +368,15 @@ void GameScene::createEffect(const glm::vec2& centerPosition, const std::string&
 	if (tag == "enemy") {
 		effectObject->addComponent<engine::component::SpriteComponent>("assets/textures/FX/enemy-deadth.png", mContext.getResourceManager(), engine::utils::Alignment::CENTER);
 		for (auto i = 0; i < 6; ++i) {
-			animation->addFrame(SDL_FRect { static_cast<float>(i * 40), 0.f, 40.f, 40.f }, 0.1f);
+			animation->addFrame(SDL_FRect { static_cast<float>(i * 40), 0.f, 40.f, 41.f }, 0.1f);
+		}
+	}
+	else if (tag == "item") {
+		effectObject->addComponent<engine::component::SpriteComponent>("assets/textures/FX/item-feedback.png",
+			mContext.getResourceManager(),
+			engine::utils::Alignment::CENTER);
+		for (auto i = 0; i < 4; ++i) {
+			animation->addFrame({ static_cast<float>(i * 32), 0.0f, 32.0f, 32.0f }, 0.1f);
 		}
 	}
 	else {

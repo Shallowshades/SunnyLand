@@ -5,6 +5,7 @@
 #include "time.h"
 #include "config.h"
 #include "context.h"
+#include "game_state.h"
 #include "../resource/resource_manager.h"
 #include "../audio/audio_player.h"
 #include "../render/renderer.h"
@@ -58,6 +59,7 @@ bool engine::core::GameApp::init() {
 	if (!initTextRenderer()) return false;
 	if (!initInputManager()) return false;
 	if (!initPhysicsEngine()) return false;
+	if (!initGameState()) return false;
 	if (!initContext()) return false;
 	if (!initSceneManager()) return false;
 
@@ -256,9 +258,19 @@ bool engine::core::GameApp::initPhysicsEngine() {
 	return true;
 }
 
+bool engine::core::GameApp::initGameState() {
+	try {
+		mGameState = std::make_unique<engine::core::GameState>(mWindow, mSDLRenderer);
+	}
+	catch (const std::exception& e) {
+		spdlog::error("初始化游戏状态失败: {}", e.what());
+		return false;
+	}
+}
+
 bool engine::core::GameApp::initContext() {
 	try {
-		mContext = std::make_unique<engine::core::Context>(*mInputManager, *mRenderer, *mCamera, *mTextRenderer, *mResourceManager, *mPhysicsEngine, *mAudioPlayer);
+		mContext = std::make_unique<engine::core::Context>(*mInputManager, *mRenderer, *mCamera, *mTextRenderer, *mResourceManager, *mPhysicsEngine, *mAudioPlayer, *mGameState);
 	}
 	catch (const std::exception& e) {
 		spdlog::error("{} 初始化上下文失败: {}", std::string(mLogTag), e.what());

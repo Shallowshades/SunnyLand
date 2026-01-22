@@ -2,6 +2,7 @@
 #include "scene_manager.h"
 #include "../object/game_object.h"
 #include "../core/context.h"
+#include "../core/game_state.h"
 #include "../physics/physics_engine.h"
 #include "../render/camera.h"
 #include "../ui/ui_manager.h"
@@ -30,10 +31,13 @@ void Scene::update(float deltaTime) {
 		return;
 	}
 
-	// 先更新物理引擎
-	mContext.getPhysicsEngine().update(deltaTime);
-	// 更新相机
-	mContext.getCamera().update(deltaTime);
+	// 只有在游戏中才更新物理引擎和相机
+	if (mContext.getGameState().isPlaying()) {
+		// 先更新物理引擎
+		mContext.getPhysicsEngine().update(deltaTime);
+		// 更新相机
+		mContext.getCamera().update(deltaTime);
+	}
 
 	// 更新所有游戏对象, 并删除需要移除的对象
 	for (auto iter = mGameObjects.begin(); iter != mGameObjects.end();) {

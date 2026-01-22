@@ -36,6 +36,7 @@ set(SOURCES
     src/engine/core/time.cpp
     src/engine/core/config.cpp
     src/engine/core/context.cpp
+    src/engine/core/game_state.cpp
     src/engine/component/component.cpp
     src/engine/component/sprite_component.cpp
     src/engine/component/transform_component.cpp
@@ -77,6 +78,7 @@ set(SOURCES
     src/game/scene/game_scene.cpp
     src/game/scene/title_scene.cpp
     src/game/scene/helps_scene.cpp
+    src/game/scene/menu_scene.cpp
     src/game/component/player_component.cpp
     src/game/component/ai_component.cpp
     src/game/component/state/player_state.cpp

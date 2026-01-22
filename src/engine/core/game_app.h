@@ -39,6 +39,7 @@ namespace engine::core {
 class Time;
 class Config;
 class Context;
+class GameState;
 /**
  * @brief 主游戏应用程序类, 初始化SDL, 管理游戏循环
  */
@@ -76,6 +77,7 @@ private:
 	[[nodiscard]] bool initCamera();
 	[[nodiscard]] bool initInputManager();
 	[[nodiscard]] bool initPhysicsEngine();
+	[[nodiscard]] bool initGameState();
 	[[nodiscard]] bool initContext();
 	[[nodiscard]] bool initSceneManager();
 
@@ -105,6 +107,7 @@ private:
 	std::unique_ptr<engine::scene::SceneManager> mSceneManager;
 	std::unique_ptr<engine::physics::PhysicsEngine> mPhysicsEngine;
 	std::unique_ptr<engine::audio::AudioPlayer> mAudioPlayer;
+	std::unique_ptr<engine::core::GameState> mGameState;
 };
 
 }

@@ -34,6 +34,7 @@ namespace engine::audio {
 }
 
 namespace engine::core {
+	class GameState;
 /**
  * brief 持有对核心引擎模块引用的上下文对象.
  * 
@@ -55,7 +56,8 @@ public:
 		engine::render::TextRenderer& textRenderer,
 		engine::resource::ResourceManager& resourceManager,
 		engine::physics::PhysicsEngine& physicsEngine,
-		engine::audio::AudioPlayer& audioPlayer);
+		engine::audio::AudioPlayer& audioPlayer,
+		engine::core::GameState& gameState);
 
 	// 禁用拷贝和移动语义
 	Context(const Context&) = delete;										///< @brief 删除拷贝构造
@@ -70,6 +72,7 @@ public:
 	engine::resource::ResourceManager& getResourceManager() const;			///< @brief 获取资源管理器
 	engine::physics::PhysicsEngine& getPhysicsEngine() const;				///< @brief 获取物理引擎
 	engine::audio::AudioPlayer& getAudioPlayer() const;						///< @brief 获取音频播放器
+	engine::core::GameState& getGameState() const;							///< @brief 获取游戏状态
 private:
 	// 引用, 确保每个模块都有效, 使用时不需要检查指针是否为空
 	engine::input::InputManager& mInputManager;								///< @brief 输入管理器			
@@ -79,6 +82,7 @@ private:
 	engine::resource::ResourceManager& mResourceManager;					///< @brief 资源管理器
 	engine::physics::PhysicsEngine& mPhysicsEngine;							///< @brief 物理引擎
 	engine::audio::AudioPlayer& mAudioPlayer;								///< @brief 音频播放器
+	engine::core::GameState& mGameState;										///< @brief 游戏状态
 };
 }
 

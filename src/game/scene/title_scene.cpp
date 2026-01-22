@@ -1,5 +1,6 @@
 #include "title_scene.h"
 #include "../../engine/core/context.h"
+#include "../../engine/core/game_state.h"
 #include "../../engine/resource/resource_manager.h"
 #include "../../engine/render/camera.h"
 #include "../../engine/input/input_manager.h"
@@ -55,7 +56,8 @@ void TitleScene::init() {
 // 创建 UI 界面元素
 void TitleScene::createUI() {
 	spdlog::trace("创建 TitleScene UI...");
-	auto windowSize = glm::vec2(640.0f, 360.0f);
+	mContext.getGameState().setState(engine::core::State::Title);
+	auto windowSize = mContext.getGameState().getLogicalSize();
 
 	if (!mUIManager->init(windowSize)) {
 		spdlog::error("初始化 UIManager 失败!");
