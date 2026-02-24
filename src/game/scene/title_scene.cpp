@@ -45,6 +45,11 @@ void TitleScene::init() {
 		spdlog::error("加载背景失败");
 		return;
 	}
+	mSessionData->syncHighScore("assets/save.json");
+
+	// 重置相机坐标, 不限制边界
+	mContext.getCamera().setPosition(glm::vec2(0.f, 0.f));
+	mContext.getCamera().setLimitBounds(std::nullopt);
 
 	// 创建 UI 元素
 	createUI();
@@ -69,7 +74,7 @@ void TitleScene::createUI() {
 	mContext.getAudioPlayer().setSoundVolume(0.5f);  // 设置音效音量为50%
 
 	// 设置背景音乐
-	// context_.getAudioPlayer().playMusic("assets/audio/platformer_level03_loop.ogg");
+	mContext.getAudioPlayer().playMusic("assets/audio/platformer_level03_loop.ogg");
 
 	// 创建标题图片 (假设不知道大小)
 	auto titleImage = std::make_unique<engine::ui::UIImage>("assets/textures/UI/title-screen.png");
@@ -204,6 +209,7 @@ void TitleScene::onHelpsClick() {
 
 void TitleScene::onQuitClick() {
 	spdlog::debug("退出按钮被点击。");
+	mSessionData->syncHighScore("assets/save.json");
 	mContext.getInputManager().setShouldQuit(true);
 }
 

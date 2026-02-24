@@ -63,6 +63,8 @@ private:
 	void playerVSItemCollision(engine::object::GameObject* player, engine::object::GameObject* item);
 	///< @brief 进入下一个关卡
 	void toNextLevel(engine::object::GameObject* trigger);
+	///< @brief 显示结束场景
+	void showEndScene(bool isWin);
 	///< @brief 根据关卡名称获取对应的地图文件
 	std::string levelNameToPath(const std::string& levelName) const;
 

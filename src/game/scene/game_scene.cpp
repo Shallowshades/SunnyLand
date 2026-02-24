@@ -1,5 +1,6 @@
 #include "game_scene.h"
 #include "menu_scene.h"
+#include "end_scene.h"
 #include "../component/player_component.h"
 #include "../component/ai_component.h"
 #include "../component/ai/patrol_behavior.h"
@@ -51,6 +52,7 @@ void GameScene::init() {
 	}
 	spdlog::trace("{} : 开始初始化", std::string(mLogTag));
 	mContext.getGameState().setState(engine::core::State::Playing);
+	mGameSessionData->syncHighScore("assets/save.json");
 
 	if (!initLevel()) {
 		spdlog::error("{} : 关卡初始化失败, 无法继续.", std::string(mLogTag));
@@ -87,6 +89,17 @@ void GameScene::update(float deltaTime){
 	Scene::update(deltaTime);
 	handleObjectCollisions();
 	handleTileTriggers();
+
+	// 玩家掉出地图下方则判断为失败
+	if (mPlayer) {
+		auto pos = mPlayer->getComponent<engine::component::TransformComponent>()->getPosition();
+		auto worldRect = mContext.getPhysicsEngine().getWorldBounds();
+		// 多100像素冗余量
+		if (worldRect && pos.y > worldRect->position.y + worldRect->size.y + 100.0f) {
+			spdlog::debug("玩家掉出地图下方，游戏失败");
+			showEndScene(false);
+		}
+	}
 }
 
 void GameScene::render(){
@@ -153,6 +166,16 @@ bool GameScene::initPlayer() {
 	auto* playerComponent = mPlayer->addComponent<game::component::PlayerComponent>();
 	if (!playerComponent) {
 		spdlog::error("{} : 无法添加PlayerComponent到玩家对象", std::string(mLogTag));
+		return false;
+	}
+
+	// 从SessionData中更新玩家生命值
+	if (auto healthComponent = mPlayer->getComponent<engine::component::HealthComponent>(); healthComponent) {
+		healthComponent->setMaxHealth(mGameSessionData->getMaxHealth());
+		healthComponent->setCurrentHealth(mGameSessionData->getCurrentHealth());
+	}
+	else {
+		spdlog::error("玩家对象缺少 HealthComponent 组件，无法设置生命值");
 		return false;
 	}
 
@@ -259,6 +282,14 @@ void GameScene::handleObjectCollisions() {
 		} else if (obj2->getName() == "player" && obj1->getTag() == "next_level") {
 			toNextLevel(obj1);
 		}
+
+		// 处理玩家与结束触发器碰撞
+		else if (obj1->getName() == "player" && obj2->getName() == "win") {
+			showEndScene(true);
+		}
+		else if (obj2->getName() == "player" && obj1->getName() == "win") {
+			showEndScene(true);
+		}
 	}
 }
 
@@ -354,6 +385,13 @@ void GameScene::toNextLevel(engine::object::GameObject* trigger) {
 	mSceneManager.requestReplaceScene(std::move(nextScene));
 }
 
+void GameScene::showEndScene(bool isWin) {
+	spdlog::debug("显示结束场景, 游戏 {}", isWin ? "Win" : "Lose");
+	mGameSessionData->setIsWin(isWin);
+	auto endScene = std::make_unique<game::scene::EndScene>(mContext, mSceneManager, mGameSessionData);
+	mSceneManager.requestPushScene(std::move(endScene));
+}
+
 std::string GameScene::levelNameToPath(const std::string& levelName) const {
 	return "assets/maps/" + levelName + ".tmj";
 }
@@ -429,11 +467,13 @@ void GameScene::createHealthUI() {
 		auto bgIcon = std::make_unique<engine::ui::UIImage>(emptyHeartTexture, iconPosition, iconSize);
 		mHealthPanel->addChild(std::move(bgIcon));
 	}
-	for (int i = 0; i < current_health; ++i) {		// 创建前景图标
+	for (int i = 0; i < maxHealth; ++i) {			// 创建前景图标
 		glm::vec2 iconPosition = { startX + i * (iconWidth + spacing), startY };
 		glm::vec2 iconSize = { iconWidth, iconHeight };
 
 		auto fgIcon = std::make_unique<engine::ui::UIImage>(fullHeartTexture, iconPosition, iconSize);
+		bool isVisible = (i < current_health);		// 前景图标的可见性取决于当前生命值
+		fgIcon->setVisible(isVisible);				// 设置前景图标的可见性
 		mHealthPanel->addChild(std::move(fgIcon));
 	}
 	// 将UIPanel添加到UI管理器中

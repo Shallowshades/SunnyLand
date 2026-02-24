@@ -142,6 +142,7 @@ void MenuScene::onBackClicked() {
 
 void MenuScene::onQuitClicked() {
 	spdlog::debug("退出按钮被点击。请求应用程序退出。");
+	mSessionData->syncHighScore("assets/save.json");
 	mContext.getInputManager().setShouldQuit(true);     // 输入管理器设置退出标志
 }
 
