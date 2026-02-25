@@ -69,10 +69,6 @@ void TitleScene::createUI() {
 		return;
 	}
 
-	// 设置音量
-	mContext.getAudioPlayer().setMusicVolume(0.2f);  // 设置背景音乐音量为20%
-	mContext.getAudioPlayer().setSoundVolume(0.5f);  // 设置音效音量为50%
-
 	// 设置背景音乐
 	mContext.getAudioPlayer().playMusic("assets/audio/platformer_level03_loop.ogg");
 

@@ -5,6 +5,8 @@
 #include <nlohmann/json.hpp>
 
 #include "engine/core/game_app.h"
+#include "engine/scene/scene_manager.h"
+#include "game/scene/title_scene.h"
 
 void testSpdlog();
 void testJson();
@@ -13,6 +15,11 @@ int main(int, char**) {
 
 	spdlog::set_level(spdlog::level::trace);
 	engine::core::GameApp app;
+	app.registerSceneSetup([](engine::scene::SceneManager& sceneManager) {
+		// GameApp 在调用 run 方法之前, 先创建并设置初始场景
+		auto titleScene = std::make_unique<game::scene::TitleScene>(sceneManager.getContext(), sceneManager);
+		sceneManager.requestPushScene(std::move(titleScene));
+	});
 	app.run();
     
     // 执行测试spdlog json 库

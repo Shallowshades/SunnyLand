@@ -4,6 +4,7 @@
 #define GAME_APP_H
 
 #include <memory>
+#include <functional>
 
 // 前向声明, 减少头文件依赖, 增加编译速度
 struct SDL_Window;
@@ -53,6 +54,13 @@ public:
 	 */
 	void run();
 
+	/**
+	 * @brief 注册用于设置初始场景的函数. SceneManager初始化后被调用
+	 * 
+	 * @param func 用于接收SceneManager引用的函数对象
+	 */
+	void registerSceneSetup(std::function<void(engine::scene::SceneManager&)> func);
+
 	// 禁止拷贝和移动构造
 	GameApp(const GameApp&) = delete;
 	GameApp& operator=(const GameApp&) = delete;
@@ -94,6 +102,10 @@ private:
 	SDL_Window* mWindow = nullptr;
 	SDL_Renderer* mSDLRenderer = nullptr;
 	bool mIsRunning = false;
+
+	// 游戏场景设置函数, 用于在运行游戏前设置初始化场景(GameApp不再决定初始场景)
+	// engine 模块作为底层不应该引用game中的文件, 应遵循上层引用下层的原则
+	std::function<void(engine::scene::SceneManager&)> mSceneSetupFunc;
 
 	// 引擎组件
 	std::unique_ptr<engine::core::Time> mTime;

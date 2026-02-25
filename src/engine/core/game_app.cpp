@@ -14,7 +14,6 @@
 #include "../input/input_manager.h"
 #include "../physics/physics_engine.h"
 #include "../scene/scene_manager.h"
-#include "../../game/scene/title_scene.h"
 
 engine::core::GameApp::GameApp() = default;
 
@@ -46,8 +45,18 @@ void engine::core::GameApp::run() {
 	close();
 }
 
+void engine::core::GameApp::registerSceneSetup(std::function<void(engine::scene::SceneManager&)> func) {
+	mSceneSetupFunc = std::move(func);
+	spdlog::trace("GameApp 已注册场景设置函数");
+}
+
 bool engine::core::GameApp::init() {
 	spdlog::trace("{} 初始化...", std::string(mLogTag));
+
+	if (!mSceneSetupFunc) {
+		spdlog::error("GameApp 未注册场景设置函数, 无法初始化 GameApp");
+		return false;
+	}
 
 	if (!initConfig()) return false;
 	if (!initSDL()) return false;
@@ -63,9 +72,8 @@ bool engine::core::GameApp::init() {
 	if (!initContext()) return false;
 	if (!initSceneManager()) return false;
 
-	// 创建第一个场景并压入栈
-	auto scene = std::make_unique<game::scene::TitleScene>(*mContext, *mSceneManager);
-	mSceneManager->requestPushScene(std::move(scene));
+	// (调用场景设置函数) 创建第一个场景并压入栈
+	mSceneSetupFunc(*mSceneManager);
 
 	mIsRunning = true;
 	spdlog::trace("{} 初始化成功", std::string(mLogTag));
@@ -189,6 +197,8 @@ bool engine::core::GameApp::initResourceManager() {
 bool engine::core::GameApp::initAudioPlayer() {
 	try {
 		mAudioPlayer = std::make_unique<engine::audio::AudioPlayer>(mResourceManager.get());
+		mAudioPlayer->setMusicVolume(mConfig->mMusicVolume);
+		mAudioPlayer->setSoundVolume(mConfig->mSoundVolume);
 	}
 	catch (const std::exception& e) {
 		spdlog::error("{} : 音频播放器初始化失败: {}", std::string(mLogTag), e.what());
