@@ -17,7 +17,7 @@ EndScene::EndScene(engine::core::Context& context, engine::scene::SceneManager& 
 	: engine::scene::Scene("EndScene", context, sceneManager)
 	, mSessionData(std::move(sessionData))
 {
-	if (mSessionData) {
+	if (!mSessionData) {
 		spdlog::error("error : 结束场景收到了空的游戏数据");
 	}
 	spdlog::trace("EndScene : {} 创建.", mSessionData->getIsWin() ? "Win" : "Lose");
@@ -120,6 +120,7 @@ void EndScene::onBackClick() {
 
 void EndScene::onRestartClick() {
 	spdlog::info("结束场景 : 重新开始按钮被点击");
+	mSessionData->reset();
 	mSceneManager.requestReplaceScene(std::make_unique<GameScene>(mContext, mSceneManager, mSessionData));
 }
 } // namespace game::scene
