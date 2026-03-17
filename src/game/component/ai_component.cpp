@@ -12,7 +12,7 @@
 namespace game::component {
 void AIComponent::setBehavior(std::unique_ptr<ai::AIBehavior> behavior) {
 	mCurrentBehavior = std::move(behavior);
-	spdlog::debug("{} : 游戏对象 '{}' 上的AI组件设置了新的行为.", std::string(mLogTag), (mOwner ? mOwner->getName() : "unknown"));
+	spdlog::debug("{} : 游戏对象 '{}' 上的AI组件设置了新的行为.", mLogTag.data(), (mOwner ? mOwner->getName() : "unknown"));
 	if (mCurrentBehavior) {
 		mCurrentBehavior->enter(*this);
 	}
@@ -56,7 +56,7 @@ engine::component::AudioComponent* AIComponent::getAudioComponent() const {
 
 void AIComponent::init() {
 	if (!mOwner) {
-		spdlog::error("{} : 玩家组件没有所属游戏对象", std::string(mLogTag));
+		spdlog::error("{} : 玩家组件没有所属游戏对象", mLogTag.data());
 		return;
 	}
 
@@ -69,7 +69,7 @@ void AIComponent::init() {
 	
 	// 检查必要组件
 	if (!mTransformComponent || !mPhysicsComponent || !mSpriteComponent || !mAnimationComponent) {
-		spdlog::error("{} : 游戏对象 '{}' 缺少必要组件", std::string(mLogTag), mOwner->getName());
+		spdlog::error("{} : 游戏对象 '{}' 缺少必要组件", mLogTag.data(), mOwner->getName());
 	}
 }
 
@@ -79,7 +79,7 @@ void AIComponent::update(float delta, engine::core::Context&) {
 		mCurrentBehavior->update(delta, *this);
 	}
 	else {
-		spdlog::warn("{} : 游戏对象 '{}' 没有设置AI组件.", std::string(mLogTag), (mOwner ? mOwner->getName() : "unknown"));
+		spdlog::warn("{} : 游戏对象 '{}' 没有设置AI组件.", mLogTag.data(), (mOwner ? mOwner->getName() : "unknown"));
 	}
 }
 } // namespace game::component

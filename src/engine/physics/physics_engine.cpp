@@ -36,25 +36,25 @@ const std::optional<engine::utils::Rect>& PhysicsEngine::getWorldBounds() const 
 
 void PhysicsEngine::registerComponent(engine::component::PhysicsComponent* component) {
 	mComponents.push_back(component);
-	spdlog::trace("{} : 物理组件注册完成", std::string(mLogTag));
+	spdlog::trace("{} : 物理组件注册完成", mLogTag.data());
 }
 
 void PhysicsEngine::unregisterComponent(engine::component::PhysicsComponent* component) {
 	auto iter = std::remove(mComponents.begin(), mComponents.end(), component);
 	mComponents.erase(iter, mComponents.end());
-	spdlog::trace("{} : 物理组件注册完成", std::string(mLogTag));
+	spdlog::trace("{} : 物理组件注册完成", mLogTag.data());
 }
 
 void PhysicsEngine::registerCollisionLayer(engine::component::TileLayerComponent* layer) {
 	layer->setPhysicsEngine(this);
 	mCollisionTileLayers.push_back(layer);
-	spdlog::trace("{} : 碰撞瓦片图层注册完成", std::string(mLogTag));
+	spdlog::trace("{} : 碰撞瓦片图层注册完成", mLogTag.data());
 }
 
 void PhysicsEngine::unregisterCollisionLayer(engine::component::TileLayerComponent* layer) {
 	auto iter = std::remove(mCollisionTileLayers.begin(), mCollisionTileLayers.end(), layer);
 	mCollisionTileLayers.erase(iter, mCollisionTileLayers.end());
-	spdlog::trace("{} : 碰撞瓦片图层注销完成", std::string(mLogTag));
+	spdlog::trace("{} : 碰撞瓦片图层注销完成", mLogTag.data());
 }
 
 void PhysicsEngine::update(float delta) {
@@ -208,7 +208,7 @@ void PhysicsEngine::checkTileTriggers() {
 			// 遍历触发事件集合, 添加到瓦片触发事件
 			for (const auto& type : triggerSet) {
 				mTileTriggerEvents.emplace_back(obj, type);
-				spdlog::trace("{} : 触发事件数组中添加了游戏对象 {} 和 瓦片触发类型: {}", std::string(mLogTag), obj->getName(), static_cast<int>(type));
+				spdlog::trace("{} : 触发事件数组中添加了游戏对象 {} 和 瓦片触发类型: {}", mLogTag.data(), obj->getName(), static_cast<int>(type));
 			}
 		}
 	}

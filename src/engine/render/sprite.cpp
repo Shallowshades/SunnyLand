@@ -1,10 +1,10 @@
 #include "sprite.h"
 
 namespace engine::render {
-Sprite::Sprite(const std::string& textureId, const std::optional<SDL_FRect>& sourceRect, bool isFlipped)
+Sprite::Sprite(std::string_view textureId, const std::optional<SDL_FRect>& sourceRect, bool isFlipped)
 	: mTextureId(textureId), mSourceRect(sourceRect), mIsFlipped(isFlipped) {}
 
-const std::string& Sprite::getTextureId() const {
+std::string_view Sprite::getTextureId() const {
 	return mTextureId;
 }
 const std::optional<SDL_FRect>& Sprite::getSourceRect() const {
@@ -13,8 +13,8 @@ const std::optional<SDL_FRect>& Sprite::getSourceRect() const {
 bool Sprite::isFlipped() const {
 	return mIsFlipped;
 }
-void Sprite::setTextureId(const std::string& textureId) {
-	mTextureId = textureId;
+void Sprite::setTextureId(std::string_view textureId) {
+	mTextureId = std::string(textureId);
 }
 void Sprite::setSourceRect(const std::optional<SDL_FRect>& sourceRect) {
 	mSourceRect = sourceRect;

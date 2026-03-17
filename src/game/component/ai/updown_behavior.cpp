@@ -13,7 +13,7 @@ UpdownBehavior::UpdownBehavior(float minY, float maxY, float speed)
 	, mMoveSpeed(speed)
 {
 	if (mPatrolMinY >= mPatrolMaxY) {
-		spdlog::error("{} : minY {} 应小于 maxY {}. 行为可能不正确.", std::string(mLogTag), mPatrolMinY, mPatrolMaxY);
+		spdlog::error("{} : minY {} 应小于 maxY {}. 行为可能不正确.", mLogTag.data(), mPatrolMinY, mPatrolMaxY);
 		std::swap(mPatrolMinY, mPatrolMaxY);
 	}
 }
@@ -35,7 +35,7 @@ void UpdownBehavior::update(float, AIComponent & aiComponent) {
 	auto pc = aiComponent.getPhysicsComponent();
 	auto tc = aiComponent.getTransformComponent();
 	if (!pc || !tc) {
-		spdlog::error("{} : 缺少必要的组件, 无法执行巡逻行为", std::string(mLogTag));
+		spdlog::error("{} : 缺少必要的组件, 无法执行巡逻行为", mLogTag.data());
 		return;
 	}
 

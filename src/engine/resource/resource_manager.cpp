@@ -25,53 +25,53 @@ void ResourceManager::clear() {
 	spdlog::trace("{} 清空资源", mLogTag);
 }
 
-SDL_Texture* ResourceManager::loadTexture(const std::string filePath) {
+SDL_Texture* ResourceManager::loadTexture(std::string_view filePath) {
 	// 构造函数确保了mTextManager不为空, 因此不需要判空, 避免性能浪费
 	return mTextureManager->loadTexture(filePath);
 }
-SDL_Texture* ResourceManager::getTexture(const std::string filePath) {
+SDL_Texture* ResourceManager::getTexture(std::string_view filePath) {
 	return mTextureManager->getTexture(filePath);
 }
-void ResourceManager::unloadTexture(const std::string& filePath) {
+void ResourceManager::unloadTexture(std::string_view filePath) {
 	mTextureManager->unloadTexture(filePath);
 }
-glm::vec2 ResourceManager::getTextureSize(const std::string& filePath) {
+glm::vec2 ResourceManager::getTextureSize(std::string_view filePath) {
 	return mTextureManager->getTextureSize(filePath);
 }
 void ResourceManager::clearTextures() {
 	mTextureManager->clearTextures();
 }
-Mix_Chunk* ResourceManager::loadSound(const std::string& filePath) {
+Mix_Chunk* ResourceManager::loadSound(std::string_view filePath) {
 	return mAudioManager->loadSound(filePath);
 }
-Mix_Chunk* ResourceManager::getSound(const std::string& filePath) {
+Mix_Chunk* ResourceManager::getSound(std::string_view filePath) {
 	return mAudioManager->getSound(filePath);
 }
-void ResourceManager::unloadSound(const std::string& filePath) {
+void ResourceManager::unloadSound(std::string_view filePath) {
 	mAudioManager->unloadSound(filePath);
 }
 void ResourceManager::clearSounds() {
 	mAudioManager->clearSounds();
 }
-Mix_Music* ResourceManager::loadMusic(const std::string& filePath) {
+Mix_Music* ResourceManager::loadMusic(std::string_view filePath) {
 	return mAudioManager->loadMusic(filePath);
 }
-Mix_Music* ResourceManager::getMusic(const std::string& filePath) {
+Mix_Music* ResourceManager::getMusic(std::string_view filePath) {
 	return mAudioManager->getMusic(filePath);
 }
-void ResourceManager::unloadMusic(const std::string& filePath) {
+void ResourceManager::unloadMusic(std::string_view filePath) {
 	mAudioManager->unloadMusic(filePath);
 }
 void ResourceManager::clearMusic() {
 	mAudioManager->clearMusic();
 }
-TTF_Font* ResourceManager::loadFont(const std::string& filePath, int pointSize) {
+TTF_Font* ResourceManager::loadFont(std::string_view filePath, int pointSize) {
 	return mFontManager->loadFont(filePath, pointSize);
 }
-TTF_Font* ResourceManager::getFont(const std::string& filePath, int pointSize) {
+TTF_Font* ResourceManager::getFont(std::string_view filePath, int pointSize) {
 	return mFontManager->getFont(filePath, pointSize);
 }
-void ResourceManager::unloadFont(const std::string& filePath, int pointSize) {
+void ResourceManager::unloadFont(std::string_view filePath, int pointSize) {
 	mFontManager->unloadFont(filePath, pointSize);
 }
 void ResourceManager::clearFonts() {

@@ -19,14 +19,14 @@ engine::core::GameApp::GameApp() = default;
 
 engine::core::GameApp::~GameApp() {
 	if (mIsRunning) {
-		spdlog::warn("{} 被销毁时没有显式关闭, 正在关闭...", std::string(mLogTag));
+		spdlog::warn("{} 被销毁时没有显式关闭, 正在关闭...", mLogTag.data());
 		close();
 	}
 }
 
 void engine::core::GameApp::run() {
 	if (!init()) {
-		spdlog::error("{} 初始化失败, 无法运行游戏.", std::string(mLogTag));
+		spdlog::error("{} 初始化失败, 无法运行游戏.", mLogTag.data());
 		return;
 	}
 
@@ -51,7 +51,7 @@ void engine::core::GameApp::registerSceneSetup(std::function<void(engine::scene:
 }
 
 bool engine::core::GameApp::init() {
-	spdlog::trace("{} 初始化...", std::string(mLogTag));
+	spdlog::trace("{} 初始化...", mLogTag.data());
 
 	if (!mSceneSetupFunc) {
 		spdlog::error("GameApp 未注册场景设置函数, 无法初始化 GameApp");
@@ -76,13 +76,13 @@ bool engine::core::GameApp::init() {
 	mSceneSetupFunc(*mSceneManager);
 
 	mIsRunning = true;
-	spdlog::trace("{} 初始化成功", std::string(mLogTag));
+	spdlog::trace("{} 初始化成功", mLogTag.data());
 	return true;
 }
 
 void engine::core::GameApp::handleEvents() {
 	if (mInputManager->shouldQuit()) {
-		spdlog::trace("{} 收到来自 InputManager 的退出请求.", std::string(mLogTag));
+		spdlog::trace("{} 收到来自 InputManager 的退出请求.", mLogTag.data());
 		mIsRunning = false;
 		return;
 	}
@@ -105,7 +105,7 @@ void engine::core::GameApp::render() {
 }
 
 void engine::core::GameApp::close() {
-	spdlog::trace("{} 关闭...", std::string(mLogTag));
+	spdlog::trace("{} 关闭...", mLogTag.data());
 
 	// 先关闭场景管理器, 确保所有场景都被清理
 	mSceneManager->clean();
@@ -130,28 +130,28 @@ bool engine::core::GameApp::initConfig() {
 		mConfig = std::make_unique<engine::core::Config>("assets/config.json");
 	}
 	catch (const std::exception& e) {
-		spdlog::error("{} 初始化配置失败: {}", std::string(mLogTag), e.what());
+		spdlog::error("{} 初始化配置失败: {}", mLogTag.data(), e.what());
 		return false;
 	}
-	spdlog::trace("{} 配置初始化成功", std::string(mLogTag));
+	spdlog::trace("{} 配置初始化成功", mLogTag.data());
 	return true;
 }
 
 bool engine::core::GameApp::initSDL() {
 	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
-		spdlog::error("{} 无法创建窗口! SDL错误: {}", std::string(mLogTag), SDL_GetError());
+		spdlog::error("{} 无法创建窗口! SDL错误: {}", mLogTag.data(), SDL_GetError());
 		return false;
 	}
 
 	mWindow = SDL_CreateWindow(mConfig->mWindowTitle.c_str(), mConfig->mWindowWidth, mConfig->mWindowHeight, SDL_WINDOW_RESIZABLE);
 	if (mWindow == nullptr) {
-		spdlog::error("{} 无法创建窗口! SDL错误: {}", std::string(mLogTag), SDL_GetError());
+		spdlog::error("{} 无法创建窗口! SDL错误: {}", mLogTag.data(), SDL_GetError());
 		return false;
 	}
 
 	mSDLRenderer = SDL_CreateRenderer(mWindow, nullptr);
 	if (mSDLRenderer == nullptr) {
-		spdlog::error("{} 无法创建渲染器! SDL错误: {}", std::string(mLogTag), SDL_GetError());
+		spdlog::error("{} 无法创建渲染器! SDL错误: {}", mLogTag.data(), SDL_GetError());
 		return false;
 	}
 
@@ -161,11 +161,11 @@ bool engine::core::GameApp::initSDL() {
 	// 设置VSync(注意:VSync开启时, 驱动程序会尝试将帧率限制到显示器刷新率, 有可能会覆盖手动设置的mTargetFps)
 	int vsyncMode = mConfig->mVsyncEnabled ? SDL_RENDERER_VSYNC_ADAPTIVE : SDL_RENDERER_VSYNC_DISABLED;
 	SDL_SetRenderVSync(mSDLRenderer, vsyncMode);
-	spdlog::trace("{} Vsync设置为: {}", std::string(mLogTag), mConfig->mVsyncEnabled ? "Enable" : "Disable");
+	spdlog::trace("{} Vsync设置为: {}", mLogTag.data(), mConfig->mVsyncEnabled ? "Enable" : "Disable");
 
 	// 设置逻辑分辨率为窗口大小的一半 (针对像素游戏)
 	SDL_SetRenderLogicalPresentation(mSDLRenderer, mConfig->mWindowWidth / 2, mConfig->mWindowHeight / 2, SDL_LOGICAL_PRESENTATION_LETTERBOX);
-	spdlog::trace("{} 初始化SDL成功", std::string(mLogTag));
+	spdlog::trace("{} 初始化SDL成功", mLogTag.data());
 	return true;
 }
 
@@ -174,11 +174,11 @@ bool engine::core::GameApp::initTime() {
 		mTime = std::make_unique<Time>();
 	}
 	catch (const std::exception& e) {
-		spdlog::error("{} 初始化时间管理器失败: {}", std::string(mLogTag), e.what());
+		spdlog::error("{} 初始化时间管理器失败: {}", mLogTag.data(), e.what());
 		return false;
 	}
 	mTime->setTargetFps(mConfig->mTargetFps);
-	spdlog::trace("{} 时间管理初始化成功", std::string(mLogTag));
+	spdlog::trace("{} 时间管理初始化成功", mLogTag.data());
 	return true;
 }
 
@@ -187,10 +187,10 @@ bool engine::core::GameApp::initResourceManager() {
 		mResourceManager = std::make_unique<engine::resource::ResourceManager>(mSDLRenderer);
 	}
 	catch (const std::exception& e) {
-		spdlog::error("{} 初始化资源管理器失败: {}", std::string(mLogTag), e.what());
+		spdlog::error("{} 初始化资源管理器失败: {}", mLogTag.data(), e.what());
 		return false;
 	}
-	spdlog::trace("{} 资源管理器成功", std::string(mLogTag));
+	spdlog::trace("{} 资源管理器成功", mLogTag.data());
 	return true;
 }
 
@@ -201,10 +201,10 @@ bool engine::core::GameApp::initAudioPlayer() {
 		mAudioPlayer->setSoundVolume(mConfig->mSoundVolume);
 	}
 	catch (const std::exception& e) {
-		spdlog::error("{} : 音频播放器初始化失败: {}", std::string(mLogTag), e.what());
+		spdlog::error("{} : 音频播放器初始化失败: {}", mLogTag.data(), e.what());
 		return false;
 	}
-	spdlog::trace("{} : 音频播放器初始化成功.", std::string(mLogTag));
+	spdlog::trace("{} : 音频播放器初始化成功.", mLogTag.data());
 	return true;
 }
 
@@ -213,10 +213,10 @@ bool engine::core::GameApp::initRenderer() {
 		mRenderer = std::make_unique<engine::render::Renderer>(mSDLRenderer, mResourceManager.get());
 	}
 	catch (const std::exception& e) {
-		spdlog::error("{} 初始化渲染器失败: {}", std::string(mLogTag), e.what());
+		spdlog::error("{} 初始化渲染器失败: {}", mLogTag.data(), e.what());
 		return false;
 	}
-	spdlog::trace("{} 渲染器初始化成功", std::string(mLogTag));
+	spdlog::trace("{} 渲染器初始化成功", mLogTag.data());
 	return true;
 }
 
@@ -237,10 +237,10 @@ bool engine::core::GameApp::initCamera() {
 		mCamera = std::make_unique<engine::render::Camera>(glm::vec2(mConfig->mWindowWidth / 2, mConfig->mWindowHeight / 2));
 	}
 	catch (const std::exception& e) {
-		spdlog::error("{} 初始化相机失败: {}", std::string(mLogTag), e.what());
+		spdlog::error("{} 初始化相机失败: {}", mLogTag.data(), e.what());
 		return false;
 	}
-	spdlog::trace("{} 相机初始化成功", std::string(mLogTag));
+	spdlog::trace("{} 相机初始化成功", mLogTag.data());
 	return true;
 }
 
@@ -249,10 +249,10 @@ bool engine::core::GameApp::initInputManager() {
 		mInputManager = std::make_unique<engine::input::InputManager>(mSDLRenderer, mConfig.get());
 	}
 	catch (const std::exception& e) {
-		spdlog::error("{} 初始化输入管理器失败: {}", std::string(mLogTag), e.what());
+		spdlog::error("{} 初始化输入管理器失败: {}", mLogTag.data(), e.what());
 		return false;
 	}
-	spdlog::trace("{} 输入管理器初始化成功", std::string(mLogTag));
+	spdlog::trace("{} 输入管理器初始化成功", mLogTag.data());
 	return true;
 }
 
@@ -261,10 +261,10 @@ bool engine::core::GameApp::initPhysicsEngine() {
 		mPhysicsEngine = std::make_unique<engine::physics::PhysicsEngine>();
 	}
 	catch (const std::exception& e) {
-		spdlog::error("{} : 初始化物理引擎失败 : {}", std::string(mLogTag), e.what());
+		spdlog::error("{} : 初始化物理引擎失败 : {}", mLogTag.data(), e.what());
 		return false;
 	}
-	spdlog::trace("{} : 物理引擎初始化成功.", std::string(mLogTag));
+	spdlog::trace("{} : 物理引擎初始化成功.", mLogTag.data());
 	return true;
 }
 
@@ -276,6 +276,7 @@ bool engine::core::GameApp::initGameState() {
 		spdlog::error("初始化游戏状态失败: {}", e.what());
 		return false;
 	}
+	return true;
 }
 
 bool engine::core::GameApp::initContext() {
@@ -283,7 +284,7 @@ bool engine::core::GameApp::initContext() {
 		mContext = std::make_unique<engine::core::Context>(*mInputManager, *mRenderer, *mCamera, *mTextRenderer, *mResourceManager, *mPhysicsEngine, *mAudioPlayer, *mGameState);
 	}
 	catch (const std::exception& e) {
-		spdlog::error("{} 初始化上下文失败: {}", std::string(mLogTag), e.what());
+		spdlog::error("{} 初始化上下文失败: {}", mLogTag.data(), e.what());
 		return false;
 	}
 	return true;
@@ -294,10 +295,10 @@ bool engine::core::GameApp::initSceneManager() {
 		mSceneManager = std::make_unique<engine::scene::SceneManager>(*mContext);
 	}
 	catch (const std::exception& e) {
-		spdlog::error("{} 初始化场景管理器失败: {}", std::string(mLogTag), e.what());
+		spdlog::error("{} 初始化场景管理器失败: {}", mLogTag.data(), e.what());
 		return false;
 	}
-	spdlog::trace("{} 场景管理器初始化成功.", std::string(mLogTag));
+	spdlog::trace("{} 场景管理器初始化成功.", mLogTag.data());
 	return true;
 }
 
@@ -351,13 +352,13 @@ void engine::core::GameApp::testInputManager() {
 
 	for (const auto& action : actions) {
 		if (mInputManager->isActionPressed(action)) {
-			spdlog::info("{} 按下 {}", std::string(mLogTag), action);
+			spdlog::info("{} 按下 {}", mLogTag.data(), action);
 		}
 		if (mInputManager->isActionReleased(action)) {
-			spdlog::info("{} 抬起 {}", std::string(mLogTag), action);
+			spdlog::info("{} 抬起 {}", mLogTag.data(), action);
 		}
 		if (mInputManager->isActionDown(action)) {
-			spdlog::info("{} 按下中 {}", std::string(mLogTag), action);
+			spdlog::info("{} 按下中 {}", mLogTag.data(), action);
 		}
 	}
 }

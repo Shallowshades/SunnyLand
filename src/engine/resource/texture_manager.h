@@ -14,6 +14,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <SDL3/SDL_render.h>
 #include <glm/glm.hpp>
@@ -52,10 +53,10 @@ namespace engine::resource {
 		TextureManager& operator=(TextureManager&&) = delete;										///< @brief 删除移动赋值构造
 
 	private:
-		SDL_Texture* loadTexture(const std::string& filePath);										///< @brief 载入纹理资源
-		SDL_Texture* getTexture(const std::string& filePath);										///< @brief 尝试获取已加载的纹理
-		glm::vec2 getTextureSize(const std::string& filePath);										///< @brief 卸载指定的纹理资源
-		void unloadTexture(const std::string& filePath);											///< @brief 获取指定的纹理尺寸
+		SDL_Texture* loadTexture(std::string_view filePath);										///< @brief 载入纹理资源
+		SDL_Texture* getTexture(std::string_view filePath);											///< @brief 尝试获取已加载的纹理
+		glm::vec2 getTextureSize(std::string_view filePath);										///< @brief 卸载指定的纹理资源
+		void unloadTexture(std::string_view filePath);												///< @brief 获取指定的纹理尺寸
 		void clearTextures();																		///< @brief 清空所有的纹理资源
 
 	private:

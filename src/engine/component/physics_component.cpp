@@ -9,9 +9,9 @@ PhysicsComponent::PhysicsComponent(engine::physics::PhysicsEngine* physicsEngine
 	: mPhysicsEngine(physicsEngine), mMass(mass >= 0.f ? mass : 1.f), mUseGravity(useGravity)
 {
 	if (!mPhysicsEngine) {
-		spdlog::error("{} : 构造失败, PhysicsEngine指针为空!", std::string(mLogTag));
+		spdlog::error("{} : 构造失败, PhysicsEngine指针为空!", mLogTag.data());
 	}
-	spdlog::trace("{} : 构造物理组件成功, 质量: {}, 使用重力: {}", std::string(mLogTag), mMass, mUseGravity);
+	spdlog::trace("{} : 构造物理组件成功, 质量: {}, 使用重力: {}", mLogTag.data(), mMass, mUseGravity);
 }
 
 PhysicsComponent::~PhysicsComponent() = default;
@@ -123,26 +123,26 @@ bool PhysicsComponent::isOnTopLadder() const {
 
 void PhysicsComponent::init() {
 	if (!mOwner) {
-		spdlog::error("{} : 物理组件初始化前需要一个GameObject作为所有者!", std::string(mLogTag));
+		spdlog::error("{} : 物理组件初始化前需要一个GameObject作为所有者!", mLogTag.data());
 		return;
 	}
 	if (!mPhysicsEngine) {
-		spdlog::error("{} : PhysicsEngine 为空!", std::string(mLogTag));
+		spdlog::error("{} : PhysicsEngine 为空!", mLogTag.data());
 		return;
 	}
 	mTransform = mOwner->getComponent<TransformComponent>();
 	if (!mTransform) {
-		spdlog::warn("{} 物理组件初始化时未找到TransformComponent组件.", std::string(mLogTag));
+		spdlog::warn("{} 物理组件初始化时未找到TransformComponent组件.", mLogTag.data());
 	}
 	// 注册到PhysicsEngine
 	mPhysicsEngine->registerComponent(this);
-	spdlog::trace("{} : 物理组件初始化完成.", std::string(mLogTag));
+	spdlog::trace("{} : 物理组件初始化完成.", mLogTag.data());
 }
 
 void PhysicsComponent::update(float, engine::core::Context&) {}
 
 void PhysicsComponent::clean() {
 	mPhysicsEngine->unregisterComponent(this);
-	spdlog::trace("{} : 物理组件清理完成.", std::string(mLogTag));
+	spdlog::trace("{} : 物理组件清理完成.", mLogTag.data());
 }
 }

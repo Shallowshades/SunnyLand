@@ -29,7 +29,7 @@ void JumpState::enter() {
 		audioComponent->playSound("jump");
 	}
 
-	spdlog::debug("{} : 玩家组件进入JumpState, 设置初始垂直速度为: {}", std::string(mLogTag), velocity.y);
+	spdlog::debug("{} : 玩家组件进入JumpState, 设置初始垂直速度为: {}", mLogTag.data(), velocity.y);
 }
 
 void JumpState::exit() {

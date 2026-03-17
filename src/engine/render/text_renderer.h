@@ -13,6 +13,7 @@
 
 #include <SDL3/SDL_render.h>
 #include <string>
+#include <string_view>
 #include <glm/vec2.hpp>
 #include "../utils/math.h"
 
@@ -54,7 +55,7 @@ public:
 	* @param position 左上角屏幕位置。
 	* @param color 文本颜色。(默认为白色)
 	*/
-    void drawUIText(const std::string& text, const std::string& fontId, int fontSize, const glm::vec2& position, const engine::utils::FColor& color = { 1.0f, 1.0f, 1.0f, 1.0f });
+    void drawUIText(std::string_view text, std::string_view fontId, int fontSize, const glm::vec2& position, const engine::utils::FColor& color = { 1.0f, 1.0f, 1.0f, 1.0f });
 
     /**
 	* @brief 绘制地图上的字符串。
@@ -66,7 +67,7 @@ public:
 	* @param position 左上角屏幕位置。
 	* @param color 文本颜色。
 	*/
-    void drawText(const Camera& camera, const std::string& text, const std::string& fontId, int fontSize, const glm::vec2& position, const engine::utils::FColor& color = { 1.0f, 1.0f, 1.0f, 1.0f });
+    void drawText(const Camera& camera, std::string_view text, std::string_view fontId, int fontSize, const glm::vec2& position, const engine::utils::FColor& color = { 1.0f, 1.0f, 1.0f, 1.0f });
 
     /**
 	* @brief 获取文本的尺寸。
@@ -76,7 +77,7 @@ public:
 	* @param fontSize 字体大小。
 	* @return 文本的尺寸。
 	*/
-    glm::vec2 getTextSize(const std::string& text, const std::string& fontId, int fontSize);
+    glm::vec2 getTextSize(std::string_view text, std::string_view fontId, int fontSize);
 
     // 禁用拷贝和移动语义
     TextRenderer(const TextRenderer&) = delete;

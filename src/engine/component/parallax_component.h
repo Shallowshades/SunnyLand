@@ -12,6 +12,7 @@
 #define PARALLAX_COMPONENT_H
 
 #include <string>
+#include <string_view>
 #include <glm/glm.hpp>
 #include "component.h"
 #include "../render/sprite.h"
@@ -35,7 +36,7 @@ public:
 	 *	- (1, 1)		表示与相机完全同步移动
 	 *	- (0.5, 0.5)	表示以相机一般的速度移动
 	 */
-	ParallaxComponent(const std::string& textureId, const glm::vec2& scrollFactor, const glm::bvec2& repeat);
+	ParallaxComponent(std::string_view textureId, const glm::vec2& scrollFactor, const glm::bvec2& repeat);
 
 	void setSprite(const engine::render::Sprite& sprite);					///< @brief 设置精灵对象
 	void setScrollFactor(const glm::vec2& scrollFactor);					///< @brief 设置滚动速度因子

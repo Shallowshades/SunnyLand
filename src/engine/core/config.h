@@ -12,6 +12,7 @@
 #define CONFIG_H
 
 #include <string>
+#include <string_view>
 #include <vector>
 #include <unordered_map>
 #include <nlohmann/json_fwd.hpp>	// nlohmann_json
@@ -25,9 +26,9 @@ namespace engine::core {
  */
 class Config final {
 public:
-	explicit Config(const std::string& filePath);						///< @brief 构造函数, 指定配置文件路径
-	[[nodiscard]] bool loadFromFile(const std::string& filePath);		///< @brief 从指定的JSON文件读取配置; 不可忽略返回值
-	[[nodiscard]] bool saveToFile(const std::string& filePath);			///< @brief 将当前配置保存到指定的JSON文件; 不可忽略返回值
+	explicit Config(std::string_view filePath);							///< @brief 构造函数, 指定配置文件路径
+	[[nodiscard]] bool loadFromFile(std::string_view filePath);			///< @brief 从指定的JSON文件读取配置; 不可忽略返回值
+	[[nodiscard]] bool saveToFile(std::string_view filePath);			///< @brief 将当前配置保存到指定的JSON文件; 不可忽略返回值
 
 private:
 	void fromJson(const nlohmann::json& data);							///< @brief 删除拷贝构造

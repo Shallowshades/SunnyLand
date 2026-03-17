@@ -38,8 +38,8 @@ void SessionData::setLevelScore(int levelScore) {
 	mLevelScore = levelScore;
 }
 
-void SessionData::setMapPath(const std::string& mapPath) {
-	mMapPath = mapPath;
+void SessionData::setMapPath(std::string_view mapPath) {
+	mMapPath = std::string(mapPath);
 }
 
 void SessionData::setIsWin(bool isWin) {
@@ -56,13 +56,13 @@ void SessionData::reset() {
 	spdlog::info("SessionData reset.");
 }
 
-void SessionData::setNextLevel(const std::string& mapPath) {
-	mMapPath = mapPath;
+void SessionData::setNextLevel(std::string_view mapPath) {
+	mMapPath = std::string(mapPath);
 	mLevelHealth = mCurrentHealth;
 	mLevelScore = mCurrentScore;
 }
 
-bool SessionData::saveToFile(const std::string& filename) const {
+bool SessionData::saveToFile(std::string_view filename) const {
 	nlohmann::json data;
 	try {
 		// 将成员变量序列化到 JSON 对象中
@@ -73,9 +73,10 @@ bool SessionData::saveToFile(const std::string& filename) const {
 		data["map_path"] = mMapPath;
 
 		// 打开文件进行写入
-		std::ofstream ofs(filename);
+		auto path = std::filesystem::path(filename);
+		std::ofstream ofs(path);
 		if (!ofs.is_open()) {
-			spdlog::error("无法打开存档文件进行写入: {}", filename);
+			spdlog::error("无法打开存档文件进行写入: {}", filename.data());
 			return false;
 		}
 
@@ -83,21 +84,22 @@ bool SessionData::saveToFile(const std::string& filename) const {
 		ofs << data.dump(4);
 		ofs.close(); // 确保文件关闭
 
-		spdlog::info("游戏数据成功存储到: {}", filename);
+		spdlog::info("游戏数据成功存储到: {}", filename.data());
 		return true;
 	}
 	catch (const std::exception& e) {
-		spdlog::error("存档时出现错误 {}: {}", filename, e.what());
+		spdlog::error("存档时出现错误 {}: {}", filename.data(), e.what());
 		return false;
 	}
 }
 
-bool SessionData::loadFromFile(const std::string& filename) {
+bool SessionData::loadFromFile(std::string_view filename) {
 	try {
 		// 打开文件进行读取
-		std::ifstream ifs(filename);
+		auto path = std::filesystem::path(filename);
+		std::ifstream ifs(path);
 		if (!ifs.is_open()) {
-			spdlog::warn("读档时找不到文件: {}", filename);
+			spdlog::warn("读档时找不到文件: {}", filename.data());
 			// 如果存档文件不存在，这不一定是错误
 			return false;
 		}
@@ -113,22 +115,23 @@ bool SessionData::loadFromFile(const std::string& filename) {
 		mHighScore = std::max(j.value("high_score", 0), mHighScore); // 文件的最高分与当前最高分取最大值
 		mMapPath = j.value("map_path", "assets/maps/level1.tmj"); // 默认起始地图
 
-		spdlog::info("游戏数据成功加载: {}", filename);
+		spdlog::info("游戏数据成功加载: {}", filename.data());
 		return true;
 	}
 	catch (const std::exception& e) {
-		spdlog::error("读档时出现错误 {}: {}", filename, e.what());
+		spdlog::error("读档时出现错误 {}: {}", filename.data(), e.what());
 		reset();
 		return false;
 	}
 }
 
-bool SessionData::syncHighScore(const std::string& filename) {
+bool SessionData::syncHighScore(std::string_view filename) {
 	try {
 		// 打开文件进行读取
-		std::fstream fs(filename);
+		auto path = std::filesystem::path(filename);
+		std::fstream fs(path);
 		if (!fs.is_open()) {
-			spdlog::warn("找不到文件: {}, 无法进行同步", filename);
+			spdlog::warn("找不到文件: {}, 无法进行同步", filename.data());
 			return false;
 		}
 
@@ -155,7 +158,7 @@ bool SessionData::syncHighScore(const std::string& filename) {
 		return true;
 	}
 	catch (const std::exception& e) {
-		spdlog::error("同步最高分时出现错误 {}: {}", filename, e.what());
+		spdlog::error("同步最高分时出现错误 {}: {}", filename.data(), e.what());
 		return false;
 	}
 }
@@ -184,7 +187,7 @@ int SessionData::getLevelScore() const {
 	return mLevelScore;
 }
 
-const std::string& SessionData::getMapPath() const {
+std::string_view SessionData::getMapPath() const {
 	return mMapPath;
 }
 

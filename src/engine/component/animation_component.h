@@ -12,6 +12,7 @@
 #define ANIMATION_COMPONENT_H
 
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <memory>
 #include "component.h"
@@ -40,11 +41,11 @@ public:
 	AnimationComponent& operator=(AnimationComponent&&) = delete;								///< @brief 删除移动赋值构造
 
 	void addAnimation(std::unique_ptr<engine::render::Animation> animation);					///< @brief 添加一个动画
-	void playAnimation(const std::string& name);												///< @brief 播放指定名称的动画	
+	void playAnimation(std::string_view name);													///< @brief 播放指定名称的动画	
 	void stopAnimation();																		///< @brief 停止当前动画播放
 	void resumeAnimation();																		///< @brief 恢复当前动画播放
 
-	std::string getCurrentAnimationName() const;												///< @brief 获取当前动画名称
+	std::string_view getCurrentAnimationName() const;												///< @brief 获取当前动画名称
 	bool getIsPlaying() const;																	///< @brief 获取是否正在播放
 	bool getIsAnimationFinished() const;														///< @brief 获取动画是否结束
 	bool getIsOneShotRemoval() const;															///< @brief 获取是否在动画结束后删除整个 GameObject

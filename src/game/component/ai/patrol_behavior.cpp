@@ -14,7 +14,7 @@ PatrolBehavior::PatrolBehavior(float minX, float maxX, float speed)
 	, mMoveSpeed(speed)
 {
 	if (mPatrolMinX >= mPatrolMaxX) {
-		spdlog::error("{} : minX {} 应小于 maxX {}. 行为可能不正确.", std::string(mLogTag), mPatrolMinX, mPatrolMaxX);
+		spdlog::error("{} : minX {} 应小于 maxX {}. 行为可能不正确.", mLogTag.data(), mPatrolMinX, mPatrolMaxX);
 		std::swap(mPatrolMinX, mPatrolMaxX);
 	}
 }
@@ -32,7 +32,7 @@ void PatrolBehavior::update(float, AIComponent& aiComponent) {
 	auto tc = aiComponent.getTransformComponent();
 	auto sc = aiComponent.getSpriteComponent();
 	if (!pc || !tc || !sc) {
-		spdlog::error("{} : 缺少必要组件, 无法执行巡逻行为.", std::string(mLogTag));
+		spdlog::error("{} : 缺少必要组件, 无法执行巡逻行为.", mLogTag.data());
 		return;
 	}
 

@@ -5,7 +5,7 @@
 #include <spdlog/spdlog.h>
 
 namespace engine::ui {
-UIImage::UIImage(const std::string& textureId,
+UIImage::UIImage(std::string_view textureId,
 	const glm::vec2& position,
 	const glm::vec2& size,
 	const std::optional<SDL_FRect>& sourceRect,

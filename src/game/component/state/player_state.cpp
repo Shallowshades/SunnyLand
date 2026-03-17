@@ -7,13 +7,13 @@
 namespace game::component::state {
 void PlayerState::playAnimation(const std::string& animationName) {
 	if (!mPlayerComponent) {
-		spdlog::error("{} : 玩家状态没有关联玩家组件, 无法播放动画 '{}'", std::string(mLogTag), animationName);
+		spdlog::error("{} : 玩家状态没有关联玩家组件, 无法播放动画 '{}'", mLogTag.data(), animationName);
 		return;
 	}
 
 	auto ac = mPlayerComponent->getAnimationComponent();
 	if (!ac) {
-		spdlog::error("{} : 玩家组件 '{}' 没有 动画组件, 无法播放动画 '{}'", std::string(mLogTag), mPlayerComponent->getOwner()->getName(), animationName);
+		spdlog::error("{} : 玩家组件 '{}' 没有 动画组件, 无法播放动画 '{}'", mLogTag.data(), mPlayerComponent->getOwner()->getName(), animationName);
 		return;
 	}
 	ac->playAnimation(animationName);

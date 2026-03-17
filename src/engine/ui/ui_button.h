@@ -36,9 +36,9 @@ public:
         * @param callback 回调函数
         */
     UIButton(engine::core::Context& context,
-        const std::string& normalSpriteId,
-        const std::string& hoverSpriteId,
-        const std::string& pressedSpriteId,
+        std::string_view normalSpriteId,
+        std::string_view hoverSpriteId,
+        std::string_view pressedSpriteId,
         const glm::vec2& position = { 0.0f, 0.0f },
         const glm::vec2& size = { 0.0f, 0.0f },
         std::function<void()> callback = nullptr);

@@ -10,20 +10,20 @@
 #include <spdlog/spdlog.h>
 
 namespace engine::scene {
-engine::scene::Scene::Scene(const std::string& name, engine::core::Context& context, engine::scene::SceneManager& sceneManager)
-	: mSceneName(std::move(name))
+engine::scene::Scene::Scene(std::string_view name, engine::core::Context& context, engine::scene::SceneManager& sceneManager)
+	: mSceneName(name)
 	, mContext(context)
 	, mSceneManager(sceneManager)
 	, mUIManager(std::make_unique<engine::ui::UIManager>())
 	, mIsInitialized(false)
 {
-	spdlog::trace("{} : {} 构造完成", std::string(mLogTag), mSceneName);
+	spdlog::trace("{} : {} 构造完成", mLogTag.data(), mSceneName);
 }
 Scene::~Scene() = default;
 
 void Scene::init() {
 	mIsInitialized = true;
-	spdlog::trace("{} : {} 初始化完成", std::string(mLogTag), mSceneName);
+	spdlog::trace("{} : {} 初始化完成", mLogTag.data(), mSceneName);
 }
 
 void Scene::update(float deltaTime) {
@@ -113,7 +113,7 @@ void Scene::clean() {
 	mGameObjects.clear();
 
 	mIsInitialized = false;
-	spdlog::trace("{} : {} 清理完成.", std::string(mLogTag), mSceneName);
+	spdlog::trace("{} : {} 清理完成.", mLogTag.data(), mSceneName);
 }
 
 void Scene::addGameObject(std::unique_ptr<engine::object::GameObject>&& gameObject) {
@@ -121,7 +121,7 @@ void Scene::addGameObject(std::unique_ptr<engine::object::GameObject>&& gameObje
 		mGameObjects.push_back(std::move(gameObject));
 	}
 	else {
-		spdlog::warn("{} : {} 尝试添加空对象", std::string(mLogTag), mSceneName);
+		spdlog::warn("{} : {} 尝试添加空对象", mLogTag.data(), mSceneName);
 	}
 }
 
@@ -130,13 +130,13 @@ void Scene::safeAddGameObject(std::unique_ptr<engine::object::GameObject>&& game
 		mPendingAdditions.push_back(std::move(gameObject));
 	}
 	else {
-		spdlog::warn("{} : {} 尝试添加空对象", std::string(mLogTag), mSceneName);
+		spdlog::warn("{} : {} 尝试添加空对象", mLogTag.data(), mSceneName);
 	}
 }
 
 void Scene::removeGameObject(engine::object::GameObject* gameObjectPtr) {
 	if (!gameObjectPtr) {
-		spdlog::warn("{} : {} 尝试移除空对象", std::string(mLogTag), mSceneName);
+		spdlog::warn("{} : {} 尝试移除空对象", mLogTag.data(), mSceneName);
 		return;
 	}
 
@@ -148,10 +148,10 @@ void Scene::removeGameObject(engine::object::GameObject* gameObjectPtr) {
 	if (iter != mGameObjects.end()) {
 		(*iter)->clean();
 		mGameObjects.erase(iter, mGameObjects.end());
-		spdlog::trace("{} : {} 移除游戏对象.", std::string(mLogTag), mSceneName);
+		spdlog::trace("{} : {} 移除游戏对象.", mLogTag.data(), mSceneName);
 	}
 	else {
-		spdlog::warn("{} : {} 中不存在应删除的游戏对象", std::string(mLogTag), mSceneName);
+		spdlog::warn("{} : {} 中不存在应删除的游戏对象", mLogTag.data(), mSceneName);
 	}
 }
 
@@ -163,7 +163,7 @@ const std::vector<std::unique_ptr<engine::object::GameObject>>& Scene::getGameOb
 	return mGameObjects;
 }
 
-engine::object::GameObject* Scene::findGameObjectByName(const std::string& name) const {
+engine::object::GameObject* Scene::findGameObjectByName(std::string_view name) const {
 	// 找到第一个符合条件的游戏对象就返回
 	for (const auto& obj : mGameObjects) {
 		if (obj && obj->getName() == name) {
@@ -173,11 +173,11 @@ engine::object::GameObject* Scene::findGameObjectByName(const std::string& name)
 	return nullptr;
 }
 
-void Scene::setName(const std::string& name) {
+void Scene::setName(std::string_view name) {
 	mSceneName = name;
 }
 
-const std::string& Scene::getName() const {
+std::string_view Scene::getName() const {
 	return mSceneName;
 }
 

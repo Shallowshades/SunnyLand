@@ -9,12 +9,12 @@
 #include <spdlog/spdlog.h>
 
 namespace engine::component {
-ParallaxComponent::ParallaxComponent(const std::string& textureId, const glm::vec2& scrollFactor, const glm::bvec2& repeat)
-	: mSprite(engine::render::Sprite(textureId))
+ParallaxComponent::ParallaxComponent(std::string_view textureId, const glm::vec2& scrollFactor, const glm::bvec2& repeat)
+	: mSprite(textureId)
 	, mScrollFactor(scrollFactor)
 	, mRepeat(repeat)
 {
-	spdlog::trace("{} 初始化完成, 纹理ID : {}", std::string(mLogTag), textureId);
+	spdlog::trace("{} 初始化完成, 纹理ID : {}", mLogTag.data(), textureId);
 }
 void ParallaxComponent::setSprite(const engine::render::Sprite& sprite) {
 	mSprite = sprite;
@@ -50,7 +50,7 @@ bool ParallaxComponent::getIsHidden() const {
 
 void ParallaxComponent::init() {
 	if (!mOwner) {
-		spdlog::error("{} 初始化时, GameObject为空", std::string(mLogTag));
+		spdlog::error("{} 初始化时, GameObject为空", mLogTag.data());
 		return;
 	}
 	

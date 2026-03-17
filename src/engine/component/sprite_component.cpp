@@ -9,14 +9,14 @@
 #include <spdlog/spdlog.h>
 
 namespace engine::component {
-SpriteComponent::SpriteComponent(const std::string& textureId, engine::resource::ResourceManager& resourceManager, engine::utils::Alignment alignment, std::optional<SDL_FRect> sourceRectOptional, bool isFlipped) 
+SpriteComponent::SpriteComponent(std::string_view textureId, engine::resource::ResourceManager& resourceManager, engine::utils::Alignment alignment, std::optional<SDL_FRect> sourceRectOptional, bool isFlipped)
 	: mResourceManager(&resourceManager)
 	, mSprite(textureId, sourceRectOptional, isFlipped)
 	, mAlignment(alignment)
 {
 	if (!mResourceManager) {
 		// 游戏主循环不要使用try...catch/throw, 会极大影响性能
-		spdlog::critical("{} 创建 SpriteComponent 时 ResourceManager 为空!. 此组件无效.", std::string(mLogTag));
+		spdlog::critical("{} 创建 SpriteComponent 时 ResourceManager 为空!. 此组件无效.", mLogTag.data());
 	}
 }
 
@@ -24,10 +24,10 @@ SpriteComponent::SpriteComponent(engine::render::Sprite&& sprite, engine::resour
 	: mResourceManager(&resourceManager), mSprite(std::move(sprite)), mAlignment(alignment)
 {
 	if (!mResourceManager) {
-		spdlog::critical("{} 创建SpriteComponent时ResourceManager为空! 此组件无效!", std::string(mLogTag));
+		spdlog::critical("{} 创建SpriteComponent时ResourceManager为空! 此组件无效!", mLogTag.data());
 		// 游戏主循环不要使用try...catch / throw, 会极大的影响性能
 	}
-	spdlog::trace("{} 创建SpriteComponent, 纹理ID: {}", std::string(mLogTag), mSprite.getTextureId());
+	spdlog::trace("{} 创建SpriteComponent, 纹理ID: {}", mLogTag.data(), mSprite.getTextureId());
 }
 
 void SpriteComponent::updateOffset() {
@@ -76,7 +76,7 @@ const engine::render::Sprite& SpriteComponent::getSprite() const {
 	return mSprite;
 }
 
-const std::string& SpriteComponent::getTextureId() const {
+std::string_view SpriteComponent::getTextureId() const {
 	return mSprite.getTextureId();
 }
 
@@ -100,7 +100,7 @@ engine::utils::Alignment SpriteComponent::getAlignment() const {
 	return mAlignment;
 }
 
-void SpriteComponent::setSpriteById(const std::string& textureId, const std::optional<SDL_FRect>& sourceRectOptional) {
+void SpriteComponent::setSpriteById(std::string_view textureId, const std::optional<SDL_FRect>& sourceRectOptional) {
 	mSprite.setTextureId(textureId);
 	mSprite.setSourceRect(sourceRectOptional);
 
@@ -129,7 +129,7 @@ void SpriteComponent::setAlignment(engine::utils::Alignment anchor) {
 
 void SpriteComponent::updateSpriteSize() {
 	if (!mResourceManager) {
-		spdlog::error("{} ResourceManager 为空! 无法获取纹理尺寸.", std::string(mLogTag));
+		spdlog::error("{} ResourceManager 为空! 无法获取纹理尺寸.", mLogTag.data());
 		return;
 	}
 	if (mSprite.getSourceRect().has_value()) {
@@ -143,12 +143,12 @@ void SpriteComponent::updateSpriteSize() {
 
 void SpriteComponent::init() {
 	if (!mOwner) {
-		spdlog::error("{} SpriteComponent 在初始化前未设置所有者.", std::string(mLogTag));
+		spdlog::error("{} SpriteComponent 在初始化前未设置所有者.", mLogTag.data());
 		return;
 	}
 	mTransform = mOwner->getComponent<TransformComponent>();
 	if (!mTransform) {
-		spdlog::warn("{} GameObject '{}' 上的 SpriteComponent 需要一个 TransformComponent, 但未找到.", std::string(mLogTag), mOwner->getName());
+		spdlog::warn("{} GameObject '{}' 上的 SpriteComponent 需要一个 TransformComponent, 但未找到.", mLogTag.data(), mOwner->getName());
 		return;
 	}
 	// 获取大小及偏移

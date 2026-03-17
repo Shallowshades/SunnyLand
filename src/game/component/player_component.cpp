@@ -98,7 +98,7 @@ float PlayerComponent::getClimbSpeed() const {
 
 void PlayerComponent::setState(std::unique_ptr<state::PlayerState> newState) {
 	if (!newState) {
-		spdlog::warn("{} : 尝试设置空的玩家状态", std::string(mLogTag));
+		spdlog::warn("{} : 尝试设置空的玩家状态", mLogTag.data());
 		return;
 	}
 
@@ -107,13 +107,13 @@ void PlayerComponent::setState(std::unique_ptr<state::PlayerState> newState) {
 	}
 
 	mCurrentState = std::move(newState);
-	spdlog::trace("{} : 玩家组件正在切换到状态: {}", std::string(mLogTag), typeid(mCurrentState).name());
+	spdlog::trace("{} : 玩家组件正在切换到状态: {}", mLogTag.data(), typeid(mCurrentState).name());
 	mCurrentState->enter();
 }
 
 bool PlayerComponent::takeDamage(int damageAmount) {
 	if (mIsDead || !mHealthComponent || damageAmount <= 0) {
-		spdlog::warn("{} : 玩家已死亡或缺少必要组件, 并未造成伤害.", std::string(mLogTag));
+		spdlog::warn("{} : 玩家已死亡或缺少必要组件, 并未造成伤害.", mLogTag.data());
 		return false;
 	}
 
@@ -124,11 +124,11 @@ bool PlayerComponent::takeDamage(int damageAmount) {
 
 	// 成功造成伤害, 根据是否存活决定状态切换
 	if (mHealthComponent->isAlive()) {
-		spdlog::debug("{} : 玩家收到了 {} 点伤害, 当前生命值: {}/{}.", std::string(mLogTag), damageAmount, mHealthComponent->getCurrentHealth(), mHealthComponent->getMaxHealth());
+		spdlog::debug("{} : 玩家收到了 {} 点伤害, 当前生命值: {}/{}.", mLogTag.data(), damageAmount, mHealthComponent->getCurrentHealth(), mHealthComponent->getMaxHealth());
 		setState(std::make_unique<state::HurtState>(this));
 	}
 	else {
-		spdlog::debug("{} : 玩家死亡.", std::string(mLogTag));
+		spdlog::debug("{} : 玩家死亡.", mLogTag.data());
 		mIsDead = true;
 		setState(std::make_unique<state::DeadState>(this));
 	}
@@ -142,7 +142,7 @@ bool PlayerComponent::isOnGround() const {
 
 void PlayerComponent::init() {
 	if (!mOwner) {
-		spdlog::error("{} : 没有所属游戏对象", std::string(mLogTag));
+		spdlog::error("{} : 没有所属游戏对象", mLogTag.data());
 		return;
 	}
 
@@ -154,7 +154,7 @@ void PlayerComponent::init() {
 	mHealthComponent = mOwner->getComponent<engine::component::HealthComponent>();
 	mAudioComponent = mOwner->getComponent<engine::component::AudioComponent>();
 	if (!mTransformComponent || !mPhysicsComponent || !mSpriteComponent || !mAnimationComponent || !mHealthComponent || !mAudioComponent) {
-		spdlog::error("{} : 对象缺少必要组件", std::string(mLogTag));
+		spdlog::error("{} : 对象缺少必要组件", mLogTag.data());
 	}
 
 	mCurrentState = std::make_unique<state::IdleState>(this);
@@ -162,9 +162,9 @@ void PlayerComponent::init() {
 		setState(std::move(mCurrentState));
 	}
 	else {
-		spdlog::error("{} : 初始化玩家状态失败", std::string(mLogTag));
+		spdlog::error("{} : 初始化玩家状态失败", mLogTag.data());
 	}
-	spdlog::trace("{} : 初始化完成", std::string(mLogTag));
+	spdlog::trace("{} : 初始化完成", mLogTag.data());
 }
 
 void PlayerComponent::handleInput(engine::core::Context& context) {

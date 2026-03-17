@@ -12,6 +12,7 @@
 #define SESSION_DATA_H
 
 #include <string>
+#include <string_view>
 #include <memory>
 #include <nlohmann/json.hpp> 
 
@@ -41,7 +42,7 @@ public:
     int getHighScore() const;
     int getLevelHealth() const;
     int getLevelScore() const;
-    const std::string& getMapPath() const;
+    std::string_view getMapPath() const;
     bool getIsWin() const;
     void setCurrentHealth(int health);
     void setMaxHealth(int maxHealth);
@@ -49,14 +50,14 @@ public:
     void setHighScore(int highScore);
     void setLevelHealth(int levelHealth);
     void setLevelScore(int levelScore);
-    void setMapPath(const std::string& mapPath);
+    void setMapPath(std::string_view mapPath);
     void setIsWin(bool isWin);
 
     void reset();                                                           ///< @brief 重置游戏数据以准备开始新游戏（保留最高分）
-    void setNextLevel(const std::string& map_path);                         ///< @brief 设置下一个场景信息（地图、关卡开始时的得分生命）
-    bool saveToFile(const std::string& filename) const;                     ///< @brief 将当前游戏数据保存到JSON文件（存档）
-    bool loadFromFile(const std::string& filename);                         ///< @brief 从JSON文件中读取游戏数据（读档）
-    bool syncHighScore(const std::string& filename);                        ///< @brief 同步最高分(文件与当前分数取最大值)
+    void setNextLevel(std::string_view map_path);                           ///< @brief 设置下一个场景信息（地图、关卡开始时的得分生命）
+    bool saveToFile(std::string_view filename) const;                       ///< @brief 将当前游戏数据保存到JSON文件（存档）
+    bool loadFromFile(std::string_view filename);                           ///< @brief 从JSON文件中读取游戏数据（读档）
+    bool syncHighScore(std::string_view filename);                          ///< @brief 同步最高分(文件与当前分数取最大值)
 private:
 	int mCurrentHealth = 3;                                                 ///< @brief 当前生命值
     int mMaxHealth = 3;                                                     ///< @brief 最大生命值

@@ -41,16 +41,16 @@ void TextRenderer::close() {
 	TTF_Quit();     // 一定要确保在ResourceManager销毁之后调用
 }
 
-void TextRenderer::drawUIText(const std::string& text, const std::string& font_id, int font_size, const glm::vec2& position, const engine::utils::FColor& color) {
+void TextRenderer::drawUIText(std::string_view text, std::string_view font_id, int font_size, const glm::vec2& position, const engine::utils::FColor& color) {
 	/* 构造函数已经保证了必要指针不会为空，这里不需要再检查 */
 	TTF_Font* font = mResourceManager->getFont(font_id, font_size);
 	if (!font) {
-		spdlog::warn("drawUIText 获取字体失败: {} 大小 {}", font_id, font_size);
+		spdlog::warn("drawUIText 获取字体失败: {} 大小 {}", font_id.data(), font_size);
 		return;
 	}
 
 	// 创建临时 TTF_Text 对象   (目前效率不高，未来可以考虑使用缓存优化)
-	TTF_Text* temp_text_object = TTF_CreateText(mTextEngine, font, text.c_str(), 0);
+	TTF_Text* temp_text_object = TTF_CreateText(mTextEngine, font, text.data(), 0);
 	if (!temp_text_object) {
 		spdlog::error("drawUIText 创建临时 TTF_Text 失败: {}", SDL_GetError());
 		return;
@@ -72,7 +72,7 @@ void TextRenderer::drawUIText(const std::string& text, const std::string& font_i
 	TTF_DestroyText(temp_text_object);
 }
 
-void TextRenderer::drawText(const Camera& camera, const std::string& text, const std::string& font_id, int font_size, const glm::vec2& position, const engine::utils::FColor& color) {
+void TextRenderer::drawText(const Camera& camera, std::string_view text, std::string_view font_id, int font_size, const glm::vec2& position, const engine::utils::FColor& color) {
 	// 应用相机变换
 	glm::vec2 position_screen = camera.worldToScreen(position);
 
@@ -80,16 +80,16 @@ void TextRenderer::drawText(const Camera& camera, const std::string& text, const
 	drawUIText(text, font_id, font_size, position_screen, color);
 }
 
-glm::vec2 TextRenderer::getTextSize(const std::string& text, const std::string& font_id, int font_size) {
+glm::vec2 TextRenderer::getTextSize(std::string_view text, std::string_view font_id, int font_size) {
 	/* 构造函数已经保证了必要指针不会为空，这里不需要再检查 */
 	TTF_Font* font = mResourceManager->getFont(font_id, font_size);
 	if (!font) {
-		spdlog::warn("getTextSize 获取字体失败: {} 大小 {}", font_id, font_size);
+		spdlog::warn("getTextSize 获取字体失败: {} 大小 {}", font_id.data(), font_size);
 		return glm::vec2(0.0f, 0.0f);
 	}
 
 	// 创建临时 TTF_Text 对象
-	TTF_Text* temp_text_object = TTF_CreateText(mTextEngine, font, text.c_str(), 0);
+	TTF_Text* temp_text_object = TTF_CreateText(mTextEngine, font, text.data(), 0);
 	if (!temp_text_object) {
 		spdlog::error("getTextSize 创建临时 TTF_Text 失败: {}", SDL_GetError());
 		return glm::vec2(0.0f, 0.0f);

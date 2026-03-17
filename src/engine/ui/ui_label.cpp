@@ -5,8 +5,8 @@
 
 namespace engine::ui {
 UILabel::UILabel(engine::render::TextRenderer& text_renderer,
-	const std::string& text,
-	const std::string& font_id,
+	std::string_view text,
+	std::string_view font_id,
 	int font_size,
 	const engine::utils::FColor& text_color,
 	const glm::vec2& position)
@@ -30,12 +30,12 @@ void UILabel::render(engine::core::Context& context) {
 	UIElement::render(context);
 }
 
-void UILabel::setText(const std::string& text) {
+void UILabel::setText(std::string_view text) {
 	mText = text;
 	mSize = mTextRenderer.getTextSize(mText, mFontId, mFontSize);
 }
 
-void UILabel::setFontId(const std::string& font_id) {
+void UILabel::setFontId(std::string_view font_id) {
 	mFontId = font_id;
 	mSize = mTextRenderer.getTextSize(mText, mFontId, mFontSize);
 }

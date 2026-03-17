@@ -15,6 +15,8 @@
 #include <unordered_map>
 #include <typeindex>
 #include <utility>
+#include <string>
+#include <string_view>
 #include <spdlog/spdlog.h>
 #include "../component/component.h"
 
@@ -37,7 +39,7 @@ public:
 	 * @param name 名称
 	 * @param tag 标签
 	 */
-	GameObject(const std::string& name = "", const std::string& tag = "");
+	GameObject(std::string_view name = "", std::string_view tag = "");
 
 	// 禁用拷贝和移动语义
 	GameObject(const GameObject&) = delete;							///< @brief 删除拷贝构造
@@ -45,10 +47,10 @@ public:
 	GameObject(GameObject&&) = delete;								///< @brief 删除移动构造
 	GameObject& operator=(GameObject&&) = delete;					///< @brief 删除移动赋值构造
 
-	void setName(const std::string& name);							///< @brief 设置名称
-	const std::string& getName() const;								///< @brief 获取名称
-	void setTag(const std::string& tag);							///< @brief 设置标签
-	const std::string& getTag() const;								///< @brief 获取标签
+	void setName(std::string_view name);							///< @brief 设置名称
+	std::string_view getName() const;								///< @brief 获取名称
+	void setTag(std::string_view tag);								///< @brief 设置标签
+	std::string_view getTag() const;								///< @brief 获取标签
 	void setNeedRemove(bool needRemove);							///< @brief 设置是否需要删除
 	bool isNeedRemove() const;										///< @brief 获取是否需要删除
 
@@ -127,7 +129,7 @@ inline T* GameObject::addComponent(Args && ...args) {
 	component->setOwner(this);
 	mComponents[typeIndex] = std::move(component);
 	ptr->init();
-	spdlog::debug("{} addComponent: {} added component {}", std::string(mLogTag), mName, typeid(T).name());
+	spdlog::debug("{} addComponent: {} added component {}", mLogTag.data(), mName, typeid(T).name());
 	return ptr;
 }
 

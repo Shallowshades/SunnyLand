@@ -11,6 +11,8 @@
 #ifndef GAME_SCENE_H
 #define GAME_SCENE_H
 
+#include <string>
+#include <string_view>
 #include <memory>
 #include "../../engine/scene/scene.h"
 #include <glm/vec2.hpp>
@@ -66,7 +68,7 @@ private:
 	///< @brief 显示结束场景
 	void showEndScene(bool isWin);
 	///< @brief 根据关卡名称获取对应的地图文件
-	std::string levelNameToPath(const std::string& levelName) const;
+	std::string levelNameToPath(std::string_view levelName) const;
 
 	/**
 	 * @brief 创建一个特效对象(一次性).
@@ -74,7 +76,7 @@ private:
 	 * @param centerPosition 特效中心位置
 	 * @param tag 特效标签(决定特效类型, 例如"enemy", "item")
 	 */
-	void createEffect(const glm::vec2& centerPosition, const std::string& tag);
+	void createEffect(const glm::vec2& centerPosition, std::string_view tag);
 
 	// UI 相关函数
 	void createScoreUI();											///< @brief 创建得分UI

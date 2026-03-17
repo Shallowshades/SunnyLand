@@ -12,6 +12,7 @@
 #define AUDIO_PLAYER_H
 
 #include <string>
+#include <string_view>
 
 namespace engine::resource {
     class ResourceManager;
@@ -49,7 +50,7 @@ public:
 	* @param channel 要播放的特定通道，或 -1 表示第一个可用通道。默认为 -1。
 	* @return 音效正在播放的通道，出错时返回 -1。
 	*/
-    int playSound(const std::string& soundPath, int channel = -1);
+    int playSound(std::string_view soundPath, int channel = -1);
 
     /**
 	* @brief 播放背景音乐。如果正在播放，则淡出之前的音乐。
@@ -59,7 +60,7 @@ public:
 	* @param fade_in_ms 音乐淡入的时间（毫秒）（0 表示不淡入）。默认为 0。
 	* @return 成功返回 true ，出错返回 false 。
 	*/
-    bool playMusic(const std::string& musicPath, int loops = -1, int fadeInMs = 0);
+    bool playMusic(std::string_view musicPath, int loops = -1, int fadeInMs = 0);
 
     /**
 	* @brief 停止当前正在播放的背景音乐。

@@ -24,9 +24,9 @@ void AudioComponent::init() {
 	}
 }
 
-void AudioComponent::playSound(const std::string& soundId, int channel, bool useSpatial) {
+void AudioComponent::playSound(std::string_view soundId, int channel, bool useSpatial) {
 	// 如果 sound_id 是音效 ID，则在查找在map中查找对应的路径； 没找到的话则把 sound_id 当作路径直接使用
-	auto sound_path = mSoundIdToPath.find(soundId) != mSoundIdToPath.end() ? mSoundIdToPath[soundId] : soundId;
+	auto soundPath = mSoundIdToPath.find(std::string(soundId)) != mSoundIdToPath.end() ? mSoundIdToPath[std::string(soundId)] : soundId;
 
 	if (useSpatial && mTransform) {    // 使用空间定位
 		// TODO: (SDL_Mixer 不支持空间定位，未来更换音频库时可以方便地实现)
@@ -35,21 +35,21 @@ void AudioComponent::playSound(const std::string& soundId, int channel, bool use
 		auto objectPosition = mTransform->getPosition();
 		float distance = glm::length(cameraCenter - objectPosition);
 		if (distance > 150.0f) {
-			spdlog::debug("AudioComponent::playSound: 音效 '{}' 超出范围，不播放。", soundId);
+			spdlog::debug("AudioComponent::playSound: 音效 '{}' 超出范围，不播放。", soundId.data());
 			return; // 超出范围，不播放
 		}
-		mAudioPlayer->playSound(sound_path, channel);
+		mAudioPlayer->playSound(soundPath, channel);
 	}
 	else {    // 不使用空间定位
-		mAudioPlayer->playSound(sound_path, channel);
+		mAudioPlayer->playSound(soundPath, channel);
 	}
 }
 
-void AudioComponent::addSound(const std::string& soundId, const std::string& soundPath) {
-	if (mSoundIdToPath.find(soundId) != mSoundIdToPath.end()) {
-		spdlog::warn("AudioComponent::addSound: 音效 ID '{}' 已存在，覆盖旧路径。", soundId);
+void AudioComponent::addSound(std::string_view soundId, std::string_view soundPath) {
+	if (mSoundIdToPath.find(std::string(soundId)) != mSoundIdToPath.end()) {
+		spdlog::warn("AudioComponent::addSound: 音效 ID '{}' 已存在，覆盖旧路径。", soundId.data());
 	}
-	mSoundIdToPath[soundId] = soundPath;
-	spdlog::debug("AudioComponent::addSound: 添加音效 ID '{}' 路径 '{}'", soundId, soundPath);
+	mSoundIdToPath[std::string(soundId)] = std::string(soundPath);
+	spdlog::debug("AudioComponent::addSound: 添加音效 ID '{}' 路径 '{}'", soundId.data(), soundPath.data());
 }
 } // namespace engine::component

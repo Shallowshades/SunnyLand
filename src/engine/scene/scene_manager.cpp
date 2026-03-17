@@ -7,12 +7,12 @@ namespace engine::scene {
 engine::scene::SceneManager::SceneManager(engine::core::Context& context) 
 	: mContext(context)
 {
-	spdlog::trace("{} 构造完成", std::string(mLogTag));
+	spdlog::trace("{} 构造完成", mLogTag.data());
 }
 
 SceneManager::~SceneManager() {
 	clean();
-	spdlog::trace("{} 析构完成", std::string(mLogTag));
+	spdlog::trace("{} 析构完成", mLogTag.data());
 }
 
 void SceneManager::requestPushScene(std::unique_ptr<Scene>&& scene) {
@@ -67,10 +67,10 @@ void SceneManager::handleInput() {
 }
 
 void SceneManager::clean() {
-	spdlog::trace("{} 正在清理场景管理器并清空场景栈...", std::string(mLogTag));
+	spdlog::trace("{} 正在清理场景管理器并清空场景栈...", mLogTag.data());
 	while (!mSceneStack.empty()) {
 		if (mSceneStack.back()) {
-			spdlog::debug("{} 正在清理场景 '{}'", std::string(mLogTag), mSceneStack.back()->getName());
+			spdlog::debug("{} 正在清理场景 '{}'", mLogTag.data(), mSceneStack.back()->getName());
 			mSceneStack.back()->clean();
 		}
 		mSceneStack.pop_back();
@@ -98,11 +98,11 @@ void SceneManager::processPendingActions() {
 
 void SceneManager::pushScene(std::unique_ptr<Scene>&& scene) {
 	if (!scene) {
-		spdlog::warn("{} 尝试将空场景压入栈中", std::string(mLogTag));
+		spdlog::warn("{} 尝试将空场景压入栈中", mLogTag.data());
 		return;
 	}
 
-	spdlog::debug("{} 正在将场景 '{}' 压入栈中", std::string(mLogTag), scene->getName());
+	spdlog::debug("{} 正在将场景 '{}' 压入栈中", mLogTag.data(), scene->getName());
 
 	// 初始化新场景
 	if (!scene->getIsInitialized()) {
@@ -118,7 +118,7 @@ void SceneManager::popScene() {
 		spdlog::warn("{} 尝试从空场景栈中弹出");
 		return;
 	}
-	spdlog::debug("{} 正在从栈中弹出场景 '{}'", std::string(mLogTag), mSceneStack.back()->getName());
+	spdlog::debug("{} 正在从栈中弹出场景 '{}'", mLogTag.data(), mSceneStack.back()->getName());
 
 	// 清除并移除栈顶场景
 	if (mSceneStack.back()) {
@@ -129,11 +129,11 @@ void SceneManager::popScene() {
 
 void SceneManager::replaceScene(std::unique_ptr<Scene>&& scene) {
 	if (!scene) {
-		spdlog::warn("{} 尝试用空场景替换", std::string(mLogTag));
+		spdlog::warn("{} 尝试用空场景替换", mLogTag.data());
 		return;
 	}
 
-	spdlog::debug("{} 正在用场景 '{}' 替换场景 '{}'", std::string(mLogTag), scene->getName(), mSceneStack.back()->getName());
+	spdlog::debug("{} 正在用场景 '{}' 替换场景 '{}'", mLogTag.data(), scene->getName(), mSceneStack.back()->getName());
 	while (!mSceneStack.empty()) {
 		if (mSceneStack.back()) {
 			mSceneStack.back()->clean();

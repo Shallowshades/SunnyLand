@@ -18,7 +18,7 @@ bool HealthComponent::takeDamage(int damageAmount) {
 	}
 
 	if (mIsInvincible) {
-		spdlog::debug("{} : 游戏对象 '{}' 处于无敌状态, 免疫了{}点伤害.", std::string(mLogTag), (mOwner ? mOwner->getName() : "unknown"), damageAmount);
+		spdlog::debug("{} : 游戏对象 '{}' 处于无敌状态, 免疫了{}点伤害.", mLogTag.data(), (mOwner ? mOwner->getName() : "unknown"), damageAmount);
 		return false;
 	}
 
@@ -30,7 +30,7 @@ bool HealthComponent::takeDamage(int damageAmount) {
 	if (isAlive() && mInvincibilityDuration > 0.f) {
 		setInvincible(mInvincibilityDuration);
 	}
-	spdlog::debug("{} : 游戏对象 '{}' 收到了 {} 点伤害, 当前生命值: {}/{}", std::string(mLogTag), (mOwner ? mOwner->getName() : "unknown"), damageAmount, mCurrentHealth, mMaxHealth);
+	spdlog::debug("{} : 游戏对象 '{}' 收到了 {} 点伤害, 当前生命值: {}/{}", mLogTag.data(), (mOwner ? mOwner->getName() : "unknown"), damageAmount, mCurrentHealth, mMaxHealth);
 	return true;
 }
 
@@ -42,7 +42,7 @@ int HealthComponent::heal(int healAmount) {
 
 	mCurrentHealth += healAmount;
 	mCurrentHealth = std::min(mMaxHealth, mCurrentHealth);
-	spdlog::debug("{} : 游戏对象 '{}' 治疗了 {} 点生命, 当前生命值: {}/{}", std::string(mLogTag), (mOwner ? mOwner->getName() : "unknown"), healAmount, mCurrentHealth, mMaxHealth);
+	spdlog::debug("{} : 游戏对象 '{}' 治疗了 {} 点生命, 当前生命值: {}/{}", mLogTag.data(), (mOwner ? mOwner->getName() : "unknown"), healAmount, mCurrentHealth, mMaxHealth);
 	return mCurrentHealth;
 }
 
@@ -75,13 +75,13 @@ void HealthComponent::setInvincible(float duration) {
 	if (duration > 0.f) {
 		mIsInvincible = true;
 		mInvincibilityTimer = duration;
-		spdlog::debug("{} : 游戏对象 '{}' 进入无敌状态, 持续 {} 秒.", std::string(mLogTag), (mOwner ? mOwner->getName() : "unknown"), duration);
+		spdlog::debug("{} : 游戏对象 '{}' 进入无敌状态, 持续 {} 秒.", mLogTag.data(), (mOwner ? mOwner->getName() : "unknown"), duration);
 	}
 	else {
 		// 如果持续时间为 0 或 负数, 则立即取消无敌
 		mIsInvincible = false;
 		mInvincibilityTimer = 0.f;
-		spdlog::debug("{} : 游戏对象 '{}' 无敌状态被手动移除.", std::string(mLogTag), (mOwner ? mOwner->getName() : "unknown"));
+		spdlog::debug("{} : 游戏对象 '{}' 无敌状态被手动移除.", mLogTag.data(), (mOwner ? mOwner->getName() : "unknown"));
 	}
 }
 

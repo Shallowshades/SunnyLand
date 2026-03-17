@@ -13,6 +13,7 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 #include <optional>
 #include <glm/vec2.hpp>
 #include <nlohmann/json.hpp>
@@ -41,7 +42,7 @@ public:
 	 * @param scene 要加载数据的目标 Scene 对象
 	 * @return bool 是否加载成功
 	 */
-	[[nodiscard]] bool loadLevel(const std::string& mapPath, Scene& scene);
+	[[nodiscard]] bool loadLevel(std::string_view mapPath, Scene& scene);
 
 private:
 	void loadImageLayer(const nlohmann::json& layerJson, Scene& scene);		///< @brief 加载图片图层
@@ -73,7 +74,7 @@ private:
 	 * @return 属性值, 如果属性不存在则返回 std::nullopt
 	 */
 	template<typename T>
-	std::optional<T> getTileProperty(const nlohmann::json& tileJson, const std::string& propertyName);
+	std::optional<T> getTileProperty(const nlohmann::json& tileJson, std::string_view propertyName);
 
 	/**
 	 * @brief 获取瓦片碰撞器矩形.
@@ -121,7 +122,7 @@ private:
 	 * @param tilesetPath Tileset 文件路径
 	 * @param firstGid 此tileset的第一个全局id
 	 */
-	void loadTileset(const std::string& tilesetPath, int firstGid);
+	void loadTileset(std::string_view tilesetPath, int firstGid);
 
 	/**
 	 * @brief 解析图片路径, 合并地图路径和相对路径. 例如
@@ -133,7 +134,7 @@ private:
 	 * @param filePath 文件路径
 	 * @return std::string 解析后的完整路径
 	 */
-	std::string resolvePath(const std::string& relativePath, const std::string& filePath);
+	std::string resolvePath(std::string_view relativePath, std::string_view filePath);
 private:
 	static constexpr std::string_view mLogTag = "LevelLoader";				///< @brief 日志标记		
 
@@ -144,13 +145,13 @@ private:
 };
 
 template<typename T>
-inline std::optional<T> scene::LevelLoader::getTileProperty(const nlohmann::json& tileJson, const std::string& propertyName) {
+inline std::optional<T> scene::LevelLoader::getTileProperty(const nlohmann::json& tileJson, std::string_view propertyName) {
 	if (!tileJson.contains("properties")) {
 		return std::nullopt;
 	}
 	const auto& properties = tileJson["properties"];
 	for (const auto& property : properties) {
-		if (property.contains("name") && property["name"] == propertyName) {
+		if (property.contains("name") && property["name"] == std::string(propertyName)) {
 			if (property.contains("value")) {
 				return property["value"].get<T>();
 			}

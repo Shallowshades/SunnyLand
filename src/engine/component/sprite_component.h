@@ -12,6 +12,7 @@
 #define SPRITE_COMPONENT_H
 
 #include <string>
+#include <string_view>
 #include <optional>
 
 #include <SDL3/SDL_rect.h>
@@ -48,7 +49,7 @@ public:
 	* @param sourceRectOptional 可选的源矩形。
 	* @param isFlipped 初始翻转状态。
 	*/
-	SpriteComponent(const std::string& textureId,
+	SpriteComponent(std::string_view textureId,
 		engine::resource::ResourceManager& resourceManager,
 		engine::utils::Alignment alignment = engine::utils::Alignment::NONE,
 		std::optional<SDL_FRect> sourceRectOptional = std::nullopt,
@@ -73,7 +74,7 @@ public:
 	void updateOffset();														///< @brief 更新偏移量
 
 	const engine::render::Sprite& getSprite() const;							///< @brief 获取精灵对象
-	const std::string& getTextureId() const;									///< @brief 获取纹理ID
+	std::string_view getTextureId() const;										///< @brief 获取纹理ID
 	bool isFlipped() const;														///< @brief 获取是否翻转
 	bool isHidden() const;														///< @brief 获取是否隐藏
 	const glm::vec2& getSpriteSize() const;										///< @brief 获取精灵尺寸
@@ -83,7 +84,7 @@ public:
 	/**
 	 * @brief 通过纹理ID设置精灵对象.
 	 */
-	void setSpriteById(const std::string& textureId, const std::optional<SDL_FRect>& sourceRectOptional = std::nullopt);
+	void setSpriteById(std::string_view textureId, const std::optional<SDL_FRect>& sourceRectOptional = std::nullopt);
 	void setFlipped(bool flipped);												///< @brief 设置是否翻转
 	void setHidden(bool hidden);												///< @brief 设置是否隐藏
 	void setSourceRect(const std::optional<SDL_FRect>& sourceRectOptional);		///< @brief 设置源矩阵

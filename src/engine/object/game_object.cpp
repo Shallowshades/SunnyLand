@@ -5,25 +5,25 @@
 #include <spdlog/spdlog.h>
 
 namespace engine::object {
-GameObject::GameObject(const std::string& name, const std::string& tag)
+GameObject::GameObject(std::string_view name, std::string_view tag)
 	: mName(name), mTag(tag)
 {
-	spdlog::trace("{} created: {} {}", std::string(mLogTag), mName, mTag);
+	spdlog::trace("{} created: {} {}", mLogTag.data(), mName, mTag);
 }
 
-void GameObject::setName(const std::string& name){
+void GameObject::setName(std::string_view name){
 	mName = name;
 }
 
-const std::string& GameObject::getName() const{
+std::string_view GameObject::getName() const{
 	return mName;
 }
 
-void GameObject::setTag(const std::string& tag){
+void GameObject::setTag(std::string_view tag){
 	mTag = tag;
 }
 
-const std::string& GameObject::getTag() const{
+std::string_view GameObject::getTag() const{
 	return mTag;
 }
 
@@ -50,7 +50,7 @@ void GameObject::render(engine::core::Context& context){
 }
 
 void GameObject::clean(){
-	spdlog::trace("{} cleaning GameObject '{}', '{}' ...", std::string(mLogTag), mName, mTag);
+	spdlog::trace("{} cleaning GameObject '{}', '{}' ...", mLogTag.data(), mName, mTag);
 	// 遍历所有组件并调用他们的clean方法
 	for (auto& pair : mComponents) {
 		pair.second->clean();

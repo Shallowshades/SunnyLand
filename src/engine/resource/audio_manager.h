@@ -14,6 +14,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 
 #include <SDL3_mixer/SDL_mixer.h>
@@ -60,14 +61,14 @@ namespace engine::resource {
 		AudioManager& operator=(AudioManager&&) = delete;												///< @brief 删除移动赋值构造
 
 	private:
-		Mix_Chunk* loadSound(const std::string& filePath);												///< @brief 载入音效资源
-		Mix_Chunk* getSound(const std::string& filePath);												///< @brief 尝试获取已加载的音效的指针,如果未加载则尝试加载
-		void unloadSound(const std::string& filePath);													///< @brief 卸载指定的音效资源
+		Mix_Chunk* loadSound(std::string_view filePath);												///< @brief 载入音效资源
+		Mix_Chunk* getSound(std::string_view filePath);													///< @brief 尝试获取已加载的音效的指针,如果未加载则尝试加载
+		void unloadSound(std::string_view filePath);													///< @brief 卸载指定的音效资源
 		void clearSounds();																				///< @brief 清空所有的音效资源
 
-		Mix_Music* loadMusic(const std::string& filePath);												///< @brief 载入音乐资源
-		Mix_Music* getMusic(const std::string& filePath);												///< @brief 尝试获取已加载的音乐的指针,如果未加载则尝试加载
-		void unloadMusic(const std::string& filePath);													///< @brief 卸载指定的音乐资源
+		Mix_Music* loadMusic(std::string_view filePath);												///< @brief 载入音乐资源
+		Mix_Music* getMusic(std::string_view filePath);													///< @brief 尝试获取已加载的音乐的指针,如果未加载则尝试加载
+		void unloadMusic(std::string_view filePath);													///< @brief 卸载指定的音乐资源
 		void clearMusic();																				///< @brief 清空所有的音乐资源
 
 		void clearAudio();																				///< @brief 清空所有音频资源

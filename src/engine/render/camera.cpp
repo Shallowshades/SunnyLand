@@ -7,7 +7,7 @@ namespace engine::render{
 Camera::Camera(const glm::vec2& viewPortSize, const glm::vec2& position, const std::optional<engine::utils::Rect> limitBounds) 
 	: mViewPortSize(viewPortSize), mPosition(position), mLimitBounds(limitBounds) 
 {
-	spdlog::trace("{} 初始化成功, 位置: ({}, {})", std::string(mLogTag), std::to_string(mPosition.x), std::to_string(mPosition.y));
+	spdlog::trace("{} 初始化成功, 位置: ({}, {})", mLogTag.data(), std::to_string(mPosition.x), std::to_string(mPosition.y));
 }
 
 void Camera::update(float deltaTime) {

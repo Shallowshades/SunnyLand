@@ -17,19 +17,19 @@ JumpBehavior::JumpBehavior(float minX, float maxX, glm::vec2 jumpVelocity, float
 {
 	// 确保巡逻范围是有效的
 	if (mPatrolMinX >= mPatrolMaxX) {
-		spdlog::error("{} : JumpBehavior: minX({})应小于maxX({}). 行为可能不正确", std::string(mLogTag), mPatrolMinX, mPatrolMaxX);
+		spdlog::error("{} : JumpBehavior: minX({})应小于maxX({}). 行为可能不正确", mLogTag.data(), mPatrolMinX, mPatrolMaxX);
 		std::swap(mPatrolMinX, mPatrolMaxX);
 	}
 
 	// 确保跳跃间隔是正数
 	if (mJumpInterval <= 0.f) {
-		spdlog::error("{} : JumpBehavior: JumpInterval = '{}'应为正数. 已设置为2.0s", std::string(mLogTag), mJumpInterval);
+		spdlog::error("{} : JumpBehavior: JumpInterval = '{}'应为正数. 已设置为2.0s", mLogTag.data(), mJumpInterval);
 		mJumpInterval = 2.f;
 	}
 
 	// 确保垂直跳跃速度是负数(向上)
 	if (mJumpVelocity.y > 0.f) {
-		spdlog::error("{} : JumpBehavior: 垂直跳跃速度({})应为负数(向上). 已取相反数", std::string(mLogTag), mJumpVelocity.y);
+		spdlog::error("{} : JumpBehavior: 垂直跳跃速度({})应为负数(向上). 已取相反数", mLogTag.data(), mJumpVelocity.y);
 		mJumpVelocity.y = -mJumpVelocity.y;
 	}
 }
@@ -43,7 +43,7 @@ void JumpBehavior::update(float delta, AIComponent& aiComponent) {
 	auto audioComponent = aiComponent.getAudioComponent();
 
 	if (!physicsComponent || !transformComponent || !spriteComponent || !animationComponent) {
-		spdlog::error("{} : 缺少必要组件, 无法执行跳跃行为", std::string(mLogTag));
+		spdlog::error("{} : 缺少必要组件, 无法执行跳跃行为", mLogTag.data());
 		return;
 	}
 

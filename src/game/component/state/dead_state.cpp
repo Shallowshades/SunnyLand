@@ -14,7 +14,7 @@ DeadState::DeadState(PlayerComponent* playerComponent)
 
 void DeadState::enter() {
 	// 播放进入死亡状态
-	spdlog::debug("{} : 玩家进入死亡状态", std::string(mLogTag));
+	spdlog::debug("{} : 玩家进入死亡状态", mLogTag.data());
 	playAnimation("hurt");
 
 	// 应用击退力, 向上的击退力

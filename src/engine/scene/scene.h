@@ -13,6 +13,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <string_view>
 
 namespace engine::core { class Context; }
 namespace engine::ui { class UIManager; }
@@ -35,7 +36,7 @@ public:
 	 * @param context 场景上下文
 	 * @param sceneManager 场景管理器
 	 */
-	Scene(const std::string& name, engine::core::Context& context, engine::scene::SceneManager& sceneManager);
+	Scene(std::string_view name, engine::core::Context& context, engine::scene::SceneManager& sceneManager);
 	virtual ~Scene();
 
 	// 禁用拷贝和移动语义
@@ -45,11 +46,11 @@ public:
 	Scene& operator=(Scene&&) = delete;						///< @brief 删除移动赋值构造
 
 	// 核心循环函数
-	virtual void init();																///< @brief 初始化场景
-	virtual void update(float deltaTime);												///< @brief 更新场景
-	virtual void render();																///< @brief 渲染场景
-	virtual void handleInput();															///< @brief 处理输入
-	virtual void clean();																///< @brief 清理场景
+	virtual void init();									///< @brief 初始化场景
+	virtual void update(float deltaTime);					///< @brief 更新场景
+	virtual void render();									///< @brief 渲染场景
+	virtual void handleInput();								///< @brief 处理输入
+	virtual void clean();									///< @brief 清理场景
 
 	/**
 	 * @brief 直接向场景中添加一个游戏对象.
@@ -80,10 +81,10 @@ public:
 	/**
 	 * @brief 根据名称查找游戏对象(返回找到的第一个对象).
 	 */
-	engine::object::GameObject* findGameObjectByName(const std::string& name) const;
+	engine::object::GameObject* findGameObjectByName(std::string_view name) const;
 
-	void setName(const std::string& name);												///< @brief 设置场景名称
-	const std::string& getName() const;													///< @brief 获取场景名称
+	void setName(std::string_view name);												///< @brief 设置场景名称
+	std::string_view getName() const;													///< @brief 获取场景名称
 	void setIsInitialized(bool initialized);											///< @brief 设置场景是否已初始化
 	bool getIsInitialized() const;														///< @brief 获取场景是否已初始化
 

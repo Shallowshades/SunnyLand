@@ -12,6 +12,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <SDL3/SDL_rect.h>
 
 namespace engine::render {
@@ -29,13 +30,13 @@ public:
 	 * @param sourceRect 可选的源矩阵, 定义要使用的纹理部分. 如果为std::nullopt, 则使用整个纹理
 	 * @param isFlipped 是否水平翻转
 	 */
-	Sprite(const std::string& textureId, const std::optional<SDL_FRect>& sourceRect = std::nullopt, bool isFlipped = false);
+	Sprite(std::string_view textureId, const std::optional<SDL_FRect>& sourceRect = std::nullopt, bool isFlipped = false);
 
-	const std::string& getTextureId() const;						///< @brief 获取纹理Id
+	std::string_view getTextureId() const;							///< @brief 获取纹理Id
 	const std::optional<SDL_FRect>& getSourceRect() const;			///< @brief 获取源矩形
 	bool isFlipped() const;											///< @brief 获取是否水平翻转
 
-	void setTextureId(const std::string& textureId);				///< @brief 设置纹理Id
+	void setTextureId(std::string_view textureId);					///< @brief 设置纹理Id
 	void setSourceRect(const std::optional<SDL_FRect>& sourceRect);	///< @brief 设置源矩阵
 	void setFlipped(bool flipped);									///< @brief 设置是否水平翻转
 

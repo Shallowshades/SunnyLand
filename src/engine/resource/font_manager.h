@@ -14,6 +14,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 #include <functional>
@@ -64,9 +65,9 @@ public:
 	FontManager(FontManager&&) = delete;															///< @brief 删除移动构造
 	FontManager& operator=(FontManager&&) = delete;													///< @brief 删除移动赋值构造
 private:
-	TTF_Font* loadFont(const std::string& filePath, int pointSize);									///< @brief 载入字体资源
-	TTF_Font* getFont(const std::string& filePath, int pointSize);									///< @brief 尝试获取已加载的字体
-	void unloadFont(const std::string& filePath, int pointSize);									///< @brief 卸载指定的字体资源
+	TTF_Font* loadFont(std::string_view filePath, int pointSize);									///< @brief 载入字体资源
+	TTF_Font* getFont(std::string_view filePath, int pointSize);									///< @brief 尝试获取已加载的字体
+	void unloadFont(std::string_view filePath, int pointSize);										///< @brief 卸载指定的字体资源
 	void clearFonts();																				///< @brief 清空所有的字体资源
 private:
 	static constexpr std::string_view mLogTag = "FontManager";

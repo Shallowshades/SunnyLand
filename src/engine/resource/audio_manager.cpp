@@ -7,13 +7,13 @@ namespace engine::resource {
 		// 初始化SDL_mixer(推荐OGG, MP3)
 		MIX_InitFlags flags = MIX_INIT_OGG | MIX_INIT_MP3;
 		if ((Mix_Init(flags) & flags) != flags) {
-			throw std::runtime_error(std::string(mLogTag) + std::string(" 错误: Mix_Init失败: ") + std::string(SDL_GetError()));
+			throw std::runtime_error(mLogTag.data() + std::string(" 错误: Mix_Init失败: ") + std::string(SDL_GetError()));
 		}
 
 		// SDL3打开音频设备的方法; 默认值: 44100Hz, 默认格式: 2声道(立体声), 2048采样块大小
 		if (!Mix_OpenAudio(0, nullptr)) {
 			Mix_Quit();
-			throw std::runtime_error(std::string(mLogTag) + std::string(" 错误: Mix_OpenAudio失败: ") + std::string(SDL_GetError()));
+			throw std::runtime_error(mLogTag.data() + std::string(" 错误: Mix_OpenAudio失败: ") + std::string(SDL_GetError()));
 		}
 		spdlog::trace("{} 构造成功", mLogTag);
 	}
@@ -35,18 +35,18 @@ namespace engine::resource {
 		spdlog::trace("{} 析构成功", mLogTag);
 	}
 
-	Mix_Chunk* AudioManager::loadSound(const std::string& filePath) {
+	Mix_Chunk* AudioManager::loadSound(std::string_view filePath) {
 		// 首先检查缓存
-		auto iter = mSounds.find(filePath);
+		auto iter = mSounds.find(std::string(filePath));
 		if (iter != mSounds.end()) {
 			return iter->second.get();
 		}
 
 		// 加载音效块
 		spdlog::debug("{} 加载音效: {}", mLogTag.data(), filePath);
-		Mix_Chunk* rawChunk = Mix_LoadWAV(filePath.c_str());
+		Mix_Chunk* rawChunk = Mix_LoadWAV(filePath.data());
 		if (!rawChunk) {
-			spdlog::error("{} 加载音效失败: '{}':{}", mLogTag.data(), filePath, SDL_GetError());
+			spdlog::error("{} 加载音效失败: '{}':{}", mLogTag.data(), filePath.data(), SDL_GetError());
 			return nullptr;
 		}
 
@@ -56,23 +56,23 @@ namespace engine::resource {
 		return rawChunk;
 	}
 
-	Mix_Chunk* AudioManager::getSound(const std::string& filePath) {
-		auto iter = mSounds.find(filePath);
+	Mix_Chunk* AudioManager::getSound(std::string_view filePath) {
+		auto iter = mSounds.find(std::string(filePath));
 		if (iter != mSounds.end()) {
 			return iter->second.get();
 		}
-		spdlog::warn("{} 音效 '{}' 未找到缓存，尝试加载。", mLogTag.data(), filePath);
+		spdlog::warn("{} 音效 '{}' 未找到缓存，尝试加载。", mLogTag.data(), filePath.data());
 		return loadSound(filePath);
 	}
 
-	void AudioManager::unloadSound(const std::string& filePath) {
-		auto iter = mSounds.find(filePath);
+	void AudioManager::unloadSound(std::string_view filePath) {
+		auto iter = mSounds.find(std::string(filePath));
 		if (iter != mSounds.end()) {
-			spdlog::debug("{} 卸载音效: {}", mLogTag.data(), filePath);
+			spdlog::debug("{} 卸载音效: {}", mLogTag.data(), filePath.data());
 			mSounds.erase(iter);
 		}
 		else {
-			spdlog::warn("{} 尝试卸载不存在的音效: {}", mLogTag.data(), filePath);
+			spdlog::warn("{} 尝试卸载不存在的音效: {}", mLogTag.data(), filePath.data());
 		}
 	}
 
@@ -83,44 +83,44 @@ namespace engine::resource {
 		}
 	}
 
-	Mix_Music* AudioManager::loadMusic(const std::string& filePath) {
+	Mix_Music* AudioManager::loadMusic(std::string_view filePath) {
 		// 检查缓存
-		auto iter = mMusic.find(filePath);
+		auto iter = mMusic.find(std::string(filePath));
 		if (iter != mMusic.end()) {
 			return iter->second.get();
 		}
 
 		// 加载音乐
 		spdlog::debug("{} 加载音乐: {}", mLogTag.data(), filePath);
-		Mix_Music* rawMusic = Mix_LoadMUS(filePath.c_str());
+		Mix_Music* rawMusic = Mix_LoadMUS(filePath.data());
 		if (!rawMusic) {
-			spdlog::error("{} 加载音乐失败: '{}': {}", mLogTag.data(), filePath, SDL_GetError());
+			spdlog::error("{} 加载音乐失败: '{}': {}", mLogTag.data(), filePath.data(), SDL_GetError());
 			return nullptr;
 		}
 
 		// 存储
 		mMusic.emplace(filePath, std::unique_ptr<Mix_Music, SDLMixMusicDeleter>(rawMusic));
-		spdlog::debug("{} 成功加载并缓存音乐: {}", mLogTag.data(), filePath);
+		spdlog::debug("{} 成功加载并缓存音乐: {}", mLogTag.data(), filePath.data());
 		return rawMusic;
 	}
 
-	Mix_Music* AudioManager::getMusic(const std::string& filePath) {
-		auto iter = mMusic.find(filePath);
+	Mix_Music* AudioManager::getMusic(std::string_view filePath) {
+		auto iter = mMusic.find(std::string(filePath));
 		if (iter != mMusic.end()) {
 			return iter->second.get();
 		}
-		spdlog::warn("{} 音乐 '{}' 未找到缓存, 尝试加载", mLogTag.data(), filePath);
+		spdlog::warn("{} 音乐 '{}' 未找到缓存, 尝试加载", mLogTag.data(), filePath.data());
 		return loadMusic(filePath);
 	}
 
-	void AudioManager::unloadMusic(const std::string& filePath) {
-		auto iter = mMusic.find(filePath);
+	void AudioManager::unloadMusic(std::string_view filePath) {
+		auto iter = mMusic.find(std::string(filePath));
 		if (iter != mMusic.end()) {
-			spdlog::debug("{} 卸载音乐: {}", mLogTag.data(), filePath);
+			spdlog::debug("{} 卸载音乐: {}", mLogTag.data(), filePath.data());
 			mMusic.erase(iter);
 		}
 		else {
-			spdlog::warn("{} 尝试卸载不存在的音乐: {}", mLogTag.data(), filePath);
+			spdlog::warn("{} 尝试卸载不存在的音乐: {}", mLogTag.data(), filePath.data());
 		}
 	}
 

@@ -19,7 +19,7 @@ ClimbState::ClimbState(PlayerComponent* playerComponent)
 }
 
 void ClimbState::enter() {
-	spdlog::debug("{} : 进入攀爬状态", std::string(mLogTag));
+	spdlog::debug("{} : 进入攀爬状态", mLogTag.data());
 	playAnimation("climb");
 	if (auto pc = mPlayerComponent->getPhysicsComponent(); pc) {
 		pc->setUseGravity(false);
@@ -27,7 +27,7 @@ void ClimbState::enter() {
 }
 
 void ClimbState::exit() {
-	spdlog::debug("{} : 退出攀爬状态", std::string(mLogTag));
+	spdlog::debug("{} : 退出攀爬状态", mLogTag.data());
 	if (auto pc = mPlayerComponent->getPhysicsComponent(); pc) {
 		pc->setUseGravity(true);
 	}

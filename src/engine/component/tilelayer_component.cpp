@@ -13,16 +13,16 @@ engine::component::TileLayerComponent::TileLayerComponent(glm::ivec2 tileSize, g
 	, mTiles(std::move(tiles))
 {
 	if (mTiles.size() != static_cast<size_t>(mMapSize.x * mMapSize.y)) {
-		spdlog::error("{} : 地图尺寸与提供的瓦片向量大小不匹配. 瓦片数据将被清除.", std::string(mLogTag));
+		spdlog::error("{} : 地图尺寸与提供的瓦片向量大小不匹配. 瓦片数据将被清除.", mLogTag.data());
 		mTiles.clear();
 		mMapSize = { 0, 0 };
 	}
-	spdlog::trace("{} 构造完成", std::string(mLogTag));
+	spdlog::trace("{} 构造完成", mLogTag.data());
 }
 
 const TileInfo* TileLayerComponent::getTileInfoAt(glm::ivec2 position) const {
 	if (position.x < 0 || position.x >= mMapSize.x || position.y < 0 || position.y >= mMapSize.y) {
-		spdlog::warn("{} : 瓦片坐标越界: ({}, {})", std::string(mLogTag), position.x, position.y);
+		spdlog::warn("{} : 瓦片坐标越界: ({}, {})", mLogTag.data(), position.x, position.y);
 		return nullptr;
 	}
 
@@ -33,7 +33,7 @@ const TileInfo* TileLayerComponent::getTileInfoAt(glm::ivec2 position) const {
 		return &mTiles[index];
 	}
 
-	spdlog::warn("{} 瓦片索引越界: {}", std::string(mLogTag), index);
+	spdlog::warn("{} 瓦片索引越界: {}", mLogTag.data(), index);
 	return nullptr;
 }
 
@@ -87,9 +87,9 @@ void TileLayerComponent::setPhysicsEngine(engine::physics::PhysicsEngine* physic
 
 void TileLayerComponent::init() {
 	if (!mOwner) {
-		spdlog::warn("{} 的owner未设置.", std::string(mLogTag));
+		spdlog::warn("{} 的owner未设置.", mLogTag.data());
 	}
-	spdlog::trace("{} 初始化完成", std::string(mLogTag));
+	spdlog::trace("{} 初始化完成", mLogTag.data());
 }
 
 void TileLayerComponent::update(float, engine::core::Context&) {}

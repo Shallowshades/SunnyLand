@@ -40,40 +40,40 @@ game::scene::GameScene::GameScene(engine::core::Context& context, engine::scene:
 {
 	if (!mGameSessionData) {
 		mGameSessionData = std::make_unique<game::data::SessionData>();
-		spdlog::info("{} : 未提供 SessionData, 使用默认值", std::string(mLogTag));
+		spdlog::info("{} : 未提供 SessionData, 使用默认值", mLogTag.data());
 	}
-	spdlog::trace("{} 构造完成", std::string(mLogTag));
+	spdlog::trace("{} 构造完成", mLogTag.data());
 }
 
 void GameScene::init() {
 	if (mIsInitialized) {
-		spdlog::warn("{} : 已经初始化过了, 重复调用 init", std::string(mLogTag));
+		spdlog::warn("{} : 已经初始化过了, 重复调用 init", mLogTag.data());
 		return;
 	}
-	spdlog::trace("{} : 开始初始化", std::string(mLogTag));
+	spdlog::trace("{} : 开始初始化", mLogTag.data());
 	mContext.getGameState().setState(engine::core::State::Playing);
 	mGameSessionData->syncHighScore("assets/save.json");
 
 	if (!initLevel()) {
-		spdlog::error("{} : 关卡初始化失败, 无法继续.", std::string(mLogTag));
+		spdlog::error("{} : 关卡初始化失败, 无法继续.", mLogTag.data());
 		mContext.getInputManager().setShouldQuit(true);
 		return;
 	}
 
 	if (!initPlayer()) {
-		spdlog::error("{} : 玩家初始化失败, 无法继续", std::string(mLogTag));
+		spdlog::error("{} : 玩家初始化失败, 无法继续", mLogTag.data());
 		mContext.getInputManager().setShouldQuit(true);
 		return;
 	}
 
 	if (!initEnemyAndItem()) {
-		spdlog::error("{} : 敌人和道具初始化失败, 无法继续.", std::string(mLogTag));
+		spdlog::error("{} : 敌人和道具初始化失败, 无法继续.", mLogTag.data());
 		mContext.getInputManager().setShouldQuit(true);
 		return;
 	}
 
 	if (!initUI()) {
-		spdlog::error("{} : UI初始化失败.", std::string(mLogTag));
+		spdlog::error("{} : UI初始化失败.", mLogTag.data());
 		mContext.getInputManager().setShouldQuit(true);
 		return;
 	}
@@ -82,7 +82,7 @@ void GameScene::init() {
 	mContext.getAudioPlayer().playMusic("assets/audio/hurry_up_and_run.ogg", true, 1000);
 
 	Scene::init();
-	spdlog::trace("{} : 初始化完成", std::string(mLogTag));
+	spdlog::trace("{} : 初始化完成", mLogTag.data());
 }
 
 void GameScene::update(float deltaTime){
@@ -121,27 +121,27 @@ void GameScene::clean(){
 
 bool GameScene::initLevel() {
 	// 加载关卡(LevelLoader加载后即可销毁)
-	spdlog::info("{} 加载关卡", std::string(mLogTag));
+	spdlog::info("{} 加载关卡", mLogTag.data());
 	engine::scene::LevelLoader levelLoader;
 	auto levelPath = mGameSessionData->getMapPath();
 	if (!levelLoader.loadLevel(levelPath, *this)) {
-		spdlog::error("{} : 关卡加载失败", std::string(mLogTag));
+		spdlog::error("{} : 关卡加载失败", mLogTag.data());
 		return false;
 	}
 
 	// 注册"main"层到物理引擎
 	auto* mainLayer = findGameObjectByName("main");
 	if (!mainLayer) {
-		spdlog::error("{} : 未找到\"main\"层", std::string(mLogTag));
+		spdlog::error("{} : 未找到\"main\"层", mLogTag.data());
 		return false;
 	}
 	auto* tileLayer = mainLayer->getComponent<engine::component::TileLayerComponent>();
 	if (!tileLayer) {
-		spdlog::error("{} : \"main\"层没有 TileLayerComponent 组件", std::string(mLogTag));
+		spdlog::error("{} : \"main\"层没有 TileLayerComponent 组件", mLogTag.data());
 		return false;
 	}
 	mContext.getPhysicsEngine().registerCollisionLayer(tileLayer);
-	spdlog::info("{} : 注册 'main' 层到物理引擎", std::string(mLogTag));
+	spdlog::info("{} : 注册 'main' 层到物理引擎", mLogTag.data());
 
 	// 设置相机边界
 	auto worldSize = mainLayer->getComponent<engine::component::TileLayerComponent>()->getWorldSize();
@@ -150,7 +150,7 @@ bool GameScene::initLevel() {
 	// 设置世界边界
 	mContext.getPhysicsEngine().setWorldBound(engine::utils::Rect(glm::vec2(0.f), worldSize));
 	
-	spdlog::trace("{} : 关卡初始化完成", std::string(mLogTag));
+	spdlog::trace("{} : 关卡初始化完成", mLogTag.data());
 	return true;
 }
 
@@ -158,14 +158,14 @@ bool GameScene::initPlayer() {
 	// 获取玩家对象
 	mPlayer = findGameObjectByName("player");
 	if (!mPlayer) {
-		spdlog::error("{} : 未找到玩家对象", std::string(mLogTag));
+		spdlog::error("{} : 未找到玩家对象", mLogTag.data());
 		return false;
 	}
 
 	// 添加PlayerComponent到玩家对象
 	auto* playerComponent = mPlayer->addComponent<game::component::PlayerComponent>();
 	if (!playerComponent) {
-		spdlog::error("{} : 无法添加PlayerComponent到玩家对象", std::string(mLogTag));
+		spdlog::error("{} : 无法添加PlayerComponent到玩家对象", mLogTag.data());
 		return false;
 	}
 
@@ -182,11 +182,11 @@ bool GameScene::initPlayer() {
 	// 相机跟随玩家
 	auto* playerTransform = mPlayer->getComponent<engine::component::TransformComponent>();
 	if (!playerTransform) {
-		spdlog::error("{} : 玩家对象没有变换组件, 无法设置相机目标", std::string(mLogTag));
+		spdlog::error("{} : 玩家对象没有变换组件, 无法设置相机目标", mLogTag.data());
 		return false;
 	}
 	mContext.getCamera().setTarget(playerTransform);
-	spdlog::trace("{} : Player 初始化完成", std::string(mLogTag));
+	spdlog::trace("{} : Player 初始化完成", mLogTag.data());
 	return true;
 }
 
@@ -222,7 +222,7 @@ bool GameScene::initEnemyAndItem() {
 				ac->playAnimation("idle");
 			}
 			else {
-				spdlog::error("{} : item 对象缺少动画组件, 无法播放动画", std::string(mLogTag));
+				spdlog::error("{} : item 对象缺少动画组件, 无法播放动画", mLogTag.data());
 				success = false;
 			}
 		}
@@ -268,12 +268,12 @@ void GameScene::handleObjectCollisions() {
 		else if (obj1->getName() == "player" && obj2->getTag() == "hazard") {
 			obj1->getComponent<game::component::PlayerComponent>()->takeDamage(1);
 			handlePlayerDamage(1);
-			spdlog::debug("{} : 玩家 {} 受到了 HAZARD 对象伤害", std::string(mLogTag), obj1->getName());
+			spdlog::debug("{} : 玩家 {} 受到了 HAZARD 对象伤害", mLogTag.data(), obj1->getName());
 		}
 		else if (obj2->getName() == "player" && obj1->getTag() == "hazard") {
 			obj2->getComponent<game::component::PlayerComponent>()->takeDamage(1);
 			handlePlayerDamage(1);
-			spdlog::debug("{} : 玩家 {} 受到了 HAZARD 对象伤害", std::string(mLogTag), obj2->getName());
+			spdlog::debug("{} : 玩家 {} 受到了 HAZARD 对象伤害", mLogTag.data(), obj2->getName());
 		}
 
 		// 处理玩家与关底触发器碰撞
@@ -302,7 +302,7 @@ void GameScene::handleTileTriggers() {
 			// 碰撞危险瓦片, 受伤
 			if (obj->getName() == "player") {
 				handlePlayerDamage(1);
-				spdlog::debug("{} : 玩家 {} 受到了 HAZARD 瓦片伤害", std::string(mLogTag), obj->getName());
+				spdlog::debug("{} : 玩家 {} 受到了 HAZARD 瓦片伤害", mLogTag.data(), obj->getName());
 			}
 			// TODO: 其他对象类型的处理, 目前让敌人无视瓦片伤害
 		}
@@ -316,7 +316,7 @@ void GameScene::handlePlayerDamage(int damage) {
 	}
 
 	if (playerComponent->getIsDead()) {
-		spdlog::info("{} : 玩家 {} 死亡", std::string(mLogTag), mPlayer->getName());
+		spdlog::info("{} : 玩家 {} 死亡", mLogTag.data(), mPlayer->getName());
 		// TODO: 可能的死亡逻辑处理
 	}
 
@@ -336,15 +336,15 @@ void GameScene::playerVSEnemyCollision(engine::object::GameObject* player, engin
 
 	// 踩踏判断成功, 敌人受伤
 	if (overlap.x > overlap.y && playerCenter.y < enemyCenter.y) {
-		spdlog::info("{} : 玩家 {} 踩踏了敌人 {}", std::string(mLogTag), player->getName(), enemy->getName());
+		spdlog::info("{} : 玩家 {} 踩踏了敌人 {}", mLogTag.data(), player->getName(), enemy->getName());
 		auto enemyHealth = enemy->getComponent<engine::component::HealthComponent>();
 		if (!enemyHealth) {
-			spdlog::error("{} : 敌人 {} 没有生命组件, 无法处理踩踏伤害", std::string(mLogTag), enemy->getName());
+			spdlog::error("{} : 敌人 {} 没有生命组件, 无法处理踩踏伤害", mLogTag.data(), enemy->getName());
 			return;
 		}
 		enemyHealth->takeDamage(1);
 		if (!enemyHealth->isAlive()) {
-			spdlog::info("{} : 敌人 {} 被踩踏后死亡", std::string(mLogTag), enemy->getName());
+			spdlog::info("{} : 敌人 {} 被踩踏后死亡", mLogTag.data(), enemy->getName());
 			enemy->setNeedRemove(true);
 			createEffect(enemyCenter, enemy->getTag());
 		}
@@ -358,7 +358,7 @@ void GameScene::playerVSEnemyCollision(engine::object::GameObject* player, engin
 		addScoreWithUI(10);
 	}
 	else {
-		spdlog::info("{} : 敌人 {} 对玩家 {} 造成伤害", std::string(mLogTag), enemy->getName(), player->getName());
+		spdlog::info("{} : 敌人 {} 对玩家 {} 造成伤害", mLogTag.data(), enemy->getName(), player->getName());
 		handlePlayerDamage(1);
 	}
 }
@@ -392,24 +392,24 @@ void GameScene::showEndScene(bool isWin) {
 	mSceneManager.requestPushScene(std::move(endScene));
 }
 
-std::string GameScene::levelNameToPath(const std::string& levelName) const {
-	return "assets/maps/" + levelName + ".tmj";
+std::string GameScene::levelNameToPath(std::string_view levelName) const {
+	return "assets/maps/" + std::string(levelName) + ".tmj";
 }
 
-void GameScene::createEffect(const glm::vec2& centerPosition, const std::string& tag) {
+void GameScene::createEffect(const glm::vec2& centerPosition, std::string_view tag) {
 	// 创建游戏对象和变换组件
-	auto effectObject = std::make_unique<engine::object::GameObject>("effect_" + tag);
+	auto effectObject = std::make_unique<engine::object::GameObject>("effect_" + std::string(tag));
 	effectObject->addComponent<engine::component::TransformComponent>(centerPosition);
 
 	// 根据标签创建不同的精灵组件和动画
 	auto animation = std::make_unique<engine::render::Animation>("effect", false);
-	if (tag == "enemy") {
+	if (std::string(tag) == "enemy") {
 		effectObject->addComponent<engine::component::SpriteComponent>("assets/textures/FX/enemy-deadth.png", mContext.getResourceManager(), engine::utils::Alignment::CENTER);
 		for (auto i = 0; i < 6; ++i) {
 			animation->addFrame(SDL_FRect { static_cast<float>(i * 40), 0.f, 40.f, 41.f }, 0.1f);
 		}
 	}
-	else if (tag == "item") {
+	else if (std::string(tag) == "item") {
 		effectObject->addComponent<engine::component::SpriteComponent>("assets/textures/FX/item-feedback.png",
 			mContext.getResourceManager(),
 			engine::utils::Alignment::CENTER);
@@ -418,7 +418,7 @@ void GameScene::createEffect(const glm::vec2& centerPosition, const std::string&
 		}
 	}
 	else {
-		spdlog::warn("{} : 未知特效类型: {}", std::string(mLogTag), tag);
+		spdlog::warn("{} : 未知特效类型: {}", mLogTag.data(), tag.data());
 		return;
 	}
 
@@ -428,7 +428,7 @@ void GameScene::createEffect(const glm::vec2& centerPosition, const std::string&
 	ac->setOneShotRemoval(true);
 	ac->playAnimation("effect");
 	safeAddGameObject(std::move(effectObject));
-	spdlog::debug("{} : 创建特效: {}", std::string(mLogTag), tag);
+	spdlog::debug("{} : 创建特效: {}", mLogTag.data(), tag);
 }
 
 void GameScene::createScoreUI() {

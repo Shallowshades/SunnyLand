@@ -14,6 +14,7 @@
 #include <SDL3/SDL_rect.h>
 #include <vector>
 #include <string>
+#include <string_view>
 
 namespace engine::render {
 
@@ -34,7 +35,7 @@ struct AnimationFrame {
  */
 class Animation final {
 public:
-	Animation(const std::string& name = "default", bool loop = true);			///< @brief 构造函数 动画名称 是否循环
+	Animation(std::string_view name = "default", bool loop = true);				///< @brief 构造函数 动画名称 是否循环
 	~Animation() = default;														///< @brief 默认析构函数
 
 	// 禁用拷贝和移动语义
@@ -46,8 +47,8 @@ public:
 	void addFrame(const SDL_FRect& sourceRect, float duration);					///< @brief 向动画添加一帧
 	const AnimationFrame& getFrame(float time) const;							///< @brief 获取给定时间点应该显示的动画帧
 
-	const std::string& getName() const;											///< @brief 获取动画名称
-	void setName(std::string name);												///< @brief 设置动画名称
+	std::string_view getName() const;											///< @brief 获取动画名称
+	void setName(std::string_view name);										///< @brief 设置动画名称
 	const std::vector<AnimationFrame>& getFrames() const;						///< @brief 获取动画帧列表
 	size_t getFrameCount() const;												///< @brief 获取帧数量
 	float getTotalDuration() const;												///< @brief 获取动画的总持续时间 (秒)

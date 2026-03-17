@@ -49,7 +49,7 @@ void MenuScene::createUI() {
 		32);
 	// 放在中间靠上的位置 
 	auto size = pause_label->getSize();
-	auto labelY = windowSize.y * 0.2;
+	auto labelY = windowSize.y * 0.2f;
 	pause_label->setPosition(glm::vec2((windowSize.x - size.x) / 2.0f, labelY));
 	mUIManager->addElement(std::move(pause_label));
 

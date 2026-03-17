@@ -10,8 +10,8 @@ InputManager::InputManager(SDL_Renderer* renderer, const engine::core::Config* c
 	: mSDLRenderer(renderer)
 {
 	if (!mSDLRenderer) {
-		spdlog::error("{} 输入管理器: SDL_Renderer为空指针.", std::string(mLogTag));
-		throw std::runtime_error(std::string(mLogTag) + std::string("输入管理器: SDL_Renderer为空指针"));
+		spdlog::error("{} 输入管理器: SDL_Renderer为空指针.", mLogTag.data());
+		throw std::runtime_error(mLogTag.data() + std::string("输入管理器: SDL_Renderer为空指针"));
 	}
 	initializeMappings(config);
 
@@ -19,7 +19,7 @@ InputManager::InputManager(SDL_Renderer* renderer, const engine::core::Config* c
 	float x, y;
 	SDL_GetMouseState(&x, &y);
 	mMousePosition = { x, y };
-	spdlog::trace("{} 初始鼠标位置: ({}, {})", std::string(mLogTag), mMousePosition.x, mMousePosition.y);
+	spdlog::trace("{} 初始鼠标位置: ({}, {})", mLogTag.data(), mMousePosition.x, mMousePosition.y);
 }
 
 void InputManager::update() {
@@ -40,23 +40,23 @@ void InputManager::update() {
 	}
 }
 
-bool InputManager::isActionDown(const std::string& actionName) const {
-	if (auto iter = mActionStates.find(actionName); iter != mActionStates.end()) {
+bool InputManager::isActionDown(std::string_view actionName) const {
+	if (auto iter = mActionStates.find(std::string(actionName)); iter != mActionStates.end()) {
 		return iter->second == ActionState::PRESSED_THIS_FRAME ||
 			iter->second == ActionState::HELD_DOWN;
 	}
 	return false;
 }
 
-bool InputManager::isActionPressed(const std::string& actionName) const {
-	if (auto iter = mActionStates.find(actionName); iter != mActionStates.end()) {
+bool InputManager::isActionPressed(std::string_view actionName) const {
+	if (auto iter = mActionStates.find(std::string(actionName)); iter != mActionStates.end()) {
 		return iter->second == ActionState::PRESSED_THIS_FRAME;
 	}
 	return false;
 }
 
-bool InputManager::isActionReleased(const std::string& actionName) const {
-	if (auto iter = mActionStates.find(actionName); iter != mActionStates.end()) {
+bool InputManager::isActionReleased(std::string_view actionName) const {
+	if (auto iter = mActionStates.find(std::string(actionName)); iter != mActionStates.end()) {
 		return iter->second == ActionState::RELEASED_THIS_FRAME;
 	}
 	return false;
@@ -92,7 +92,7 @@ void InputManager::processEvent(const SDL_Event& event) {
 		auto iter = mInputToActionsMappings.find(scancode);
 		if (iter != mInputToActionsMappings.end()) {
 			const std::vector<std::string>& associatedActions = iter->second;
-			for (const std::string& actionName : associatedActions) {
+			for (const auto& actionName : associatedActions) {
 				updateActionState(actionName, isDown, isRepeat);
 			}
 		}
@@ -105,7 +105,7 @@ void InputManager::processEvent(const SDL_Event& event) {
 		auto iter = mInputToActionsMappings.find(button);
 		if (iter != mInputToActionsMappings.end()) {
 			const std::vector<std::string>& associatedActions = iter->second;
-			for (const std::string& actionName : associatedActions) {
+			for (const auto& actionName : associatedActions) {
 				// 鼠标事件不考虑repeat, 所以第三个参数传false
 				updateActionState(actionName, isDown, false);
 			}
@@ -124,10 +124,10 @@ void InputManager::processEvent(const SDL_Event& event) {
 }
 
 void InputManager::initializeMappings(const engine::core::Config* config) {
-	spdlog::trace("{} 初始化输入映射", std::string(mLogTag));
+	spdlog::trace("{} 初始化输入映射", mLogTag.data());
 	if (!config) {
-		spdlog::error("{} 输入管理器: Config 为空指针", std::string(mLogTag));
-		throw std::runtime_error(std::string(mLogTag) + std::string("Config 为空指针"));
+		spdlog::error("{} 输入管理器: Config 为空指针", mLogTag.data());
+		throw std::runtime_error(mLogTag.data() + std::string("Config 为空指针"));
 	}
 	mActionsToKeyNameMappings = config->mInputMappings;
 	mInputToActionsMappings.clear();
@@ -135,11 +135,11 @@ void InputManager::initializeMappings(const engine::core::Config* config) {
 
 	// 如果配置中没有定义鼠标按钮动作(通常不需要配置), 则添加默认映射, 用于UI
 	if (mActionsToKeyNameMappings.find("MouseLeftClick") == mActionsToKeyNameMappings.end()) {
-		spdlog::debug("{} 配置中没有定义 'MouseLeftClick' 动作, 添加默认映射到 'MouseLeft'.", std::string(mLogTag));
+		spdlog::debug("{} 配置中没有定义 'MouseLeftClick' 动作, 添加默认映射到 'MouseLeft'.", mLogTag.data());
 		mActionsToKeyNameMappings["MouseLeftClick"] = { "MouseLeft" };
 	}
 	if (mActionsToKeyNameMappings.find("MouseRightClick") == mActionsToKeyNameMappings.end()) {
-		spdlog::debug("{} 配置中没有定义 'MouseRightClick' 动作, 添加默认映射到 'MouseRight'.", std::string(mLogTag));
+		spdlog::debug("{} 配置中没有定义 'MouseRightClick' 动作, 添加默认映射到 'MouseRight'.", mLogTag.data());
 		mActionsToKeyNameMappings["MouseRightClick"] = { "MouseRight" };
 	}
 
@@ -147,35 +147,35 @@ void InputManager::initializeMappings(const engine::core::Config* config) {
 	for (const auto& [actionName, keyNames] : mActionsToKeyNameMappings) {
 		// 每个动作对应一个动作状态, 初始化INACTIVE
 		mActionStates[actionName] = ActionState::INACTIVE;
-		spdlog::trace("{} 映射动作: {}", std::string(mLogTag), actionName);
+		spdlog::trace("{} 映射动作: {}", mLogTag.data(), actionName);
 		// 设置 "按键 -> 动作" 的映射
-		for (const std::string& keyName : keyNames) {
-			spdlog::trace("{} 当前按键名称 '{}'", std::string(mLogTag), keyName);
+		for (const auto& keyName : keyNames) {
+			spdlog::trace("{} 当前按键名称 '{}'", mLogTag.data(), keyName);
 			SDL_Scancode scancode = scancodeFromString(keyName);
 			Uint32 mouseButton = mouseButtonFromString(keyName);
 			// TODO: 未来可添加其他输入类型 ......
 
 			if (scancode != SDL_SCANCODE_UNKNOWN) {
 				mInputToActionsMappings[scancode].push_back(actionName);
-				spdlog::trace("{} 按键映射: {} (Scancode: {} 到动作: {})", std::string(mLogTag), keyName, static_cast<int>(scancode), actionName);
+				spdlog::trace("{} 按键映射: {} (Scancode: {} 到动作: {})", mLogTag.data(), keyName, static_cast<int>(scancode), actionName);
 			}
 			else if (mouseButton != 0) {	// 如果鼠标按钮有效, 则将action添加到mMouseActionMappings中
 				mInputToActionsMappings[mouseButton].push_back(actionName);
-				spdlog::trace("{} 鼠标映射: {} (Button ID: {} 到动作: {})", std::string(mLogTag), keyName, static_cast<int>(mouseButton), actionName);
+				spdlog::trace("{} 鼠标映射: {} (Button ID: {} 到动作: {})", mLogTag.data(), keyName, static_cast<int>(mouseButton), actionName);
 			}
 			// TODO: more input type
 			else {
-				spdlog::warn("{} 输入映射警告: 未知键或按钮名称 '{}' 用于动作 '{}'", std::string(mLogTag), keyName, actionName);
+				spdlog::warn("{} 输入映射警告: 未知键或按钮名称 '{}' 用于动作 '{}'", mLogTag.data(), keyName, actionName);
 			}
 		}
 	}
-	spdlog::trace("{} 输入映射初始化成功", std::string(mLogTag));
+	spdlog::trace("{} 输入映射初始化成功", mLogTag.data());
 }
 
-void InputManager::updateActionState(const std::string& actionName, bool isInputActive, bool isRepeatEvent) {
-	auto iter = mActionStates.find(actionName);
+void InputManager::updateActionState(std::string_view actionName, bool isInputActive, bool isRepeatEvent) {
+	auto iter = mActionStates.find(std::string(actionName));
 	if (iter == mActionStates.end()) {
-		spdlog::warn("{} 尝试更新未注册的动作状态: {}", std::string(mLogTag), actionName);
+		spdlog::warn("{} 尝试更新未注册的动作状态: {}", mLogTag.data(), actionName);
 		return;
 	}
 
@@ -192,11 +192,11 @@ void InputManager::updateActionState(const std::string& actionName, bool isInput
 	}
 }
 
-SDL_Scancode InputManager::scancodeFromString(const std::string& keyName) {
-	return SDL_GetScancodeFromName(keyName.c_str());
+SDL_Scancode InputManager::scancodeFromString(std::string_view keyName) {
+	return SDL_GetScancodeFromName(keyName.data());
 }
 
-Uint32 InputManager::mouseButtonFromString(const std::string& buttonName) {
+Uint32 InputManager::mouseButtonFromString(std::string_view buttonName) {
 	if (buttonName == "MouseLeft") return SDL_BUTTON_LEFT;
 	if (buttonName == "MouseMiddle") return SDL_BUTTON_MIDDLE;
 	if (buttonName == "MouseRight") return SDL_BUTTON_RIGHT;

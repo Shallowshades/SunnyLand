@@ -12,7 +12,7 @@ ColliderComponent::ColliderComponent(std::unique_ptr<engine::physics::Collider> 
 	, mIsActive(isActive)
 {
 	if (!mCollider) {
-		spdlog::error("{} : 初始化失败, 碰撞体指针为空", std::string(mLogTag));
+		spdlog::error("{} : 初始化失败, 碰撞体指针为空", mLogTag.data());
 	}
 }
 
@@ -125,13 +125,13 @@ void ColliderComponent::setActive(bool isActive) {
 
 void ColliderComponent::init() {
 	if (!mOwner) {
-		spdlog::error("{} : 该组件的所有者指针为空", std::string(mLogTag));
+		spdlog::error("{} : 该组件的所有者指针为空", mLogTag.data());
 		return;
 	}
 
 	mTransform = mOwner->getComponent<TransformComponent>();
 	if (!mTransform) {
-		spdlog::error("{} : 需要一个在同一个游戏对象上的变换组件", std::string(mLogTag));
+		spdlog::error("{} : 需要一个在同一个游戏对象上的变换组件", mLogTag.data());
 		return;
 	}
 
