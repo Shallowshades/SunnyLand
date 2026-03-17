@@ -145,7 +145,7 @@ void Renderer::drawUIFilledRect(const engine::utils::Rect& rect, const engine::u
 	if (!SDL_RenderFillRect(mRenderer, &sdlRect)) {
 		spdlog::error("{} 绘制填充矩形失败: {}", mLogTag.data(), SDL_GetError());
 	}
-	setDrawColor(0, 0, 0, 1);
+	setDrawColorFloat(0.f, 0.f, 0.f, 1.f);
 }
 
 void Renderer::present() {

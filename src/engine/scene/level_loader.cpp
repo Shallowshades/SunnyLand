@@ -230,7 +230,12 @@ void LevelLoader::loadObjectLayer(const nlohmann::json& layerJson, Scene& scene)
 			// 获取瓦片json信息
 			// 1. 必然存在, 因为getTileInfoByGid(gid)函数已经顺利执行
 			// 2. 这里再获取json, 实际上检索了两次, 未来可用优化
-			auto tileJson = getTileJsonByGid(gid);
+			auto tileJsonOpt = getTileJsonByGid(gid);
+			if (!tileJsonOpt) {
+				spdlog::error("{} : gid 为 {} 的瓦片没有对应的json数据", mLogTag.data(), gid);
+				continue;
+			}
+			auto& tileJson = tileJsonOpt.value();
 
 			// 获取碰撞信息: 如果是SOLID类型, 则添加物理组件, 且图片源矩形区域就是碰撞盒大小
 			if (tileInfo.mType == engine::component::TileType::SOLID) {

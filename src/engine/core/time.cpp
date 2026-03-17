@@ -1,5 +1,6 @@
 #include <SDL3/SDL_timer.h>
 #include <spdlog/spdlog.h>
+#include <algorithm>
 
 #include "time.h"
 
@@ -72,6 +73,11 @@ void engine::core::Time::limitFrameRate(float currentDeltaTime) {
 		Uint64 nsToWait = static_cast<Uint64>(timeToWait * SDL_NS_PER_SECOND);
 		SDL_DelayNS(nsToWait);
 		mDeltaTime = static_cast<double>(SDL_GetTicksNS() - mLastTime) / SDL_NS_PER_SECOND;
+	}
+	// 否则使用当前帧耗费的时间
+	else {
+		// 限制最大 delta time 为 0.1秒 (即最低 10 FPS)，防止刚启动或卡顿时的物理穿模
+		mDeltaTime = std::min(static_cast<double>(currentDeltaTime), 0.1);
 	}
 }
 

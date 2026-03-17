@@ -31,6 +31,28 @@ void Scene::update(float deltaTime) {
 		return;
 	}
 
+	// 优先移除上一帧已经标记删除的对象, 避免物理更新产生的碰撞事件持有悬空指针
+	bool needRemove = false;
+	for (auto& obj : mGameObjects) {
+		if (!obj) {
+			needRemove = true;
+			spdlog::warn("{} : exist a null game object pointer, will be clean in one frame", mLogTag.data());
+			continue;
+		}
+		if (obj->isNeedRemove()) {
+			needRemove = true;
+			obj->clean();
+		}
+	}
+
+	// C++20, 比erase-remove_if简洁
+	// 如此写需优先调用clean
+	if (needRemove) {
+		std::erase_if(mGameObjects, [](const std::unique_ptr<engine::object::GameObject>& obj) {
+			return !obj || obj->isNeedRemove();
+		});
+	}
+
 	// 只有在游戏中才更新物理引擎和相机
 	if (mContext.getGameState().isPlaying()) {
 		// 先更新物理引擎
@@ -39,19 +61,13 @@ void Scene::update(float deltaTime) {
 		mContext.getCamera().update(deltaTime);
 	}
 
-	// 更新所有游戏对象, 并删除需要移除的对象
-	for (auto iter = mGameObjects.begin(); iter != mGameObjects.end();) {
+	for (auto& obj : mGameObjects) {
 		// 安全更新游戏对象
-		if (*iter && !(*iter)->isNeedRemove()) {
-			(*iter)->update(deltaTime, mContext);
-			++iter;
+		if (obj && !obj->isNeedRemove()) {
+			obj->update(deltaTime, mContext);
 		}
-		else { 
-			// 安全删除需要移除的对象
-			if (*iter) {
-				(*iter)->clean();
-			}
-			iter = mGameObjects.erase(iter);
+		else if (!obj){
+			spdlog::warn("{} : try to update a null game object pointer", mLogTag.data());
 		}
 	}
 
@@ -85,17 +101,10 @@ void Scene::handleInput() {
 	// 如果输入事件被UI处理则返回, 不再处理游戏对象输入
 	if (mUIManager->handleInput(mContext)) return;
 
-	// 遍历所有游戏对象, 并删除需要移除的对象
-	for (auto iter = mGameObjects.begin(); iter != mGameObjects.end();) {
-		if (*iter && !(*iter)->isNeedRemove()) {
-			(*iter)->handleInput(mContext);
-			++iter;
-		}
-		else {
-			if (*iter) {
-				(*iter)->clean();
-			}
-			iter = mGameObjects.erase(iter);
+	// 遍历所有游戏对象, 删除等到update
+	for (auto& obj : mGameObjects) {
+		if (obj && !obj->isNeedRemove()) {
+			obj->handleInput(mContext);
 		}
 	}
 }

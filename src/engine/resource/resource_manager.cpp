@@ -21,6 +21,7 @@ ResourceManager::~ResourceManager() = default;
 void ResourceManager::clear() {
 	mFontManager->clearFonts();
 	mAudioManager->clearSounds();
+	mAudioManager->clearMusic();
 	mTextureManager->clearTextures();
 	spdlog::trace("{} 清空资源", mLogTag);
 }
